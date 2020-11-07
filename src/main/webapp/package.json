@@ -1,0 +1,20 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel src/index.html --out-dir dev",
+    "build": "parcel build src/index.html --out-dir WEB-INF --public-url ./"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/react": "^16.9.56",
+    "@types/react-dom": "^16.9.9",
+    "parcel-bundler": "^1.12.4",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "typescript": "^4.0.5"
+  }
+}
