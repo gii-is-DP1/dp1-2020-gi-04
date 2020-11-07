@@ -7,5 +7,5 @@ import io.github.fourfantastics.standby.model.ShortFilm;
 
 @Repository
 public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long>{
-
+	
 }

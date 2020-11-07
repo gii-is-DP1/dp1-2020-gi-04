@@ -26,14 +26,11 @@ public class ShortFilm {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
 	@NotNull
-	@Size(min = 1, max = 64)
 	String name;
 	@NotNull
-	@Size(max = 500)
 	String description;
-	@DateTimeFormat(iso = ISO.DATE_TIME)
+	@DateTimeFormat(iso = ISO.DATE)
 	Date uploadDate;
 	@NotNull
-	@Size(min = 1)
 	Long duration;
 }

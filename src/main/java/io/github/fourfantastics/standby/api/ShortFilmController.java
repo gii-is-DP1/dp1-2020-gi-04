@@ -28,13 +28,13 @@ public class ShortFilmController {
 		return shortFilmService.getAllShortFilms();
 	}
 	
-	@GetMapping("/api/film/{id}")
+	@GetMapping("/api/films/{id}")
 	public ShortFilm getShortFilmById(@PathVariable Long id) {
 		return shortFilmService.getShortFilmById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 	
-	@PostMapping("/api/film")
+	@PostMapping("/api/films")
 	public ShortFilm postShortFilm(@Valid @RequestBody ShortFilm newShortFilm, BindingResult binding) {
 		if (binding.hasErrors()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -44,7 +44,7 @@ public class ShortFilmController {
 		return newShortFilm;
 	}
 	
-	@PutMapping("/api/film/{id}")
+	@PutMapping("/api/films/{id}")
 	public ShortFilm putShortFilmById(@PathVariable Long id, @Valid @RequestBody ShortFilm modifiedShortFilm, BindingResult binding) {
 		if (binding.hasErrors()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
