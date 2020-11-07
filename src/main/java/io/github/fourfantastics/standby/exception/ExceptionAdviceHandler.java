@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdviceHandler {
 	@ExceptionHandler(InvalidShortFilmException.class)
 	@ResponseBody
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public String invalidHandler(Exception e) {
-		return e.getMessage();
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ErrorMessage invalidHandler(Exception e) {
+		return new ErrorMessage(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 	}
 	
 	@ExceptionHandler(ShortFilmNotFoundException.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	String notFoundHandler(ShortFilmNotFoundException e) {
-		return e.getMessage();
+	public ErrorMessage notFoundHandler(ShortFilmNotFoundException e) {
+		return new ErrorMessage(HttpStatus.NOT_FOUND.value(), e.getMessage());
 	}
 }

@@ -5,7 +5,6 @@ import java.util.Set;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
+import io.github.fourfantastics.standby.exception.InvalidShortFilmException;
+import io.github.fourfantastics.standby.exception.ShortFilmNotFoundException;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 
@@ -31,13 +31,13 @@ public class ShortFilmController {
 	@GetMapping("/api/films/{id}")
 	public ShortFilm getShortFilmById(@PathVariable Long id) {
 		return shortFilmService.getShortFilmById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+				.orElseThrow(() -> new ShortFilmNotFoundException(id));
 	}
 	
 	@PostMapping("/api/films")
 	public ShortFilm postShortFilm(@Valid @RequestBody ShortFilm newShortFilm, BindingResult binding) {
 		if (binding.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			throw new InvalidShortFilmException();
 		}
 		
 		shortFilmService.saveShortFilm(newShortFilm);
@@ -47,7 +47,7 @@ public class ShortFilmController {
 	@PutMapping("/api/films/{id}")
 	public ShortFilm putShortFilmById(@PathVariable Long id, @Valid @RequestBody ShortFilm modifiedShortFilm, BindingResult binding) {
 		if (binding.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			throw new InvalidShortFilmException();
 		}
 		
 		return shortFilmService.getShortFilmById(id)

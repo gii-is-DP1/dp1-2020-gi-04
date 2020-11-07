@@ -8,7 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -26,14 +25,11 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
 	@NotNull
-	@Size(min = 4, max = 64)
 	String name;
 	@NotNull
-	@Size(min = 8, max = 128)
 	@Email
 	String email;
 	@NotNull
-	@Size(min = 8, max = 128)
 	String password;
 	@DateTimeFormat(iso = ISO.DATE)
 	Date creationDate;
