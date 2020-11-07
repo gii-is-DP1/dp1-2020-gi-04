@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +41,7 @@ public class ShortFilmController {
 			throw new InvalidShortFilmException();
 		}
 		
+		newShortFilm.setId(null);
 		shortFilmService.saveShortFilm(newShortFilm);
 		return newShortFilm;
 	}
@@ -59,11 +61,7 @@ public class ShortFilmController {
 					shortFilmService.saveShortFilm(x);
 					return x;
 				})
-				.orElseGet(() -> {
-					modifiedShortFilm.setId(id);
-					shortFilmService.saveShortFilm(modifiedShortFilm);
-					return modifiedShortFilm;
-				});
+				.orElseThrow(() -> new ShortFilmNotFoundException(id));
 				
 	}
 }

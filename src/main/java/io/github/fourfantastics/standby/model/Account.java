@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
@@ -25,12 +26,16 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
 	@NotNull
+	@Length(min = 5)
 	String name;
 	@NotNull
+	@Length(min = 5)
 	@Email
 	String email;
 	@NotNull
+	@Length(min = 8)
 	String password;
+	@NotNull
 	@DateTimeFormat(iso = ISO.DATE)
 	Date creationDate;
 	String photoUrl;
