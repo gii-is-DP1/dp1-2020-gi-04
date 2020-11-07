@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
       "target": "es5",
-      "module": "es2015",
+      "module": "esnext",
       "jsx": "react",
       "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
       "lib": [
           "dom",
           "es5",
-          "es6"
+          "es6",
+          "esnext"
       ]
   },
   "include": [
