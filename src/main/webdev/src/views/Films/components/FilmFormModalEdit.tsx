@@ -37,9 +37,7 @@ export const FilmFormModalEdit = React.memo<FilmFormModalEditProps>((props) => {
     }
   }, [error]);
 
-  if (loading) return <Loading />;
-
-  const handleEditFilm = (values: FilmFormValues) => {
+  const handleEditFilm = (values: Partial<Film>) => {
     const id = film ? film.id : "";
 
     editFilm({
@@ -47,7 +45,6 @@ export const FilmFormModalEdit = React.memo<FilmFormModalEditProps>((props) => {
       url: `/films/${id}`,
     });
   };
-
   return (
     <Box>
       <FilmFormModal

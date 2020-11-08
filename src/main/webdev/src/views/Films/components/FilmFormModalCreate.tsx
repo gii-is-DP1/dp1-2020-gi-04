@@ -10,49 +10,49 @@ export interface FilmFormModalCreateProps {
   handleSubmit?: (film: Film) => void;
 }
 
-export const FilmFormModalCreate = React.memo<FilmFormModalCreateProps>((props) => {
-  const {handleSubmit} = props;
-  const [isCreating, setIsCreating] = useState(false);
+export const FilmFormModalCreate = React.memo<FilmFormModalCreateProps>(
+  (props) => {
+    const { handleSubmit } = props;
+    const [isCreating, setIsCreating] = useState(false);
 
-  const sendSuccessNotification = notification["success"];
-  const sendErrorNotification = notification["error"];
+    const sendSuccessNotification = notification["success"];
+    const sendErrorNotification = notification["error"];
 
-  const [{ data, loading, error }, createFilm] = useAxios<Film>(
-    { url: "/films", method: "POST" },
-    { manual: true }
-  );
+    const [{ data, loading, error }, createFilm] = useAxios<Film>(
+      { url: "/films", method: "POST" },
+      { manual: true }
+    );
 
-  useEffect(() => {
-    if (data) {
-      sendSuccessNotification({ message: "Film created successfully!" });
-      handleSubmit(data);
-    }
-  }, [data]);
+    useEffect(() => {
+      if (data) {
+        sendSuccessNotification({ message: "Film created successfully!" });
+        handleSubmit(data);
+      }
+    }, [data]);
 
-  useEffect(() => {
-    if (error) {
-      sendErrorNotification({ message: error.message });
-    }
-  }, [error]);
+    useEffect(() => {
+      if (error) {
+        sendErrorNotification({ message: error.message });
+      }
+    }, [error]);
 
-  if (loading) return <Loading />;
-
-  return (
-    <Box>
-      <FilmFormModal
-        visible={isCreating}
-        title="Create film"
-        handleCancel={() => setIsCreating(false)}
-        handleSubmit={(values) => {
-          setIsCreating(false);
-          createFilm({ data: values });
-        }}
-      />
-      <Row justify="center">
-        <Button type="primary" onClick={() => setIsCreating(true)}>
-          Create
-        </Button>
-      </Row>
-    </Box>
-  );
-});
+    return (
+      <Box>
+        <FilmFormModal
+          visible={isCreating}
+          title="Create film"
+          handleCancel={() => setIsCreating(false)}
+          handleSubmit={(values) => {
+            setIsCreating(false);
+            createFilm({ data: values });
+          }}
+        />
+        <Row justify="center">
+          <Button type="primary" onClick={() => setIsCreating(true)}>
+            Create
+          </Button>
+        </Row>
+      </Box>
+    );
+  }
+);

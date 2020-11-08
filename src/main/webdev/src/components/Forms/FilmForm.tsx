@@ -15,10 +15,12 @@ export interface FilmFormValues {
   name?: string;
   description?: string;
   duration?: number;
-  uploadDate?: any;
+  uploadDate?: moment.Moment;
 }
+
+
 export interface FilmFormProps {
-  handleSubmit: (values: FilmFormValues) => void;
+  handleSubmit: (values: Partial<Film>) => void;
   initialValues?: Partial<Film>;
 }
 export const FilmForm = React.memo<FilmFormProps>((props) => {
@@ -46,7 +48,7 @@ export const FilmForm = React.memo<FilmFormProps>((props) => {
       onFinish={(values: FilmFormValues) => {
         const { uploadDate, ...others } = values;
         handleSubmit({
-          uploadDate: uploadDate?.toISOString(),
+          uploadDate: uploadDate.valueOf(),
           ...others,
         });
       }}
