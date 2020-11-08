@@ -13,14 +13,8 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ShortFilm {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,4 +31,38 @@ public class ShortFilm {
 	@NotNull
 	@Min(1)
 	Long duration;
+
+	public ShortFilm() {};
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public Date getUploadDate() {
+		return uploadDate;
+	}
+	public void setUploadDate(Date uploadDate) {
+		this.uploadDate = uploadDate;
+	}
+	public Long getDuration() {
+		return duration;
+	}
+	public void setDuration(Long duration) {
+		this.duration = duration;
+	}
+	
 }

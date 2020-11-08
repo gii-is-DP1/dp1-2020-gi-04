@@ -39,6 +39,8 @@ local.properties
 # sbteclipse plugin
 .target
 
+# static page
+src/main/resources/static/*
 # Tern plugin
 .tern-project
 
