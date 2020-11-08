@@ -31,17 +31,17 @@ public class ShortFilm {
 	@Min(1)
 	Long duration;
 	
-	public static ShortFilm of(Long id, String name, String description, Date uploadDate, Long duration) {
-		return new ShortFilm(id, name, description, uploadDate, duration);
-	}
-	
-	private ShortFilm(Long id, String name, String description, Date uploadDate, Long duration) {
+	public ShortFilm(Long id, String name, String description, Date uploadDate, Long duration) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.uploadDate = uploadDate;
 		this.duration = duration;
+	}
+	
+	public ShortFilm() {
+		
 	}
 
 	public Long getId() {

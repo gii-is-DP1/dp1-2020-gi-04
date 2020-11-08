@@ -4,14 +4,14 @@ public class ErrorMessage {
 	private Integer error;
 	private String message;
 	
-	public static ErrorMessage of(Integer error, String message) {
-		return new ErrorMessage(error, message);
-	}
-	
-	private ErrorMessage(Integer error, String message) {
+	public ErrorMessage(Integer error, String message) {
 		super();
 		this.error = error;
 		this.message = message;
+	}
+	
+	public ErrorMessage() {
+		
 	}
 
 	public Integer getError() {

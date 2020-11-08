@@ -33,11 +33,7 @@ public class Account {
 	Date creationDate;
 	String photoUrl;
 	
-	public static Account of(Long id, String name, String email, String password, Date creationDate, String photoUrl) {
-		return new Account(id, name, email, password, creationDate, photoUrl);
-	}
-	
-	private Account(Long id, String name, String email, String password, Date creationDate, String photoUrl) {
+	public Account(Long id, String name, String email, String password, Date creationDate, String photoUrl) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -45,6 +41,10 @@ public class Account {
 		this.password = password;
 		this.creationDate = creationDate;
 		this.photoUrl = photoUrl;
+	}
+	
+	public Account() {
+		
 	}
 
 	public Long getId() {
