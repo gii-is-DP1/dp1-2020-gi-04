@@ -21,7 +21,7 @@ export const routes: Route[] = [
   {
     path: PATHS.FILM,
     Component: loadable(() =>
-      import("../../views/Films").then((module) => ({ default: module.Films }))
+      import("../../views/Films/FilmsView").then((module) => ({ default: module.FilmsView }))
     ),
   },
 ];
