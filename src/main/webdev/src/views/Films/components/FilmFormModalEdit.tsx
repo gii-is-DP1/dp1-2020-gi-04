@@ -6,11 +6,11 @@ import { Loading } from "../../../components/pure/Loading";
 import { Film } from "../types";
 import { FilmFormModal } from "./FilmFormModal";
 
-export interface FilmFormModalCreateProps {
+export interface FilmFormModalEditProps {
   handleSubmit?: (film: Film) => void;
 }
 
-export const FilmFormModalCreate = React.memo<FilmFormModalCreateProps>((props) => {
+export const FilmFormModalEdit = React.memo<FilmFormModalEditProps>((props) => {
   const {handleSubmit} = props;
   const [isCreating, setIsCreating] = useState(false);
 

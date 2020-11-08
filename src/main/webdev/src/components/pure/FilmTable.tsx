@@ -50,14 +50,21 @@ export const FilmTable = React.memo<FilmTableProps>((props) => {
       dataIndex: "id",
       key: "actions",
       render: (id: number, film: Film) => (
-        <Row justify="space-around" style={{flexWrap: "nowrap"}}>
+        <Row justify="space-around" style={{ flexWrap: "nowrap" }}>
           <Col>
-            <Button onClick={() => handleEdit(film)} type="primary">
+            <Button
+              onClick={() => {
+                if (handleEdit) handleEdit(film);
+              }}
+              type="primary"
+            >
               Edit
             </Button>
           </Col>
           <Col>
-            <Button onClick={() => handleDelete(film)} danger>
+            <Button onClick={() => {
+                if (handleDelete) handleDelete(film);
+              }} danger>
               Delete
             </Button>
           </Col>
@@ -65,5 +72,5 @@ export const FilmTable = React.memo<FilmTableProps>((props) => {
       ),
     },
   ];
-  return <Table dataSource={films} columns={columns} {...rest}/>;
+  return <Table dataSource={films} columns={columns} rowKey={(film) => film.id} {...rest} />;
 });
