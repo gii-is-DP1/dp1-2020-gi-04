@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.model;
 
-import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,8 +8,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @Entity
 public class ShortFilm {
@@ -25,13 +21,12 @@ public class ShortFilm {
 	@Length(min = 10)
 	String description;
 	@NotNull
-	@DateTimeFormat(iso = ISO.DATE)
-	Date uploadDate;
+	Long uploadDate;
 	@NotNull
 	@Min(1)
 	Long duration;
 	
-	public ShortFilm(Long id, String name, String description, Date uploadDate, Long duration) {
+	public ShortFilm(Long id, String name, String description, Long uploadDate, Long duration) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -68,11 +63,11 @@ public class ShortFilm {
 		this.description = description;
 	}
 	
-	public Date getUploadDate() {
+	public Long getUploadDate() {
 		return uploadDate;
 	}
 	
-	public void setUploadDate(Date uploadDate) {
+	public void setUploadDate(Long uploadDate) {
 		this.uploadDate = uploadDate;
 	}
 	
