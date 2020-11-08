@@ -20,6 +20,7 @@ import io.github.fourfantastics.standby.service.ShortFilmService;
 
 @RestController
 public class ShortFilmController {
+	
 	@Autowired
 	ShortFilmService shortFilmService;
 	
@@ -48,6 +49,7 @@ public class ShortFilmController {
 	@PutMapping("/api/films/{id}")
 	public ShortFilm putShortFilmById(@PathVariable Long id, @Valid @RequestBody ShortFilm modifiedShortFilm, BindingResult binding) {
 		if (binding.hasErrors()) {
+			System.out.println(binding.getFieldErrors());
 			throw new InvalidShortFilmException();
 		}
 		

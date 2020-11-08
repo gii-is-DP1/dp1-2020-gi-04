@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Link } from "@reach/router";
+import { Link, useLocation } from "@reach/router";
 import { Layout, Menu, Breadcrumb, Card } from "antd";
 import { Box } from "@material-ui/core";
 const logo = require("../../../public/logo.png");
@@ -19,13 +19,13 @@ export const AppLayout = React.memo((props) => {
           <Menu.Item key="3">nav 3</Menu.Item>
         </Menu>
       </Header>
-      <Content style={{ padding: "0 50px" }}>
+      <Content style={{ padding: "0 1%" }}>
         <Breadcrumb style={{ margin: "16px 0" }}>
           <Breadcrumb.Item>Home</Breadcrumb.Item>
           <Breadcrumb.Item>List</Breadcrumb.Item>
           <Breadcrumb.Item>App</Breadcrumb.Item>
         </Breadcrumb>
-        <Box mx={4} my={5}>
+        <Box>
           <Card>{children}</Card>
         </Box>
       </Content>

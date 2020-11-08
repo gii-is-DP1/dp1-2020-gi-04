@@ -1,6 +1,14 @@
 import React from "react";
 
-import { Form, Input, InputNumber, DatePicker, Button } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  DatePicker,
+  Button,
+  Row,
+  Divider,
+} from "antd";
 
 export interface FilmFormValues {
   name?: string;
@@ -16,32 +24,34 @@ export const FilmForm = React.memo<FilmFormProps>((props) => {
 
   return (
     <Form
-      labelCol={{ span: 4 }}
-      wrapperCol={{ span: 20 }}
+      labelCol={{ span: 6 }}
+      wrapperCol={{ span: 18 }}
       onFinish={(values: FilmFormValues) => {
         const { uploadDate, ...others } = values;
         handleSubmit({
-          uploadDate: uploadDate.format("YYYY-MM-DD"),
+          uploadDate: uploadDate?.toISOString(),
           ...others,
         });
       }}
     >
-      <Form.Item label="Nombre" name="name">
+      <Form.Item label="Name" name="name">
         <Input />
       </Form.Item>
-      <Form.Item label="Descripcion" name="description">
+      <Form.Item label="Description" name="description">
         <Input />
       </Form.Item>
-      <Form.Item label="Duracion" name="duration">
+      <Form.Item label="Duration" name="duration">
         <InputNumber />
       </Form.Item>
-      <Form.Item label="Fecha de subida" name="uploadDate">
+      <Form.Item label="Upload Date" name="uploadDate">
         <DatePicker />
       </Form.Item>
-
-      <Button type="primary" htmlType="submit">
-        Enviar
-      </Button>
+      <Divider />
+      <Row justify="center">
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Row>
     </Form>
   );
 });

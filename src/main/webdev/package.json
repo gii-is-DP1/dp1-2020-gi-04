@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "parcel public/index.html --out-dir dev",
-    "build": "parcel build public/index.html --out-dir ../resources/static --public-url ./"
+    "build": "parcel build public/index.html --out-dir ../resources/static --public-url /"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +13,9 @@
     "@material-ui/core": "^4.11.0",
     "antd": "^4.8.0",
     "axios": "^0.21.0",
+    "axios-hooks": "^2.1.0",
     "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "styled-components": "^5.2.1"
