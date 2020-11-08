@@ -12,9 +12,16 @@ export interface FilmTableDisplayProps {
 }
 export const FilmTableDisplay = React.memo<FilmTableDisplayProps>((props) => {
   const { forceFetch } = props;
-  const [{ data, loading, error }, refetch] = useAxios("/films");
 
+  const [{ data, loading, error }, refetch] = useAxios("/films");
   const sendErrorNotification = notification["error"];
+
+  useEffect(() => {
+    if (forceFetch) {
+      refetch();
+    }
+  }, [forceFetch]);
+
   useEffect(() => {
     if (error) {
       sendErrorNotification({
@@ -22,6 +29,7 @@ export const FilmTableDisplay = React.memo<FilmTableDisplayProps>((props) => {
       });
     }
   }, [error]);
+
   return (
     <FilmTable films={data} style={{ overflowX: "auto" }} loading={loading} />
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { RouteComponentProps } from "@reach/router";
 import { Divider } from "antd";
@@ -9,12 +9,13 @@ import { FilmFormModalCreate } from "./components/FilmFormModalCreate";
 import { FilmTableDisplay } from "./components/FilmTableDisplay";
 
 export const FilmsView = React.memo<RouteComponentProps>((props) => {
+  const [forceFetch, setForceFetch] = useState(0);
   return (
     <Box>
       <Title level={3}>Films</Title>
-      <FilmTableDisplay forceFetch={0}/>
+      <FilmTableDisplay forceFetch={forceFetch} />
       <Divider />
-      <FilmFormModalCreate />
+      <FilmFormModalCreate handleSubmit={() => setForceFetch(forceFetch + 1)} />
     </Box>
   );
 });
