@@ -1,11 +1,9 @@
 package io.github.fourfantastics.standby.configuration;
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.ResourceResolverChain;
@@ -17,71 +15,69 @@ import java.util.List;
 
 @Configuration
 public class RouteRedirectConfiguration implements WebMvcConfigurer {
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/*").addResourceLocations("classpath:/static/").resourceChain(false)
-				.addResolver(new PushStateResourceResolver());
-	}
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+            .addResourceHandler("/*")
+            .addResourceLocations("classpath:/static/")
+            .resourceChain(false)
+            .addResolver(new PushStateResourceResolver());
+    }
 
-	/*@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/").setViewName("forward:/index.html");
-	}*/
+    private class PushStateResourceResolver implements ResourceResolver {
+        private List<String> handledExtensions = Arrays.asList("html", "js", "json", "csv", "css", "png", "svg", "eot", "ttf", "woff", "appcache", "jpg", "jpeg", "gif", "ico");
+        private List<String> ignoredPaths = Arrays.asList("api");
 
-	private class PushStateResourceResolver implements ResourceResolver {
-		private Resource index = new ClassPathResource("/static/index.html");
-		private List<String> handledExtensions = Arrays.asList("html", "js", "json", "csv", "css", "png", "svg", "eot",
-				"ttf", "woff", "appcache", "jpg", "jpeg", "gif", "ico");
-		private List<String> ignoredPaths = Arrays.asList("api");
+        @Override
+        public Resource resolveResource(HttpServletRequest request, String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
+        	return resolve(requestPath, locations);
+        }
 
-		@Override
-		public Resource resolveResource(HttpServletRequest request, String requestPath,
-				List<? extends Resource> locations, ResourceResolverChain chain) {
-			return resolve(requestPath, locations);
-		}
+        @Override
+        public String resolveUrlPath(String resourcePath, List<? extends Resource> locations, ResourceResolverChain chain) {
+            Resource resolvedResource = resolve(resourcePath, locations);
+            if (resolvedResource == null) {
+                return null;
+            }
+            try {
+                return resolvedResource.getURL().toString();
+            } catch (IOException e) {
+                return resolvedResource.getFilename();
+            }
+        }
 
-		@Override
-		public String resolveUrlPath(String resourcePath, List<? extends Resource> locations,
-				ResourceResolverChain chain) {
-		
-			Resource resolvedResource = resolve(resourcePath, locations);
-			if (resolvedResource == null) {
-				return null;
-			}
-			try {
-				return resolvedResource.getURL().toString();
-			} catch (IOException e) {
-				return resolvedResource.getFilename();
-			}
-		}
+        private Resource resolve(String requestPath, List<? extends Resource> locations) {
+        	Resource index = new ClassPathResource("/static/index.html");
+            if (isIgnored(requestPath)) {
+                return null;
+            }
+            if (isHandled(requestPath)) {
+                Resource root = locations.get(0);
+                Resource resource = createRelative(root, requestPath);
+                if (resource != null && resource.exists()) {
+                	return resource;
+                } else {
+                	return null;
+                }
+            }
+            return index;
+        }
 
-		private Resource resolve(String requestPath, List<? extends Resource> locations) {
-			System.out.println("resolve "+requestPath);
-			if (isIgnored(requestPath)) {
-				return null;
-			}
-			if (isHandled(requestPath)) {
-				return locations.stream().map(loc -> createRelative(loc, requestPath))
-						.filter(resource -> resource != null && resource.exists()).findFirst().orElseGet(null);
-			}
-			return index;
-		}
+        private Resource createRelative(Resource resource, String relativePath) {
+            try {
+                return resource.createRelative(relativePath);
+            } catch (IOException e) {
+                return null;
+            }
+        }
 
-		private Resource createRelative(Resource resource, String relativePath) {
-			try {
-				return resource.createRelative(relativePath);
-			} catch (IOException e) {
-				return null;
-			}
-		}
+        private boolean isIgnored(String path) {
+            return ignoredPaths.contains(path);
+        }
 
-		private boolean isIgnored(String path) {
-			return ignoredPaths.contains(path);
-		}
-
-		private boolean isHandled(String path) {
-			String extension = StringUtils.getFilenameExtension(path);
-			return handledExtensions.stream().anyMatch(ext -> ext.equals(extension));
-		}
-	}
+        private boolean isHandled(String path) {
+            String extension = StringUtils.getFilenameExtension(path);
+            return handledExtensions.stream().anyMatch(ext -> ext.equals(extension));
+        }
+    }
 }

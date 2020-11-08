@@ -32,4 +32,8 @@ public class ShortFilmService {
 		}
 		return shortFilms;
 	}
+	
+	public void deleteShortFilm(ShortFilm shortFilm) {
+		shortFilmRepository.delete(shortFilm);
+	}
 }

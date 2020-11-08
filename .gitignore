@@ -70,6 +70,9 @@ src/main/resources/static/*
 # Spring Boot Tooling
 .sts4-cache/
 
+# Static resources
+src/main/resources/static/*
+
 ### Java ###
 # Compiled class file
 *.class
