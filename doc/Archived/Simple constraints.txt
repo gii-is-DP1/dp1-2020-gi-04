@@ -1,0 +1,63 @@
+Notification:
+text: @notnull
+emisionDate: @notnull
+readDate: @notnull
+
+TOTAL: 3
+
+Company:
+companyName: @notnull @unique
+taxIDNumber: @notnull @unique
+businessPhone: @notnull @unique @phone
+officeAddress: @notnull
+
+TOTAL: 8
+
+Account:
+name: @notnull @unique @max 64
+email: @notnull @unique @email
+password: @notnull
+creationDate: @notnull
+photo:
+
+TOTAL: 8
+
+PrivacyRequest:
+requestState: @notnull
+requestDate: @notnull
+
+TOTAL: 2
+
+User:
+fullName: @notnull @unique
+country: @notnull
+city: @notnull
+
+TOTAL: 4
+
+Role:
+type: @notnull
+
+TOTAL: 1
+
+Rating:
+grade: @notnull @min 0 @max 10
+
+TOTAL: 3
+
+Comment:
+text: @notnull @max 10000
+
+TOTAL: 2
+
+Short Film:
+name: @notnull @unique @max 128
+description: @notnull @max 500
+uploadDate: @notnull
+duration: @notnull @min 1
+
+TOTAL: 8
+
+-----------------
+
+TOTAL: 39
