@@ -1,8 +1,11 @@
 import React from "react";
 
-import { Layout, Menu, Breadcrumb, Card } from "antd";
+import { Layout, Breadcrumb, Card, Image, Row, Col } from "antd";
 import { Box } from "@material-ui/core";
-const logo = require("../../assets/logo.png");
+import logo from "../../assets/logo.png";
+import { Link } from "@reach/router";
+import Title from "antd/lib/typography/Title";
+
 const { Header, Content, Footer } = Layout;
 
 export const AppLayout = React.memo((props) => {
@@ -11,12 +14,18 @@ export const AppLayout = React.memo((props) => {
   return (
     <Layout className="layout">
       <Header>
-        <div className="logo" />
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
-          <Menu.Item key="1">nav 1</Menu.Item>
-          <Menu.Item key="2">nav 2</Menu.Item>
-          <Menu.Item key="3">nav 3</Menu.Item>
-        </Menu>
+        <Link to="/">
+          <Row justify="start" wrap={false}>
+            <Col>
+              <Image src={logo} preview={false} width="54px" height="54px" />
+            </Col>
+            <Col style={{ marginLeft: "15px" }}>
+              <Title level={3} style={{ color: "white", lineHeight: 2.5 }}>
+                Home
+              </Title>
+            </Col>
+          </Row>
+        </Link>
       </Header>
       <Content style={{ padding: "0 1%" }}>
         <Breadcrumb style={{ margin: "16px 0" }}>

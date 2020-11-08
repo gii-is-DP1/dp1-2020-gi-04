@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 
 import {
   Form,
@@ -9,27 +9,46 @@ import {
   Row,
   Divider,
 } from "antd";
-
+import { Film } from "../../views/Films/types";
+import moment from "moment";
 export interface FilmFormValues {
   name?: string;
   description?: string;
   duration?: number;
-  uploadDate?: any;
+  uploadDate?: moment.Moment;
 }
+
+
 export interface FilmFormProps {
-  handleSubmit: (values: FilmFormValues) => void;
+  handleSubmit: (values: Partial<Film>) => void;
+  initialValues?: Partial<Film>;
 }
 export const FilmForm = React.memo<FilmFormProps>((props) => {
-  const { handleSubmit } = props;
+  const { initialValues, handleSubmit } = props;
+
+  const [form] = Form.useForm();
+
+  const parsedInitialValues = useMemo(() => {
+    if (!initialValues) return {};
+    const { uploadDate } = initialValues;
+    if (uploadDate) {
+      return { ...initialValues, uploadDate: moment(uploadDate) };
+    }
+    return initialValues;
+  }, [initialValues, form]);
+
+  useEffect(() => form.resetFields(), [initialValues]);
 
   return (
     <Form
+      form={form}
+      initialValues={parsedInitialValues}
       labelCol={{ span: 6 }}
       wrapperCol={{ span: 18 }}
       onFinish={(values: FilmFormValues) => {
         const { uploadDate, ...others } = values;
         handleSubmit({
-          uploadDate: uploadDate?.toISOString(),
+          uploadDate: uploadDate.valueOf(),
           ...others,
         });
       }}
