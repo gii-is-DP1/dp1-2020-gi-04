@@ -1,9 +1,8 @@
 import React from "react";
 
-import { Link, useLocation } from "@reach/router";
 import { Layout, Menu, Breadcrumb, Card } from "antd";
 import { Box } from "@material-ui/core";
-const logo = require("../../../public/logo.png");
+const logo = require("../../assets/logo.png");
 const { Header, Content, Footer } = Layout;
 
 export const AppLayout = React.memo((props) => {
