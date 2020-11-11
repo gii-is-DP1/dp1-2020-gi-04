@@ -5,26 +5,24 @@ H7 - Role management (Role, ShortFilm)
 H8 - Comment and evaluate short films (Comment, Rating, ShortFilm)
 H9 - Tag short films (ShortFilm, Tag)
 H10 - See short film's tag (ShortFilm, Tag)
-H11 - Request personal data of a filmmaker (Company, User, PrivacyRequest)
+H11 - Request personal data of a filmmaker with private information (Company, User, PrivacyRequest)
 H12 - Request response notification (Company, User, PrivacyRequest, Notification)
-H13 - Search short films filtering by filmmaker (ShortFilm, User)
-H14 - Search short films filtering by tags (ShortFilm, Tag)
-H15 - Search short films filtering by trending (ShortFilm, Rating)
-H17 - Short films in the filmmaker's profile (ShortFilm, User)
-H18 - Disassociation of a participation (User, ShortFilm)
-H19 - Request personal data of a filmmaker with private information (User, Company, PrivacyRequest)
-H20 - User's favourites (User, ShortFilm)
-H21 - Subscription to filmmaker (User, Account)
-H22 - Subscription notifications (Account, User, Notification)
+H13 - Search short films and users by filters (ShortFilm, Tag, User)
+H14 - Short films in the filmmaker's profile (ShortFilm, User)
+H15 - Disassociation of a participation (User, ShortFilm)
+H16 - Save short film as favourite (User, ShortFilm)
+H17 - List all favourite short films (User, ShortFilm)
+H18 - Subscription to filmmaker (User, Account)
+H19 - Subscription notifications (Account, User, Notification)
 
-TOTAL: 16
+TOTAL: 14
 
 User stories involving 3 or more entities:
 
 H8 - Comment and evaluate short films (Comment, Rating, ShortFilm)
-H11 - Request personal data of a filmmaker (Company, User, PrivacyRequest)
+H11 - Request personal data of a filmmaker with private information (Company, User, PrivacyRequest)
 H12 - Request response notification (Company, User, PrivacyRequest, Notification)
-H19 - Request personal data of a filmmaker with private information (User, Company, PrivacyRequest)
-H22 - Subscription notifications (Account, User, Notification)
+H13 - Search short films and users by filters (ShortFilm, Tag, User)
+H19 - Subscription notifications (Account, User, Notification)
 
 TOTAL: 5
