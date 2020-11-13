@@ -8,12 +8,12 @@ TOTAL: 3
 Company:
 companyName: @notnull @unique
 taxIDNumber: @notnull @unique
-businessPhone: @notnull @unique @phone
+businessPhone: @notnull @phone
 officeAddress: @notnull
 
-TOTAL: 8
+TOTAL: 7
 
-Account:
+User:
 name: @notnull @unique @max 64
 email: @notnull @unique @email
 password: @notnull
@@ -28,10 +28,11 @@ requestDate: @notnull
 
 TOTAL: 2
 
-User:
-fullName: @notnull @unique
-country: @notnull
-city: @notnull
+Filmmaker:
+fullName: @notnull
+country: @optional
+city: @optional
+phone: @phone
 
 TOTAL: 4
 
@@ -51,13 +52,13 @@ text: @notnull @max 10000
 TOTAL: 2
 
 Short Film:
-name: @notnull @unique @max 128
+name: @notnull @max 128
 description: @notnull @max 500
 uploadDate: @notnull
 duration: @notnull @min 1
 
-TOTAL: 8
+TOTAL: 7
 
 -----------------
 
-TOTAL: 39
+TOTAL: 37
