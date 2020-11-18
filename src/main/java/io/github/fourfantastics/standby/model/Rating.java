@@ -1,24 +1,24 @@
 package io.github.fourfantastics.standby.model;
 
 import javax.persistence.Column;
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Range;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
-public class Rating {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	Long id;
+
+public class Rating extends BaseEntity{
+	
 	
 	@NotNull
 	@Column(nullable = false)
