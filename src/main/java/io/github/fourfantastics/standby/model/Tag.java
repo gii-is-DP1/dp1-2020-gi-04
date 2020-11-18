@@ -1,9 +1,7 @@
 package io.github.fourfantastics.standby.model;
 
 import javax.persistence.Entity;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -15,20 +13,10 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class ShortFilm extends BaseEntity {
-
+public class Tag extends BaseEntity{
+		
 	@NotEmpty
-	@Length(min = 5)
-	String name;
-
-	@NotEmpty
-	@Min(1)
-	String fileUrl;
-
-	@NotNull
-	Long uploadDate;
-
-	@NotEmpty
-	@Length(min = 10)
-	String description;
+	@Length(max = 20)
+	String tagname;
+	
 }
