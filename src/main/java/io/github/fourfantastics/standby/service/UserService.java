@@ -19,14 +19,13 @@ public class UserService {
 	public Optional<User> getAccountById(Long id) {
 		return userRepository.findById(id);
 	}
-	
 	public Set<User> getAllShortFilms() {
-		Set<User> shortFilms = new HashSet<>();
+		Set<User> users = new HashSet<>();
 		Iterator<User> iterator = userRepository.findAll().iterator();
 		while (iterator.hasNext()) {
-			shortFilms.add(iterator.next());
+			users.add(iterator.next());
 		}
-		return shortFilms;
+		return users;
 	}
 	
 	public void saveAccount(User account) {
