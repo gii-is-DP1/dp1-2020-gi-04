@@ -8,7 +8,6 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
 
 public class FilmmakerService {
-
 	@Autowired
 	FilmmakerRepository filmmakerRepository;
 

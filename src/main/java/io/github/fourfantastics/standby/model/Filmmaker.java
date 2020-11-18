@@ -28,6 +28,7 @@ public class Filmmaker extends User{
 	@Column(nullable = true)
 	String city;
 	
+	
 	@Pattern(regexp = "^\\+[1-9]{1}[0-9]{3,14}$")
 	@Column(nullable = true)
 	String phone;

@@ -19,7 +19,6 @@ public class UserService {
 	public Optional<User> getAccountById(Long id) {
 		return userRepository.findById(id);
 	}
-	
 	public Set<User> getAllShortFilms() {
 		Set<User> users = new HashSet<>();
 		Iterator<User> iterator = userRepository.findAll().iterator();
