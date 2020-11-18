@@ -11,15 +11,14 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
-public class ShortFilm {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	Long id;
+public class ShortFilm extends BaseEntity {
 
 	@NotEmpty
 	@Length(min = 5)

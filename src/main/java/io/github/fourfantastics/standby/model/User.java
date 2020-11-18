@@ -11,16 +11,14 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
-public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	Long id;
-	
+public class User extends BaseEntity {
 	@NotNull
 	@Column(unique = true, nullable = false)
 	@Length(min = 5)
