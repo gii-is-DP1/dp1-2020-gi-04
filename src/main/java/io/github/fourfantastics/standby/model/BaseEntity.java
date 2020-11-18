@@ -9,7 +9,7 @@ import javax.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@MappedSuperclass
+
 @Entity
 @Data
 @NoArgsConstructor
