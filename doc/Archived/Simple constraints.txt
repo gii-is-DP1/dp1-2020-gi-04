@@ -14,13 +14,13 @@ officeAddress: @notnull
 TOTAL: 7
 
 User:
-name: @notnull @unique @max 64
+name: @notnull @unique @min 5 @max 64
 email: @notnull @unique @email
 password: @notnull
 creationDate: @notnull
 photo:
 
-TOTAL: 8
+TOTAL: 9
 
 PrivacyRequest:
 requestState: @notnull
@@ -29,12 +29,12 @@ requestDate: @notnull
 TOTAL: 2
 
 Filmmaker:
-fullName: @notnull
+fullName: @notnull @min 5 @max 128
 country: @optional
 city: @optional
 phone: @phone
 
-TOTAL: 4
+TOTAL: 6
 
 Role:
 type: @notnull
@@ -47,7 +47,7 @@ grade: @notnull @min 0 @max 10
 TOTAL: 3
 
 Comment:
-text: @notnull @max 10000
+text: @notnull @min 5 @max 10000
 
 TOTAL: 2
 
@@ -61,4 +61,4 @@ TOTAL: 7
 
 -----------------
 
-TOTAL: 37
+TOTAL: 40

@@ -39,16 +39,20 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
         
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+		
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-		    <groupId>io.fusionauth</groupId>
-		    <artifactId>fusionauth-jwt</artifactId>
-		    <version>3.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -65,50 +69,18 @@
 
 	<build>
 		<plugins>
-			<plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.10.3</version>
-                <executions>
-			        <execution>
-			            <id>install node and npm</id>
-			            <goals>
-			                <goal>install-node-and-npm</goal>
-			            </goals>
-			            <phase>package</phase>
-			            <configuration>
-			                 <installDirectory>target</installDirectory>
-			                 <workingDirectory>src/main/webdev</workingDirectory>
-			            </configuration>
-			        </execution>
-			        <execution>
-					    <id>npm install</id>
-					    <goals>
-					        <goal>npm</goal>
-					    </goals>
-					    <phase>package</phase>
-					    <configuration>
-					        <arguments>install</arguments>
-					        <installDirectory>target</installDirectory>
-                            <workingDirectory>src/main/webdev</workingDirectory>
-					    </configuration>
-					</execution>
-					<execution>
-                        <id>npm run build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <arguments>run build</arguments>
-                            <installDirectory>target</installDirectory>
-                            <workingDirectory>src/main/webdev</workingDirectory>
-                        </configuration>
-                    </execution>
-			    </executions>
-			    <configuration>
-			        <nodeVersion>v12.18.0</nodeVersion>
-			    </configuration>
+		    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
