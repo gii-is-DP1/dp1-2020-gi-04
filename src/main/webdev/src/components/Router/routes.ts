@@ -1,0 +1,40 @@
+import React from "react";
+import { loadable } from "../../utils/fn";
+
+export interface Route {
+  path?: string;
+  Component: (props: any) => JSX.Element;
+  default?: boolean;
+}
+
+export const PATHS = {
+  FILM: "/films",
+  INDEX: "/",
+};
+
+export const routes: Route[] = [
+  {
+    path: PATHS.INDEX,
+    Component: loadable(() =>
+      import("../../views/Landing").then((module) => ({
+        default: module.Landing,
+      }))
+    ),
+  },
+  {
+    path: PATHS.FILM,
+    Component: loadable(() =>
+      import("../../views/Films/FilmsView").then((module) => ({
+        default: module.FilmsView,
+      }))
+    ),
+  },
+  {
+    Component: loadable(() =>
+      import("../../views/NotFound/NotFoundView").then((module) => ({
+        default: module.NotFoundView,
+      }))
+    ),
+    default: true,
+  },
+];
