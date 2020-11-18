@@ -1,0 +1,14 @@
+H1 Register user
+H2 Register company
+H3 Login
+H4, H18, H19 Account management
+H5 - Upload short film
+H7, H13 - Edit short film
+
+H6, H8, H14 - View short film
+H10, H12, H16 - User profile
+H17 - Notifications
+
+H15 - List favourite short films
+H11 - Search short film
+H20 - Feed page
