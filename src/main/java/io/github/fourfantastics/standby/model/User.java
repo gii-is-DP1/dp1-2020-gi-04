@@ -1,6 +1,7 @@
 package io.github.fourfantastics.standby.model;
 
 import javax.persistence.Column;
+
 import javax.persistence.Entity;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;

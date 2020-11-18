@@ -14,7 +14,7 @@ public class RoleService {
 	@Autowired
 	RoleRepository roleRepository;
 	
-	public Optional<Role> getShortRoleById(Long id) {
+	public Optional<Role> getRoleById(Long id) {
 		return roleRepository.findById(id);
 	}
 	
