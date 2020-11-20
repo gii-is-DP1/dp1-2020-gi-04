@@ -1,0 +1,27 @@
+<nav class="navbar navbar-light navbar-expand-md navbar-light bg-light border-bottom fixed-top" data-th-fragment="navbar">
+    <a data-th-href="@{/}" class="navbar-brand">Standby</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="navbar-collapse collapse" id="navbar-content">
+        <ul class="nav navbar-nav mt-4 mt-md-0 mx-auto row">
+            <form>
+                <div class="form-row">
+                    <div class="input-group col col-12 col-md-auto">
+                        <input type="text" size="40" class="form-control" placeholder="Search short films, filmmakers..." />
+                        <div class="input-group-append">
+                            <button data-th-replace="~{@{/fragments/buttons} :: imgBtn('btn-light border-input', '40px', @{/static/search-icon.svg}, '20px')}"></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </ul>
+
+        <ul class="nav mt-4 mt-md-0 justify-content-between" style="height: 40px">
+            <button data-th-replace="~{@{/fragments/buttons} :: imgBtn('btn-light mr-0 mr-md-2', '40px', @{/static/upload-icon.svg}, '20px')}"></button>
+            <button data-th-replace="~{@{/fragments/buttons} :: imgBtn('btn-light mr-0 mr-md-2', '40px', @{/static/notification-icon.svg}, '20px')}"></button>
+            <button data-th-replace="~{@{/fragments/buttons} :: imgBtn('btn-light mr-0 mr-md-2', '40px', @{/static/user-icon.svg}, '20px')}"></button>
+        </ul>
+    </div>
+</nav>
