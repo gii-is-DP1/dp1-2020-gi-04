@@ -1,7 +1,6 @@
 package io.github.fourfantastics.standby.model;
 
 import javax.persistence.Column;
-
 import javax.persistence.Entity;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -16,28 +15,21 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
-public class User extends BaseEntity {
+public class Company extends User {
 	@NotNull
 	@Column(unique = true, nullable = false)
 	@Length(min = 5)
-	String name;
+	String companyName;
 	
 	@NotNull
 	@Column(unique = true, nullable = false)
-	@Length(min = 5)
-	@Email
-	String email;
+	Integer taxIDNumber;
 	
 	@NotNull
 	@Column(nullable = false)
-	@Length(min = 8)
-	String password;
+	String bussinessPhone;
 	
 	@NotNull
 	@Column(nullable = false)
-	Long creationDate;
-	
-	
-	@Column(nullable = true)
-	String photoUrl;
+	String officeAddress;
 }
