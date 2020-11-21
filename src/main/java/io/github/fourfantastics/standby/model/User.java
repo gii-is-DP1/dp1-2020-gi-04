@@ -37,6 +37,9 @@ public abstract class User {
 	@OneToMany(mappedBy = "user")
 	List<Comment> comments;
 
+	@OneToMany(mappedBy = "user")
+	List<Rating> ratings;
+
 	@NotNull
 	@Column(unique = true, nullable = false)
 	@Length(min = 5)

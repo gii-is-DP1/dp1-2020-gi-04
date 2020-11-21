@@ -38,12 +38,13 @@ class StandbyApplicationTests {
 		company.setCompanyName("El pepe");
 		company.setOfficeAddress("Te gacasas");
 		company.setTaxIDNumber(1231521512);
+		company.setNotifications(new ArrayList<Notification>());
 		companyRepository.save(company);
 		
 		
 		Notification a = new Notification();
 			a.setEmisionDate(1L);
-			a.setText("Tu mae e suna perra");
+			a.setText("Vaya");
 			a.setUser(company);
 		
 		
