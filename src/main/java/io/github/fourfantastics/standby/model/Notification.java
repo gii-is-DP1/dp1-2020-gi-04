@@ -26,7 +26,6 @@ public class Notification{
 	Long id;
 	
 	@NotNull
-	@NotEmpty
 	@Column(nullable = false)
 	String text;
 	

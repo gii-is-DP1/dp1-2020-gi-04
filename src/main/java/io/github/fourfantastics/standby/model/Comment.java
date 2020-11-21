@@ -33,6 +33,8 @@ public class Comment {
 	@Column(nullable = false)
 	String comment;
 	
+	@NotNull
+	String date;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id" , referencedColumnName= "user")
