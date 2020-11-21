@@ -5,8 +5,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +29,17 @@ public class Comment {
 	
 	@NotNull
 	@NotEmpty
+	@Length(max= 1000)
 	@Column(nullable = false)
 	String comment;
+	
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "user_id" , referencedColumnName= "user")
+	User user;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "shortfilm_id" , referencedColumnName= "shortfilm")
+	ShortFilm shortfilm;
+	
 }

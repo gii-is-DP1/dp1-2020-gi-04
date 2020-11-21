@@ -37,7 +37,7 @@ public class Notification{
 	@Column(nullable = true)
 	Long readDate;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	User user;
 

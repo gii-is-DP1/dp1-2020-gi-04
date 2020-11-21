@@ -33,6 +33,9 @@ public abstract class User {
 
 	@OneToMany(mappedBy = "user")
 	List<Notification> notifications;
+	
+	@OneToMany(mappedBy = "user")
+	List<Comment> comments;
 
 	@NotNull
 	@Column(unique = true, nullable = false)

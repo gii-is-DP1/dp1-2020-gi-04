@@ -1,9 +1,12 @@
 package io.github.fourfantastics.standby.model;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.validator.constraints.Length;
@@ -26,4 +29,8 @@ public class Tag {
 	@NotEmpty
 	@Length(max = 20)
 	String tagname;
+	
+	@ManyToMany
+	List<ShortFilm> shortfilms;
+	
 }

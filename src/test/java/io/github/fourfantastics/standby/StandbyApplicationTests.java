@@ -50,7 +50,6 @@ class StandbyApplicationTests {
 		notificationRepository.save(a);
 		for(Company c : companyRepository.findAll()) {
 			System.out.println(c.getEmail());
-			System.out.println(notificationRepository.findByUser(c).get(0).getText());
 			
 		}
 		
