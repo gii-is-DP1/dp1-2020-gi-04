@@ -26,7 +26,7 @@ public class PrivacyRequest{
 	
 	@NotNull
 	@Column(nullable = false)
-	String requestState;
+	RequestStateType requestState;
 	
 	@NotNull
 	@Column(nullable = false)
