@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -32,8 +34,11 @@ public class Notification{
 	@Column(nullable = false)
 	Long emisionDate;
 	
-	@NotNull
-	@Column(nullable = false)
+	@Column(nullable = true)
 	Long readDate;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	User user;
 
 }

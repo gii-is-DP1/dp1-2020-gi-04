@@ -1,9 +1,9 @@
 Notification:
 text: @notnull
 emisionDate: @notnull
-readDate: @notnull
+readDate: 
 
-TOTAL: 3
+TOTAL: 2
 
 Company:
 companyName: @notnull @unique
@@ -61,4 +61,4 @@ TOTAL: 7
 
 -----------------
 
-TOTAL: 40
+TOTAL: 39
