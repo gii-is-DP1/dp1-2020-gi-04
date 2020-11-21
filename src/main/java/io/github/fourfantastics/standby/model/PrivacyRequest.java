@@ -3,19 +3,26 @@ package io.github.fourfantastics.standby.model;
 import javax.persistence.Column;
 
 import javax.persistence.Entity;
-
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
-public class PrivacyRequest extends BaseEntity{
-	
+@AllArgsConstructor
+public class PrivacyRequest{
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	Long id;
 	
 	@NotNull
 	@Column(nullable = false)
@@ -24,5 +31,10 @@ public class PrivacyRequest extends BaseEntity{
 	@NotNull
 	@Column(nullable = false)
 	Long requestDate;
-
+	
+	@ManyToOne(optional=true)
+	Filmmaker filmmaker;
+	
+	@ManyToOne(optional=true)
+	Company company;
 }
