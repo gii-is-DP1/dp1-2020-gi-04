@@ -1,43 +1,16 @@
 package io.github.fourfantastics.standby.model;
 
-import javax.persistence.Column;
-
-import javax.persistence.Entity;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.Length;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
-@Entity
-@Data
-@EqualsAndHashCode(callSuper=true)
-@NoArgsConstructor
-public class User extends BaseEntity {
-	@NotNull
-	@Column(unique = true, nullable = false)
-	@Length(min = 5)
-	String name;
-	
-	@NotNull
-	@Column(unique = true, nullable = false)
-	@Length(min = 5)
-	@Email
-	String email;
-	
-	@NotNull
-	@Column(nullable = false)
-	@Length(min = 8)
-	String password;
-	
-	@NotNull
-	@Column(nullable = false)
-	Long creationDate;
-	
-	
-	@Column(nullable = true)
-	String photoUrl;
+public interface User {
+	public Long getId();
+	public void setId(Long id);
+	public String getName();
+	public void setName(String name);
+	public String getEmail();
+	public void setEmail(String email);
+	public String getPassword();
+	public void setPassword(String password);
+	public Long getCreationDate();
+	public void setCreationDate(Long creationDate);
+	public String getPhotoUrl();
+	public void setPhotoUrl(String photoUrl);
 }
