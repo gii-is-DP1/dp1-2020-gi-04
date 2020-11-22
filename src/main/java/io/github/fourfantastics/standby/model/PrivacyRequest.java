@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
@@ -33,8 +34,10 @@ public class PrivacyRequest{
 	Long requestDate;
 	
 	@ManyToOne(optional=true)
+	@JoinColumn(name = "filmmaker_id", referencedColumnName = "filmmaker")
 	Filmmaker filmmaker;
 	
 	@ManyToOne(optional=true)
+	@JoinColumn(name = "company_id", referencedColumnName = "company")
 	Company company;
 }

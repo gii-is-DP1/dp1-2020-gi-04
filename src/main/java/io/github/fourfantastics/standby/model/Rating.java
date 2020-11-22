@@ -32,6 +32,10 @@ public class Rating {
 	@Range(min=0,max=10)
 	Integer grade;
 	
+	@NotNull
+	@Column(nullable = false)
+	Long date;
+	
 	@ManyToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	User user;

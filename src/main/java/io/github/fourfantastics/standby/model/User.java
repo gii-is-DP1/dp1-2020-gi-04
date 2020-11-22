@@ -9,7 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -31,18 +33,10 @@ public abstract class User {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
 
-	@OneToMany(mappedBy = "user")
-	List<Notification> notifications;
-	
-	@OneToMany(mappedBy = "user")
-	List<Comment> comments;
-
-	@OneToMany(mappedBy = "user")
-	List<Rating> ratings;
 
 	@NotNull
 	@Column(unique = true, nullable = false)
-	@Length(min = 5)
+	@Length(min = 5,max=64)
 	String name;
 
 	@NotNull
@@ -61,4 +55,23 @@ public abstract class User {
 
 	@Column(nullable = true)
 	String photoUrl;
+	
+	@ManyToMany
+	List<Filmmaker> filmmakers;
+	
+	@OneToMany(mappedBy = "user")
+	List<Notification> notifications;
+	
+	@OneToOne(optional=false)
+	private NotificationConfiguration notificationConfiguration;
+	
+	@OneToMany(mappedBy = "user")
+	List<Rating> ratings;
+	
+	@OneToMany(mappedBy = "user")
+	List<Comment> comments;
+	
+	@ManyToMany
+	List<ShortFilm> shortfilms;
+
 }
