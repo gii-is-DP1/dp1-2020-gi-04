@@ -47,4 +47,6 @@ public class ShortFilm {
 	@OneToMany(mappedBy = "shortFilm")
 	List<Rating> ratings;
 	
+	@OneToMany(mappedBy = "shortFilm")
+	List<Comment> comments;
 }
