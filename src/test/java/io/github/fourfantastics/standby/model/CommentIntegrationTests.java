@@ -2,23 +2,21 @@ package io.github.fourfantastics.standby.model;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
+import io.github.fourfantastics.standby.repository.CommentRepository;
 import io.github.fourfantastics.standby.repository.CompanyRepository;
-
-import io.github.fourfantastics.standby.repository.RatingRepository;
+import io.github.fourfantastics.standby.repository.FilmmakerRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
-
 import io.github.fourfantastics.standby.repository.UserRepository;
 
 @SpringBootTest
-class RatingIntegrationTests {
-
+public class CommentIntegrationTests {
+	@Autowired
+	FilmmakerRepository filmmakerRepository;
+	
 	@Autowired
 	CompanyRepository companyRepository;
 
@@ -26,14 +24,31 @@ class RatingIntegrationTests {
 	UserRepository userRepository;
 
 	@Autowired
-	RatingRepository ratingRepository;
+	CommentRepository commentRepository;
 	
 	@Autowired
 	ShortFilmRepository shortFilmRepository;
-
 	
 	@Test
 	void contextLoads() {
+		
+		/*
+		Filmmaker filmmaker=new Filmmaker();
+		filmmaker.setCity("Seville");
+		filmmaker.setCountry("Spain");
+		filmmaker.setCreationDate(1L);
+		filmmaker.setEmail("filmmaker@gmail.com");
+		filmmaker.setFullname("Javier Gutiérrez");
+		filmmaker.setName("javig");
+		filmmaker.setPhone("675987432");
+		filmmaker.setPhotoUrl("url photo");
+		filmmakerRepository.save(filmmaker);
+		
+		Filmmaker savedFilmmaker = filmmakerRepository.findById(1L).orElse(null);
+		assertNotNull(savedFilmmaker);
+		
+		*/
+		
 		Company company = new Company();
 		company.setEmail("company@gmail.com");
 		company.setName("companyusername");
@@ -48,7 +63,7 @@ class RatingIntegrationTests {
 
 		Company savedCompany = companyRepository.findById(1L).orElse(null);
 		assertNotNull(savedCompany);
-
+		
 		User savedUser = userRepository.findById(1L).orElse(null);
 		assertNotNull(savedUser);
 		
@@ -66,25 +81,21 @@ class RatingIntegrationTests {
 		ShortFilm savedShortFilm = shortFilmRepository.findById(savedFilm.getId()).orElse(null);
 		assertNotNull(savedShortFilm);
 		
+		Comment comment = new Comment();
 		
-		Rating rating = new Rating();
-
-		rating.setUser(company);
-		rating.setShortFilm(shortFilm);
-		rating.setGrade(3);
-		rating.setDate(1L);
-
-		Rating savedRating = ratingRepository.save(rating);
+		comment.setUser(company);
+		comment.setShortFilm(shortFilm);
+		comment.setDate(1L);
+		comment.setComment("Breathtaking");
 		
-		Rating returnedRating = ratingRepository.findById(savedRating.getId()).orElse(null);
-		assertNotNull(returnedRating);
+		Comment savedComment = commentRepository.save(comment);
 		
-		Rating commonRating = ratingRepository.findByUserAndShortFilm(company, shortFilm).orElse(null);
-		assertNotNull(commonRating);
+		Comment returnedComment=  commentRepository.findById(savedComment.getId()).orElse(null);
+		assertNotNull(returnedComment);
 		
-
+		Comment commonComment =  commentRepository.findByUserAndShortFilm(company, shortFilm).orElse(null);
+		assertNotNull(commonComment);
 		
-
 	}
 
 }
