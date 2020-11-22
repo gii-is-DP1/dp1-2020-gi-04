@@ -37,11 +37,11 @@ public class Comment {
 	String date;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "user_id" , referencedColumnName= "user")
+	@JoinColumn(name = "user_id" , referencedColumnName= "id")
 	User user;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "shortfilm_id" , referencedColumnName= "shortfilm")
-	ShortFilm shortfilm;
+	@JoinColumn(name = "shortfilm_id" , referencedColumnName= "id")
+	ShortFilm shortFilm;
 	
 }
