@@ -56,22 +56,22 @@ public abstract class User {
 	@Column(nullable = true)
 	String photoUrl;
 	
-	@ManyToMany
-	List<Filmmaker> filmmakers;
+	/*@ManyToMany //subscribe
+	List<Filmmaker> filmmakers;*/
 	
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user") //receive
 	List<Notification> notifications;
 	
-	@OneToOne(optional=false)
-	private NotificationConfiguration notificationConfiguration;
-	
-	@OneToMany(mappedBy = "user")
+	/*@OneToOne //configures
+	NotificationConfiguration notificationconfiguration;*/
+
+	@OneToMany(mappedBy = "user")//
 	List<Rating> ratings;
 	
 	@OneToMany(mappedBy = "user")
 	List<Comment> comments;
 	
-	@ManyToMany
-	List<ShortFilm> shortfilms;
+	/*@ManyToMany  //favourites
+	List<ShortFilm> shortfilms;*/
 
 }

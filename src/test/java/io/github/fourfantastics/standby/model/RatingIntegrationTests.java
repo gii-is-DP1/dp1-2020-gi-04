@@ -12,10 +12,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.repository.CommentRepository;
 import io.github.fourfantastics.standby.repository.CompanyRepository;
+import io.github.fourfantastics.standby.repository.FilmmakerRepository;
+import io.github.fourfantastics.standby.repository.NotificationConfigurationRepository;
 import io.github.fourfantastics.standby.repository.NotificationRepository;
+import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
 import io.github.fourfantastics.standby.repository.RatingRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
+import io.github.fourfantastics.standby.repository.TagRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
 
 @SpringBootTest
@@ -33,6 +38,7 @@ class RatingIntegrationTests {
 	@Autowired
 	ShortFilmRepository shortFilmRepository;
 
+	
 	@Test
 	void contextLoads() {
 		Company company = new Company();
@@ -49,7 +55,7 @@ class RatingIntegrationTests {
 
 		Company savedCompany = companyRepository.findById(1L).orElse(null);
 		assertNotNull(savedCompany);
-		
+
 		User savedUser = userRepository.findById(1L).orElse(null);
 		assertNotNull(savedUser);
 		
@@ -73,9 +79,8 @@ class RatingIntegrationTests {
 		rating.setUser(company);
 		rating.setShortFilm(shortFilm);
 		rating.setGrade(3);
+		rating.setDate(1L);
 
-		
-		
 		Rating savedRating = ratingRepository.save(rating);
 		
 		Rating returnedRating = ratingRepository.findById(savedRating.getId()).orElse(null);
@@ -83,6 +88,8 @@ class RatingIntegrationTests {
 		
 		Rating commonRating = ratingRepository.findByUserAndShortFilm(company, shortFilm).orElse(null);
 		assertNotNull(commonRating);
+		
+
 		
 
 	}
