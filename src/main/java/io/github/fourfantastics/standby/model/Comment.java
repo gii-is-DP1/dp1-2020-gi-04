@@ -34,7 +34,7 @@ public class Comment {
 	String comment;
 	
 	@NotNull
-	String date;
+	Long date;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id" , referencedColumnName= "id")

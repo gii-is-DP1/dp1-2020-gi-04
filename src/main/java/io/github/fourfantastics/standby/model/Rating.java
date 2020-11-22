@@ -36,7 +36,7 @@ public class Rating {
 	@Column(nullable = false)
 	Long date;
 	
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	User user;
 	

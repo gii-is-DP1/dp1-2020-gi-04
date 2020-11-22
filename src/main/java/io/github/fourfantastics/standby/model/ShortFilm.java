@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -49,4 +50,10 @@ public class ShortFilm {
 	
 	@OneToMany(mappedBy = "shortFilm")
 	List<Comment> comments;
+	
+	/*@ManyToMany //favourites
+	List<User> users;*/
+	
+	/*@ManyToMany //attached
+	List<Tag> tags;*/
 }
