@@ -26,7 +26,6 @@ public class Notification{
 	Long id;
 	
 	@NotNull
-	@NotEmpty
 	@Column(nullable = false)
 	String text;
 	
@@ -37,7 +36,7 @@ public class Notification{
 	@Column(nullable = true)
 	Long readDate;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	User user;
 

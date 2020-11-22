@@ -20,7 +20,6 @@ public class Company extends User {
 
 	@NotNull
 	@Column(unique = true, nullable = false)
-	@Length(min = 5)
 	String companyName;
 
 	@NotNull

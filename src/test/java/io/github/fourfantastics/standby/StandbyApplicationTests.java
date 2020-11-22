@@ -38,19 +38,19 @@ class StandbyApplicationTests {
 		company.setCompanyName("El pepe");
 		company.setOfficeAddress("Te gacasas");
 		company.setTaxIDNumber(1231521512);
+		company.setNotifications(new ArrayList<Notification>());
 		companyRepository.save(company);
 		
 		
 		Notification a = new Notification();
 			a.setEmisionDate(1L);
-			a.setText("Tu mae e suna perra");
+			a.setText("Vaya");
 			a.setUser(company);
 		
 		
 		notificationRepository.save(a);
 		for(Company c : companyRepository.findAll()) {
 			System.out.println(c.getEmail());
-			System.out.println(notificationRepository.findByUser(c).get(0).getText());
 			
 		}
 		
