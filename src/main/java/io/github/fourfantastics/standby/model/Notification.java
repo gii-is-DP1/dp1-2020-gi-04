@@ -1,4 +1,4 @@
-package io.github.fourfantastics.standby.model;
+	package io.github.fourfantastics.standby.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +36,7 @@ public class Notification{
 	@Column(nullable = true)
 	Long readDate;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false)//receives
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	User user;
 

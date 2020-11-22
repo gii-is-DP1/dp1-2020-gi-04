@@ -33,11 +33,11 @@ public class PrivacyRequest{
 	@Column(nullable = false)
 	Long requestDate;
 	
-	@ManyToOne(optional=true)
-	@JoinColumn(name = "filmmaker_id", referencedColumnName = "filmmaker")
+	/*@ManyToOne(optional=false)//receives
+	@JoinColumn(name = "filmmaker_id", referencedColumnName = "id")
 	Filmmaker filmmaker;
 	
-	@ManyToOne(optional=true)
-	@JoinColumn(name = "company_id", referencedColumnName = "company")
-	Company company;
+	@ManyToOne(optional=false)//send
+	@JoinColumn(name = "company_id", referencedColumnName = "id")
+	Company company;*/
 }
