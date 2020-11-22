@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Range;
@@ -29,5 +31,17 @@ public class Rating {
 	@Column(nullable = false)
 	@Range(min=0,max=10)
 	Integer grade;
+	
+	@NotNull
+	@Column(nullable = false)
+	Long date;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	User user;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "shortFilm_id", referencedColumnName = "id")
+	ShortFilm shortFilm;
 
 }

@@ -1,20 +1,28 @@
 Notification:
 text: @notnull
 emisionDate: @notnull
-readDate: @notnull
+readDate:
 
-TOTAL: 3
+TOTAL: 2
+
+NotificationConfiguration:
+byComments: @notnull
+byRatings: @notnull
+bySubscriptions: @notnull
+byPrivacyRequests: @notnull
+
+TOTAL: 4
 
 Company:
 companyName: @notnull @unique
 taxIDNumber: @notnull @unique
-businessPhone: @notnull @phone
+businessPhone: @notnull
 officeAddress: @notnull
 
-TOTAL: 7
+TOTAL: 6
 
 User:
-name: @notnull @unique @min 5 @max 64
+name: @notnull @unique @lengthMin 5 @lengthMax 64
 email: @notnull @unique @email
 password: @notnull
 creationDate: @notnull
@@ -29,12 +37,12 @@ requestDate: @notnull
 TOTAL: 2
 
 Filmmaker:
-fullName: @notnull @min 5 @max 128
-country: @optional
-city: @optional
-phone: @phone
+fullName: @notnull
+country:
+city:
+phone:
 
-TOTAL: 6
+TOTAL: 1
 
 Role:
 type: @notnull
@@ -43,22 +51,29 @@ TOTAL: 1
 
 Rating:
 grade: @notnull @min 0 @max 10
+date: @notnull
 
-TOTAL: 3
+TOTAL: 4
 
 Comment:
-text: @notnull @min 5 @max 10000
+text: @notnull @notempty @lengthMax 1000
+date: @notnull
+
+TOTAL: 4
+
+Short Film:
+name: @notnull @notempty @lengthMax 128
+fileUrl: @notnull @notempty
+description: @notnull @lengthMax 10000
+uploadDate: @notnull
+
+TOTAL: 8
+
+Tag:
+name: @notnull @notempty
 
 TOTAL: 2
 
-Short Film:
-name: @notnull @max 128
-description: @notnull @max 500
-uploadDate: @notnull
-duration: @notnull @min 1
-
-TOTAL: 7
-
 -----------------
 
-TOTAL: 40
+TOTAL: 43

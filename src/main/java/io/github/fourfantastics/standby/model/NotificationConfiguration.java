@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,4 +20,7 @@ public class NotificationConfiguration {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
+	
+	/*@OneToOne(optional = false) //configures
+	User user;*/
 }
