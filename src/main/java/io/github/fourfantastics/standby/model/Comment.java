@@ -43,5 +43,4 @@ public class Comment {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "shortfilm_id" , referencedColumnName= "id")
 	ShortFilm shortFilm;
-	
 }

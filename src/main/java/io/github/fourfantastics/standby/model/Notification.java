@@ -1,4 +1,4 @@
-	package io.github.fourfantastics.standby.model;
+package io.github.fourfantastics.standby.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -39,5 +38,4 @@ public class Notification{
 	@ManyToOne(optional = false)//receives
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	User user;
-
 }
