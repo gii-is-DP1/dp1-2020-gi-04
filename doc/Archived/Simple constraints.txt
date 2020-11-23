@@ -1,0 +1,79 @@
+Notification:
+text: @notnull
+emisionDate: @notnull
+readDate:
+
+TOTAL: 2
+
+NotificationConfiguration:
+byComments: @notnull
+byRatings: @notnull
+bySubscriptions: @notnull
+byPrivacyRequests: @notnull
+
+TOTAL: 4
+
+Company:
+companyName: @notnull @unique
+taxIDNumber: @notnull @unique
+businessPhone: @notnull
+officeAddress: @notnull
+
+TOTAL: 6
+
+User:
+name: @notnull @unique @lengthMin 5 @lengthMax 64
+email: @notnull @unique @email
+password: @notnull
+creationDate: @notnull
+photo:
+
+TOTAL: 9
+
+PrivacyRequest:
+requestState: @notnull
+requestDate: @notnull
+
+TOTAL: 2
+
+Filmmaker:
+fullName: @notnull
+country:
+city:
+phone:
+
+TOTAL: 1
+
+Role:
+type: @notnull
+
+TOTAL: 1
+
+Rating:
+grade: @notnull @min 0 @max 10
+date: @notnull
+
+TOTAL: 4
+
+Comment:
+text: @notnull @notempty @lengthMax 1000
+date: @notnull
+
+TOTAL: 4
+
+Short Film:
+name: @notnull @notempty @lengthMax 128
+fileUrl: @notnull @notempty
+description: @notnull @lengthMax 10000
+uploadDate: @notnull
+
+TOTAL: 8
+
+Tag:
+name: @notnull @notempty
+
+TOTAL: 2
+
+-----------------
+
+TOTAL: 43

@@ -1,0 +1,27 @@
+Users stories involving 2 or more entities:
+
+H5 - Upload short films (ShortFilm, Filmmaker)
+H6 - View short films (ShortFilm, Tag, Comment, Rating)
+H7 - Manage users involved in a short film (ShortFilm, Filmmaker, Role)
+H8 - Comment and evaluate short films (Comment, Rating, ShortFilm)
+H9 - Tag short films (ShortFilm, Tag)
+H10 - Request personal data of a filmmaker with private information (Company, Filmmaker, PrivacyRequest)
+H11 - Search short films and users by filters (ShortFilm, Tag, User)
+H12 - View filmmaker's profile (Filmmaker, ShortFilm)
+H14 - Save short film as favourite (User, ShortFilm)
+H15 - List all favourites short films (User, ShortFilm)
+H16 - Subscription to filmmaker (User, Filmmaker)
+H17 - Receive notifications (User, Comment, Rating, PrivacyRequest, Notification)
+
+TOTAL: 13
+
+User stories involving 3 or more entities:
+
+H6 - View short films (ShortFilm, Tag, Comment, Rating)
+H7 - Manage users involved in a short film (ShortFilm, Filmmaker, Role)
+H8 - Comment and evaluate short films (Comment, Rating, ShortFilm)
+H10 - Request personal data of a filmmaker with private information (Company, Filmmaker, PrivacyRequest)
+H11 - Search short films and users by filters (ShortFilm, Tag, User)
+H17 - Receive notifications (User, Comment, Rating, PrivacyRequest, Notification)
+
+TOTAL: 6
