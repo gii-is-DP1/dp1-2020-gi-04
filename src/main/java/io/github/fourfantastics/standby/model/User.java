@@ -28,9 +28,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public abstract class User {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	Long id;
-
 
 	@NotNull
 	@Column(unique = true, nullable = false)

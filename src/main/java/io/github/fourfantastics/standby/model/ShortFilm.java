@@ -26,7 +26,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ShortFilm {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 	
 	@NotEmpty

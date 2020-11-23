@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import io.github.fourfantastics.standby.repository.CommentRepository;
 import io.github.fourfantastics.standby.repository.CompanyRepository;
@@ -12,6 +13,7 @@ import io.github.fourfantastics.standby.repository.FilmmakerRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest
 public class CommentIntegrationTests {
 	@Autowired
@@ -31,14 +33,13 @@ public class CommentIntegrationTests {
 	
 	@Test
 	void contextLoads() {
-		
 		/*
 		Filmmaker filmmaker=new Filmmaker();
 		filmmaker.setCity("Seville");
 		filmmaker.setCountry("Spain");
 		filmmaker.setCreationDate(1L);
 		filmmaker.setEmail("filmmaker@gmail.com");
-		filmmaker.setFullname("Javier Gutiérrez");
+		filmmaker.setFullname("Javier Gutiï¿½rrez");
 		filmmaker.setName("javig");
 		filmmaker.setPhone("675987432");
 		filmmaker.setPhotoUrl("url photo");
@@ -46,7 +47,6 @@ public class CommentIntegrationTests {
 		
 		Filmmaker savedFilmmaker = filmmakerRepository.findById(1L).orElse(null);
 		assertNotNull(savedFilmmaker);
-		
 		*/
 		
 		Company company = new Company();
@@ -73,11 +73,8 @@ public class CommentIntegrationTests {
 		shortFilm.setUploadDate(1L);
 		shortFilm.setDescription("Description");
 		
-		
-
 		ShortFilm savedFilm = shortFilmRepository.save(shortFilm);
-	
-		
+
 		ShortFilm savedShortFilm = shortFilmRepository.findById(savedFilm.getId()).orElse(null);
 		assertNotNull(savedShortFilm);
 		
@@ -95,7 +92,5 @@ public class CommentIntegrationTests {
 		
 		Comment commonComment =  commentRepository.findByUserAndShortFilm(company, shortFilm).orElse(null);
 		assertNotNull(commonComment);
-		
 	}
-
 }
