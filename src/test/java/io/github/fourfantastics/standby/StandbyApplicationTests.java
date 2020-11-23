@@ -1,7 +1,6 @@
 package io.github.fourfantastics.standby;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
