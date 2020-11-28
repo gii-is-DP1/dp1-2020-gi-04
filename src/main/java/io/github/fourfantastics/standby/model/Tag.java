@@ -1,5 +1,6 @@
 package io.github.fourfantastics.standby.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
