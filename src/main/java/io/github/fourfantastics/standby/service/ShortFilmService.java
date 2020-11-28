@@ -39,7 +39,7 @@ public class ShortFilmService {
 		shortFilmRepository.delete(shortFilm);
 	}
 
-	public List<Tag> getShortFilmTags(ShortFilm shortFilm) {
+	public Set<Tag> getShortFilmTags(ShortFilm shortFilm) {
 		Long id = shortFilm.getId();
 		return shortFilmRepository.findTagsByShortFilmId(id);
 
