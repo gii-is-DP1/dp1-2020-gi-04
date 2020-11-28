@@ -37,7 +37,6 @@ class StandbyApplicationTests {
 		company.setCompanyName("El pepe");
 		company.setOfficeAddress("Te gacasas");
 		company.setTaxIDNumber(1231521512);
-		company.setNotifications(new ArrayList<Notification>());
 		companyRepository.save(company);
 		
 		

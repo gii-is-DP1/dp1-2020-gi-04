@@ -1,6 +1,9 @@
 package io.github.fourfantastics.standby.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +28,10 @@ class RatingIntegrationTests {
 
 	@Autowired
 	RatingRepository ratingRepository;
-	
+
 	@Autowired
 	ShortFilmRepository shortFilmRepository;
-	
+
 	@Test
 	void contextLoads() {
 		Company company = new Company();
@@ -41,14 +44,15 @@ class RatingIntegrationTests {
 		company.setCompanyName("The boring company");
 		company.setOfficeAddress("Sillicon Valley");
 		company.setTaxIDNumber(1231521512);
-		companyRepository.save(company);
 
-		Company savedCompany = companyRepository.findById(1L).orElse(null);
-		assertNotNull(savedCompany);
+		company = companyRepository.save(company);
 
-		User savedUser = userRepository.findById(1L).orElse(null);
+		assertNotNull(company);
+		assertNotNull(company.getId());
+
+		User savedUser = userRepository.findById(company.getId()).orElse(null);
 		assertNotNull(savedUser);
-		
+
 		ShortFilm shortFilm = new ShortFilm();
 		shortFilm.setName("A new awesome video");
 		shortFilm.setFileUrl("file://video.mp4");
@@ -56,10 +60,10 @@ class RatingIntegrationTests {
 		shortFilm.setDescription("Description");
 
 		ShortFilm savedFilm = shortFilmRepository.save(shortFilm);
-	
+
 		ShortFilm savedShortFilm = shortFilmRepository.findById(savedFilm.getId()).orElse(null);
 		assertNotNull(savedShortFilm);
-		
+
 		Rating rating = new Rating();
 
 		rating.setUser(company);
@@ -68,11 +72,18 @@ class RatingIntegrationTests {
 		rating.setDate(1L);
 
 		Rating savedRating = ratingRepository.save(rating);
-		
+
 		Rating returnedRating = ratingRepository.findById(savedRating.getId()).orElse(null);
 		assertNotNull(returnedRating);
-		
+
 		Rating commonRating = ratingRepository.findByUserAndShortFilm(company, shortFilm).orElse(null);
 		assertNotNull(commonRating);
+
+		company = companyRepository.findById(company.getId()).get();
+		Set<Rating> userRatings = company.getRatings();
+		assertEquals(1, userRatings.size());
+		
+		shortFilm = shortFilmRepository.findById(shortFilm.getId()).get();
+		System.out.println(shortFilm);
 	}
 }
