@@ -1,6 +1,7 @@
 package io.github.fourfantastics.standby.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -13,6 +14,6 @@ import io.github.fourfantastics.standby.model.Tag;
 @Repository
 public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
 	
-	@Query("SELECT tags FROM ShortFilm sf JOIN sf.tags tags WHERE sf.id = :id")
-	List<Tag> findTagsByShortFilmId(@Param("id") Long id);
+	@Query("SELECT sf.tags FROM ShortFilm sf WHERE sf.id = :id")
+	Set<Tag> findTagsByShortFilmId(@Param("id") Long id);
 }

@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,10 +35,6 @@ public class TagsIntegrationTests {
 		Tag comedy = new Tag();
 		comedy.setTagname("comedy");
 
-		List<Tag> tags = new ArrayList<Tag>();
-		tags.add(action);
-		tags.add(comedy);
-
 		action = tagRepository.save(action);
 		thriller = tagRepository.save(thriller);
 		comedy = tagRepository.save(comedy);
@@ -45,6 +43,10 @@ public class TagsIntegrationTests {
 		assertNotNull(thriller.getId());
 		assertNotNull(comedy.getId());
 
+		Set<Tag> tags = new HashSet<Tag>();
+		tags.add(action);
+		tags.add(comedy);
+
 		ShortFilm shortFilm = new ShortFilm();
 		shortFilm.setName("A new awesome video");
 		shortFilm.setFileUrl("file://video.mp4");
@@ -52,6 +54,15 @@ public class TagsIntegrationTests {
 		shortFilm.setDescription("Description");
 		shortFilm.setTags(tags);
 
+		ShortFilm shortFilm2 = new ShortFilm();
+		shortFilm2.setName("Second Video");
+		shortFilm2.setFileUrl("file://video.mp4");
+		shortFilm2.setUploadDate(1L);
+		shortFilm2.setDescription("Description");
+		Set<Tag> tags2 = new HashSet<Tag>();
+		tags2.add(comedy);
+		shortFilm2.setTags(tags2);
+		shortFilmService.save(shortFilm2);
 		shortFilm = shortFilmService.save(shortFilm);
 
 		assertNotNull(shortFilm.getId());
@@ -59,10 +70,17 @@ public class TagsIntegrationTests {
 		ShortFilm queriedShortFilm = shortFilmService.getShortFilmById(shortFilm.getId()).orElse(null);
 
 		assertNotNull(queriedShortFilm);
-		List<Tag> shortFilmTags = shortFilmService.getShortFilmTags(queriedShortFilm);
+		Set<Tag> shortFilmTags = queriedShortFilm.getTags();
 		assertNotNull(shortFilmTags);
 		assertEquals(2, shortFilmTags.size());
-		System.out.println(shortFilmTags);
+		comedy = tagRepository.findById(comedy.getId()).get();
+		assertEquals(2, comedy.getMovies().size());
+
+		queriedShortFilm.getTags().remove(comedy);
+		queriedShortFilm = shortFilmService.save(queriedShortFilm);
+
+		comedy = tagRepository.findById(comedy.getId()).get();
+		assertEquals(1, comedy.getMovies().size());
 
 	}
 }

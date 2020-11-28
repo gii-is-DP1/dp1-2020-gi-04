@@ -1,9 +1,11 @@
 package io.github.fourfantastics.standby.model;
 
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,7 +26,7 @@ import lombok.ToString;
 
 @Entity
 @Data
-@ToString(exclude = "ratings")
+@ToString(exclude = {"ratings"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,9 +52,7 @@ public class ShortFilm {
 	@OneToMany(mappedBy = "shortFilm")
 	List<Rating> ratings;
 
-	
-	@ManyToMany
-	@JoinColumn(name = "tags_id", referencedColumnName = "id")
-	List<Tag> tags;
+	@ManyToMany(fetch = FetchType.EAGER)
+	Set<Tag> tags = new HashSet<Tag>();
 
 }
