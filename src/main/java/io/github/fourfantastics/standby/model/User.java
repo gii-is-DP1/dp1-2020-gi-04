@@ -13,6 +13,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -28,7 +29,7 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"notifications", "ratings", "comments", "favouriteShortFilms","filmmakersSubscribedTo"})
+@ToString(exclude = { "notifications", "ratings", "comments", "favouriteShortFilms", "filmmakersSubscribedTo", "configuration" })
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class User {
@@ -58,16 +59,14 @@ public abstract class User {
 	@Column(nullable = true)
 	String photoUrl;
 
-	
-	 @ManyToMany(fetch = FetchType.EAGER) //subscribe List<Filmmaker> filmmakers;
-	 Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();
+	@ManyToMany(fetch = FetchType.EAGER) // subscribe List<Filmmaker> filmmakers;
+	Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();
 
 	@OneToMany(mappedBy = "user") // receive
 	Set<Notification> notifications = new HashSet<Notification>();
 
-	/*
-	 * @OneToOne //configures NotificationConfiguration notificationconfiguration;
-	 */
+	@OneToOne(fetch = FetchType.EAGER) // configures NotificationConfiguration
+	NotificationConfiguration configuration;			// notificationconfiguration;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user") //
 	Set<Rating> ratings = new HashSet<Rating>();

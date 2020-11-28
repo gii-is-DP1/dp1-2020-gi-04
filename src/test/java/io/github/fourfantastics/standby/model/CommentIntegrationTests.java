@@ -16,6 +16,7 @@ import io.github.fourfantastics.standby.repository.UserRepository;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest
 public class CommentIntegrationTests {
+	
 	@Autowired
 	FilmmakerRepository filmmakerRepository;
 	

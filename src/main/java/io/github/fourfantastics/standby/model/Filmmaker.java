@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString(exclude = {"userSubscriptions"})
+@ToString(exclude = {"userSubscriptions","receivedRequests","participateAs"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class Filmmaker extends User {
@@ -38,6 +39,9 @@ public class Filmmaker extends User {
 	@ManyToMany(fetch = FetchType.EAGER , mappedBy = "filmmakersSubscribedTo")
 	Set<User> userSubscriptions = new HashSet<User>();
 	
-	/*@OneToMany(mappedBy = "filmmaker")
-	List<PrivacyRequest> requests;*/
+	@OneToMany(fetch = FetchType.EAGER)
+	Set<PrivacyRequest> receivedRequests = new HashSet<PrivacyRequest>();
+	
+	@OneToMany(fetch = FetchType.EAGER)
+	Set<Role> participateAs = new HashSet<Role>();
 }

@@ -1,7 +1,6 @@
 package io.github.fourfantastics.standby.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -9,9 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -27,7 +24,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = { "ratings", "comments", "tags", "favouriteUsers" })
+@ToString(exclude = { "ratings", "comments", "tags", "favouriteUsers", "madeBy" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShortFilm {
@@ -61,4 +58,6 @@ public class ShortFilm {
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "favouriteShortFilms")
 	Set<User> favouriteUsers = new HashSet<User>();
 
+	@OneToMany(fetch = FetchType.EAGER)
+	Set<Role> madeBy = new HashSet<Role>();
 }
