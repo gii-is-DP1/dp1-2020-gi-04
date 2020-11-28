@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -22,11 +23,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 @EqualsAndHashCode(of = "id")
+@ToString(exclude = {"notifications", "ratings", "comments", "favouriteShortFilms"})
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class User {
@@ -73,8 +76,7 @@ public abstract class User {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	Set<Comment> comments = new HashSet<Comment>();
 
-	/*
-	 * @ManyToMany //favourites List<ShortFilm> shortfilms;
-	 */
+	@ManyToMany(fetch = FetchType.EAGER)
+	Set<ShortFilm> favouriteShortFilms = new HashSet<ShortFilm>();
 
 }

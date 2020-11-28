@@ -27,6 +27,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
+@ToString(exclude = { "ratings", "comments", "tags", "favouriteUsers" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShortFilm {
@@ -53,8 +54,11 @@ public class ShortFilm {
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
 	Set<Comment> comments = new HashSet<Comment>();
-	
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	Set<Tag> tags = new HashSet<Tag>();
+
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "favouriteShortFilms")
+	Set<User> favouriteUsers = new HashSet<User>();
 
 }
