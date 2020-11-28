@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Comment {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 	
 	@NotNull
@@ -43,5 +43,4 @@ public class Comment {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "shortfilm_id" , referencedColumnName= "id")
 	ShortFilm shortFilm;
-	
 }

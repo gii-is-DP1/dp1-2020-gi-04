@@ -40,8 +40,6 @@ local.properties
 # sbteclipse plugin
 .target
 
-# static page
-src/main/resources/static/*
 # Tern plugin
 .tern-project
 
@@ -70,9 +68,6 @@ src/main/resources/static/*
 ### Eclipse Patch ###
 # Spring Boot Tooling
 .sts4-cache/
-
-# Static resources
-src/main/resources/static/*
 
 ### Java ###
 # Compiled class file
