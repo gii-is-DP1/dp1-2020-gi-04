@@ -26,7 +26,6 @@ import lombok.ToString;
 
 @Entity
 @Data
-@ToString(exclude = {"ratings"})
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,9 +48,12 @@ public class ShortFilm {
 	@Length(min = 10)
 	String description;
 
-	@OneToMany(mappedBy = "shortFilm")
-	List<Rating> ratings;
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
+	Set<Rating> ratings = new HashSet<Rating>();
 
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
+	Set<Comment> comments = new HashSet<Comment>();
+	
 	@ManyToMany(fetch = FetchType.EAGER)
 	Set<Tag> tags = new HashSet<Tag>();
 

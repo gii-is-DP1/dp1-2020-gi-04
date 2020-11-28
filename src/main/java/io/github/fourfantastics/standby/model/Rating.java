@@ -3,6 +3,7 @@ package io.github.fourfantastics.standby.model;
 import javax.persistence.Column;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,32 +17,32 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
+@ToString(exclude = {"user", "shortFilm" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class Rating {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
-	
+
 	@NotNull
 	@Column(nullable = false)
-	@Range(min=0,max=10)
+	@Range(min = 0, max = 10)
 	Integer grade;
-	
+
 	@NotNull
 	@Column(nullable = false)
 	Long date;
-	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	User user;
-	
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "shortFilm_id", referencedColumnName = "id")
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	ShortFilm shortFilm;
 
 }

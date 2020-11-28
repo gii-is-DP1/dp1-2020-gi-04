@@ -1,9 +1,12 @@
 package io.github.fourfantastics.standby.model;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +36,7 @@ public abstract class User {
 
 	@NotNull
 	@Column(unique = true, nullable = false)
-	@Length(min = 5,max=64)
+	@Length(min = 5, max = 64)
 	String name;
 
 	@NotNull
@@ -52,23 +55,26 @@ public abstract class User {
 
 	@Column(nullable = true)
 	String photoUrl;
-	
-	/*@ManyToMany //subscribe
-	List<Filmmaker> filmmakers;*/
-	
-	@OneToMany(mappedBy = "user") //receive
-	List<Notification> notifications;
-	
-	/*@OneToOne //configures
-	NotificationConfiguration notificationconfiguration;*/
 
-	@OneToMany(mappedBy = "user")//
-	List<Rating> ratings;
-	
-	@OneToMany(mappedBy = "user")
-	List<Comment> comments;
-	
-	/*@ManyToMany  //favourites
-	List<ShortFilm> shortfilms;*/
+	/*
+	 * @ManyToMany //subscribe List<Filmmaker> filmmakers;
+	 */
+
+	@OneToMany(mappedBy = "user") // receive
+	Set<Notification> notifications = new HashSet<Notification>();
+
+	/*
+	 * @OneToOne //configures NotificationConfiguration notificationconfiguration;
+	 */
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user") //
+	Set<Rating> ratings = new HashSet<Rating>();
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+	Set<Comment> comments = new HashSet<Comment>();
+
+	/*
+	 * @ManyToMany //favourites List<ShortFilm> shortfilms;
+	 */
 
 }
