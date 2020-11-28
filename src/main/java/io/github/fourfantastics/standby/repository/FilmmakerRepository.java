@@ -6,6 +6,4 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 
 public interface FilmmakerRepository extends CrudRepository<Filmmaker,Long> {
 
-	
-	
 }

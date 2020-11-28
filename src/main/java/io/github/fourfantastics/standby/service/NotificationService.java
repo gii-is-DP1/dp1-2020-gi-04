@@ -18,5 +18,4 @@ public class NotificationService {
 	public void saveNotification(Notification notification) {
 		notificationRepository.save(notification);
 	}
-
 }
