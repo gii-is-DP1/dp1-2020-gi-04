@@ -32,11 +32,14 @@ import lombok.ToString;
 @ToString(exclude = { "notifications", "ratings", "comments", "favouriteShortFilms", "filmmakersSubscribedTo", "configuration" })
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class User {
+public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	Long id;
 
+	@NotNull
+	UserType type;
+	
 	@NotNull
 	@Column(unique = true, nullable = false)
 	@Length(min = 5, max = 64)

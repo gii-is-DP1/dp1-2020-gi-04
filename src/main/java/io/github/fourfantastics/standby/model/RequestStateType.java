@@ -8,14 +8,14 @@ public enum RequestStateType {
 	private String name;
 	   
 	RequestStateType(String name) {
-		   this.name = name;
-	   }
+		this.name = name;
+	}
 	   
-	   public String getName() {
-		   return name;
-	   }
+	public String getName() {
+		return name;
+	}
 	   
-	   public String toString() {
-		   return getName();
-	   }
+	public String toString() {
+		return getName();
+	}
 }
