@@ -39,7 +39,7 @@ public class FavouriteIntegrationTest {
 		company.setBusinessPhone("6125125125");
 		company.setCompanyName("The boring company");
 		company.setOfficeAddress("Sillicon Valley");
-		company.setTaxIDNumber(1231521512);
+		company.setTaxIDNumber(123152112);
 		company.getFavouriteShortFilms().add(shortFilm);
 
 		company = userRepository.save(company);

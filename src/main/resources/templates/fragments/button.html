@@ -1,9 +1,11 @@
-<button type="button" data-th-fragment="imgBtn(btnClasses, btnWidth, imgUrl, imgSize)"
-data-th-class="|btn ${btnClasses}|"
-data-th-style="|
-background-image: url(@{${imgUrl}});
-background-size: ${imgSize};
+<a data-th-fragment="imgBtn(src)"
+type="button"
+data-th-attrappend="href=${href} ? @{${href}}"
+data-th-class="'btn ' + (${classes} ?: 'btn-light mr-0 mr-md-2')"
+data-th-style="'
+background-image: url(' + @{${src}} + ');
+background-size: ' + (${size} ?: '20px') + ';
 background-repeat: no-repeat;
 background-position: center;
-width: ${btnWidth};
-|"></button>
+width: ' + (${width} ?: '40px') + ';
+'"></a>

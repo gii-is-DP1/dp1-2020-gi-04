@@ -33,7 +33,7 @@ public class CommentIntegrationTests {
 	ShortFilmRepository shortFilmRepository;
 	
 	@Test
-	void contextLoads() {
+	void contextLoads1() {
 		/*
 		Filmmaker filmmaker=new Filmmaker();
 		filmmaker.setCity("Seville");
@@ -59,10 +59,10 @@ public class CommentIntegrationTests {
 		company.setBusinessPhone("6125125125");
 		company.setCompanyName("The boring company");
 		company.setOfficeAddress("Sillicon Valley");
-		company.setTaxIDNumber(1231521512);
-		companyRepository.save(company);
+		company.setTaxIDNumber(123152112);
+		company = companyRepository.save(company);
 
-		Company savedCompany = companyRepository.findById(1L).orElse(null);
+		Company savedCompany = companyRepository.findById(company.id).orElse(null);
 		assertNotNull(savedCompany);
 		
 		User savedUser = userRepository.findById(1L).orElse(null);
