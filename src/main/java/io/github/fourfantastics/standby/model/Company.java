@@ -12,14 +12,13 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = "sentRequests")
-@NoArgsConstructor
+
 @AllArgsConstructor
 public class Company extends User {
 	@NotNull
@@ -32,7 +31,7 @@ public class Company extends User {
 
 	@NotNull
 	@Column(nullable = false)
-	String bussinessPhone;
+	String businessPhone;
 
 	@NotNull
 	@Column(nullable = false)
@@ -40,4 +39,9 @@ public class Company extends User {
 	
 	@OneToMany(fetch = FetchType.EAGER)
 	Set<PrivacyRequest> sentRequests = new HashSet<PrivacyRequest>();
+
+	public Company() {
+		super();
+		setType(UserType.Company);
+	}
 }

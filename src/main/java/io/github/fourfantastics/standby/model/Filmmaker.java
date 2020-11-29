@@ -13,14 +13,12 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"userSubscriptions","receivedRequests","participateAs"})
-@NoArgsConstructor
 @AllArgsConstructor
 public class Filmmaker extends User {
 	@NotNull
@@ -44,4 +42,9 @@ public class Filmmaker extends User {
 	
 	@OneToMany(fetch = FetchType.EAGER)
 	Set<Role> participateAs = new HashSet<Role>();
+
+	public Filmmaker() {
+		super();
+		setType(UserType.Filmmaker);
+	}
 }
