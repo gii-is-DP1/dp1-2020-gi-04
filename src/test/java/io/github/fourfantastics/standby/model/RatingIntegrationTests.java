@@ -11,10 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import io.github.fourfantastics.standby.repository.CompanyRepository;
-
 import io.github.fourfantastics.standby.repository.RatingRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
-
 import io.github.fourfantastics.standby.repository.UserRepository;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -43,8 +41,7 @@ class RatingIntegrationTests {
 		company.setBusinessPhone("6125125125");
 		company.setCompanyName("The boring company");
 		company.setOfficeAddress("Sillicon Valley");
-		company.setTaxIDNumber(1231521512);
-
+		company.setTaxIDNumber(12315272);
 		company = companyRepository.save(company);
 
 		assertNotNull(company);
@@ -82,7 +79,7 @@ class RatingIntegrationTests {
 		company = companyRepository.findById(company.getId()).get();
 		Set<Rating> userRatings = company.getRatings();
 		assertEquals(1, userRatings.size());
-		
+
 		shortFilm = shortFilmRepository.findById(shortFilm.getId()).get();
 		System.out.println(shortFilm);
 	}
