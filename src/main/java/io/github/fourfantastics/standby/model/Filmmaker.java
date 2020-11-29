@@ -1,18 +1,24 @@
 package io.github.fourfantastics.standby.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
+@ToString(exclude = {"userSubscriptions","receivedRequests","participateAs"})
 @AllArgsConstructor
 public class Filmmaker extends User {
 	@NotNull
@@ -28,9 +34,17 @@ public class Filmmaker extends User {
 	@Column(nullable = true)
 	String phone;
 	
-	/*@ManyToMany
-	List<User> users;*/
+	@ManyToMany(fetch = FetchType.EAGER , mappedBy = "filmmakersSubscribedTo")
+	Set<User> userSubscriptions = new HashSet<User>();
 	
-	/*@OneToMany(mappedBy = "filmmaker")
-	List<PrivacyRequest> requests;*/
+	@OneToMany(fetch = FetchType.EAGER)
+	Set<PrivacyRequest> receivedRequests = new HashSet<PrivacyRequest>();
+	
+	@OneToMany(fetch = FetchType.EAGER)
+	Set<Role> participateAs = new HashSet<Role>();
+
+	public Filmmaker() {
+		super();
+		setType(UserType.Filmmaker);
+	}
 }

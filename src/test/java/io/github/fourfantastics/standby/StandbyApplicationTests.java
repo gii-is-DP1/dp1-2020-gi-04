@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby;
 
-import java.util.ArrayList;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,12 +31,11 @@ class StandbyApplicationTests {
 		company.setPassword("El nano el makina");
 		company.setPhotoUrl("aaaaaaa ");
 		company.setCreationDate(1L);
-		company.setBussinessPhone("6125125125");
+		company.setBusinessPhone("6125125125");
 		company.setCompanyName("El pepe");
 		company.setOfficeAddress("Te gacasas");
 		company.setTaxIDNumber(1231521512);
 		companyRepository.save(company);
-		
 		
 		Notification a = new Notification();
 			a.setEmisionDate(1L);

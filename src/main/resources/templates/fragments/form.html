@@ -1,0 +1,64 @@
+<div data-th-fragment="errors()" 
+data-th-if="${#fields != null and #fields.hasGlobalErrors()}" 
+data-th-each="msg : ${#fields.globalErrors()}"
+data-th-text="${msg}" 
+data-th-class="'alert'"
+data-th-classappend="${classes}?: 'alert-danger'"
+role="alert">
+</div>
+
+<div data-th-fragment="fieldError(name)"
+data-th-if="${#fields != null and #fields.hasErrors('__${name}__')}"
+data-th-text="${#fields.errors('__${name}__')[0]}"
+class="invalid-feedback">
+</div>
+
+<div data-th-fragment="formGroup(content)"
+class="form-group"
+data-th-insert="${content}"></div>
+
+<th-block data-th-fragment="input(name)">
+<div class="form-group">
+<label data-th-if="${label}" data-th-text="${label}"></label>
+<input data-th-field="*{__${name}__}"
+class="form-control"
+data-th-classappend="${#fields.hasErrors('__${name}__') ? ' is-invalid': ''}"
+data-th-type="${type}?: 'text'"
+data-th-autocomplete="${autocomplete}?: null"
+data-th-autofocus="${autofocus}?: null"
+data-th-disabled="${disabled}?: null"
+data-th-form="${form}?: null"
+data-th-max="${max}?: null"
+data-th-min="${min}?: null"
+data-th-maxlength="${maxlength}?: null"
+data-th-minlength="${minlength}?: null"
+data-th-multiple="${multiple}?: null"
+data-th-pattern="${pattern}?: null"
+data-th-placeholder="${placeholder}?: null"
+data-th-readonly="${readonly}?: null"
+data-th-required="${required}?: null"
+data-th-size="${size}?: null"
+data-th-value="${value}?: null"
+data-th-width="${width}?: null">
+<div data-th-replace="~{this :: fieldError(${name})}"></div>
+</div>
+</th-block>
+
+<th-block data-th-fragment="textarea(name)">
+<label data-th-if="${label}" data-th-text="${label}"></label>
+<textarea data-th-field="*{__${name}__}"
+class="form-control"
+data-th-classappend="${#fields.hasErrors('__${name}__') ? ' is-invalid': ''}"
+data-th-autofocus="${autofocus}?: null"
+data-th-disabled="${disabled}?: null"
+data-th-form="${form}?: null"
+data-th-maxlength="${maxlength}?: null" 
+data-th-placeholder="${placeholder}?: null"
+data-th-readonly="${readonly}?: null"
+data-th-required="${required}?: null"
+data-th-rows="${rows}?: null"
+data-th-cols="${cols}?: null"
+data-th-wrap="${wrap}?: null"
+data-th-text="${value}?: null"></textarea>
+<div data-th-replace="~{this :: fieldError(${name})}"></div>
+</th-block>

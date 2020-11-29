@@ -40,7 +40,7 @@ class RatingIntegrationTests {
 		company.setPassword("Very strong password");
 		company.setPhotoUrl("foto url");
 		company.setCreationDate(1L);
-		company.setBussinessPhone("6125125125");
+		company.setBusinessPhone("6125125125");
 		company.setCompanyName("The boring company");
 		company.setOfficeAddress("Sillicon Valley");
 		company.setTaxIDNumber(1231521512);
