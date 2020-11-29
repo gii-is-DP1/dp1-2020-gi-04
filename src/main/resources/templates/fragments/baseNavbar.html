@@ -5,13 +5,13 @@
     </button>
 
     <div class="navbar-collapse collapse" id="navbar-content">
-        <ul class="nav navbar-nav mt-4 mt-md-0 mx-auto row">
+        <ul class="nav navbar-nav mt-4 mt-md-0 mx-auto row" style="height: 40px">
             <form>
                 <div class="form-row">
                     <div class="input-group col col-12 col-md-auto">
                         <input type="text" size="40" class="form-control" placeholder="Search short films, filmmakers..." />
                         <div class="input-group-append">
-                            <button data-th-replace="~{@{/fragments/button} :: imgBtn('btn-light border-input', '40px', @{/static/search-icon.svg}, '20px')}"></button>
+                            <button data-th-replace="~{@{/fragments/button} :: imgBtn(classes='btn-light border-input', src=@{/static/search-icon.svg})}"></button>
                         </div>
                     </div>
                 </div>
@@ -19,9 +19,9 @@
         </ul>
 
         <ul class="nav mt-4 mt-md-0 justify-content-between" style="height: 40px">
-            <button data-th-replace="~{@{/fragments/button} :: imgBtn('btn-light mr-0 mr-md-2', '40px', @{/static/upload-icon.svg}, '20px')}"></button>
-            <button data-th-replace="~{@{/fragments/button} :: imgBtn('btn-light mr-0 mr-md-2', '40px', @{/static/notification-icon.svg}, '20px')}"></button>
-            <button data-th-replace="~{@{/fragments/button} :: imgBtn('btn-light mr-0 mr-md-2', '40px', @{/static/user-icon.svg}, '20px')}"></button>
+            <button data-th-replace="~{@{/fragments/button} :: imgBtn(src=@{/static/upload-icon.svg},)}"></button>
+            <button data-th-replace="~{@{/fragments/button} :: imgBtn(src=@{/static/notification-icon.svg})}"></button>
+            <button data-th-replace="~{@{/fragments/button} :: imgBtn(src=@{/static/user-icon.svg}, href=@{/manageAccount})}"></button>
         </ul>
     </div>
 </nav>
