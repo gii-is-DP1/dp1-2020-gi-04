@@ -3,6 +3,7 @@ package io.github.fourfantastics.standby;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Notification;
@@ -11,6 +12,7 @@ import io.github.fourfantastics.standby.repository.CompanyRepository;
 import io.github.fourfantastics.standby.repository.NotificationRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest
 class StandbyApplicationTests {
 
@@ -34,7 +36,7 @@ class StandbyApplicationTests {
 		company.setBusinessPhone("6125125125");
 		company.setCompanyName("El pepe");
 		company.setOfficeAddress("Te gacasas");
-		company.setTaxIDNumber(1231521512);
+		company.setTaxIDNumber(123152112);
 		companyRepository.save(company);
 		
 		Notification a = new Notification();
