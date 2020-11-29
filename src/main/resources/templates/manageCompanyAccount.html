@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html data-th-replace="~{@{/fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+    <title>Manage account - Standby</title>
+    <section>
+        <h3>Manage my account</h3>
+        <hr />
+        <div class="row align-middle">
+            <div class="col-0 col-sm-1"></div>
+            <div class="col-12 col-sm-10">
+                <form data-th-object="${company}">
+                    <div data-th-replace="~{@{/fragments/form} :: errors}"></div>
+                    <label class="form-text text-muted">Personal information</label>
+                    <input data-th-replace="~{@{/fragments/form} :: input(name='companyName', label='Company name', placeholder='Acme Inc.')}">
+                    <div class="form-row">
+                        <div class="col-12 col-md-6">
+                            <input data-th-replace="~{@{/fragments/form} :: input(name='taxIDNumber', label='Tax ID number', placeholder='123-45-1234567')}">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <input data-th-replace="~{@{/fragments/form} :: input(name='businessPhone', label='Business phone', placeholder='+46 629382239')}">
+                        </div>
+                    </div>
+                    <input data-th-replace="~{@{/fragments/form} :: input(name='officeAddress', label='Office address', placeholder='Polígono Industrial Los Ángeles 8')}">
+                    <br>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="col-12 col-md-6">
+                                <button type="button" class="btn btn-outline-secondary btn-block">Cancel</button>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <button type="button" class="btn btn-primary btn-block">Apply changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <form>
+                    <br>
+                    <label class="form-text text-muted">Notification configuration</label>
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                          <input class="custom-control-input" type="checkbox" id="check1">
+                          <label class="custom-control-label" for="check1">Privacy request status changes</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="col-12 col-md-6">
+                                <button type="button" class="btn btn-outline-secondary btn-block">Cancel</button>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <button type="button" class="btn btn-primary btn-block">Apply changes</button>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                </form>
+                <hr>
+                <form>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-outline-danger btn-block">Delete my account</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-0 col-sm-1"></div>
+        </div>
+    </section>
+</html>
