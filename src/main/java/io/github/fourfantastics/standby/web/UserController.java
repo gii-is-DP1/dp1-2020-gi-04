@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
 import io.github.fourfantastics.standby.service.exceptions.NotFoundException;
@@ -27,6 +29,9 @@ import io.github.fourfantastics.standby.service.exceptions.NotFoundException;
 public class UserController {
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	NotificationConfigurationService notificationConfigurationService;
 	
 	@InitBinder("credentials")
 	public void initBinderCredentials(WebDataBinder dataBinder) {
@@ -78,7 +83,7 @@ public class UserController {
 		return "redirect:/";
 	}
 	
-	@RequestMapping("/manageAccount")
+	@GetMapping("/manageAccount")
 	public String getManageAccount(HttpSession session, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
@@ -95,5 +100,34 @@ public class UserController {
 			model.put("company", company);
 			return "manageCompanyAccount";
 		}
+	}
+	
+	@PostMapping("/manageFilmmakerAccount")
+	public String doManageAccount(HttpSession session, @ModelAttribute("filmmaker") Filmmaker filmmaker,
+			BindingResult result, Map<String, Object> model) {
+		Optional<User> optionalUser = userService.getLoggedUser(session);
+		if (!optionalUser.isPresent()) {
+			return "redirect:/login";
+		}
+		
+		User user = optionalUser.get();
+		if (user.getType() != UserType.Filmmaker) {
+			return "redirect:/manageAccount";
+		}
+		
+		if (result.hasErrors()) {
+			return "redirect:/manageAccount";
+		}
+		
+		Filmmaker userFilmmaker = (Filmmaker) user;
+		userFilmmaker.setCity(filmmaker.getCity());
+		userFilmmaker.setCountry(filmmaker.getCountry());
+		userFilmmaker.setFullname(filmmaker.getFullname());
+		userFilmmaker.setPhone(filmmaker.getPhone());
+		userFilmmaker = (Filmmaker) userService.saveUser(userFilmmaker);
+			
+		model.put("filmmaker", userFilmmaker);
+		model.put("notificationConfiguration", userFilmmaker.getConfiguration());
+		return "redirect:/manageAccount";
 	}
 }

@@ -45,6 +45,7 @@ data-th-width="${width}?: null">
 </th-block>
 
 <th-block data-th-fragment="textarea(name)">
+<div class="form-group">
 <label data-th-if="${label}" data-th-text="${label}"></label>
 <textarea data-th-field="*{__${name}__}"
 class="form-control"
@@ -61,4 +62,13 @@ data-th-cols="${cols}?: null"
 data-th-wrap="${wrap}?: null"
 data-th-text="${value}?: null"></textarea>
 <div data-th-replace="~{this :: fieldError(${name})}"></div>
+</div>
+</th-block>
+
+<th-block data-th-fragment="switch(name)">
+<div class="custom-control custom-switch">
+<input class="custom-control-input" type="checkbox" data-th-field="*{__${name}__}" data-th-id="chkbx-__${name}__" value="true">
+<label class="custom-control-label" data-th-for="'chkbx-' + ${name}" data-th-text="${label} ?: ${name}"></label>
+<div data-th-replace="~{this :: fieldError(${name})}"></div>
+</div>
 </th-block>

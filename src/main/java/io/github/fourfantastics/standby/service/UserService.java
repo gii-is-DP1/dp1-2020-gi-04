@@ -21,8 +21,12 @@ public class UserService {
 	@Autowired
 	UserRepository userRepository;
 
-	public Optional<User> getUser(Long id) {
+	public Optional<User> getUserById(Long id) {
 		return userRepository.findById(id);
+	}
+	
+	public User saveUser(User user) {
+		return userRepository.save(user);
 	}
 	
 	public User register(User user) {

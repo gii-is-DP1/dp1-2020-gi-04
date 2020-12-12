@@ -3,11 +3,12 @@ package io.github.fourfantastics.standby.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.repository.NotificationConfigurationRepository;
 
-
+@Service
 public class NotificationConfigurationService {
 	@Autowired
 	NotificationConfigurationRepository notificationConfigurationRepository;
@@ -16,8 +17,7 @@ public class NotificationConfigurationService {
 		return notificationConfigurationRepository.findById(id);
 	}
 	
-	public void saveRating(NotificationConfiguration notificationConfiguration) {
+	public void saveNotificationConfiguration(NotificationConfiguration notificationConfiguration) {
 		notificationConfigurationRepository.save(notificationConfiguration);
 	}
-
 }

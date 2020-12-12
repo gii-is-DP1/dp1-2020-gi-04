@@ -6,10 +6,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.repository.RoleRepository;
 
+@Service
 public class RoleService {
 	@Autowired
 	RoleRepository roleRepository;
@@ -34,6 +36,4 @@ public class RoleService {
 	public void deleteRole(Role role) {
 		roleRepository.delete(role);
 	}
-	
-
 }

@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.service.NotificationConfigurationService;
+import io.github.fourfantastics.standby.service.NotificationService;
 import io.github.fourfantastics.standby.service.UserService;
 
 @SpringBootApplication
@@ -21,6 +24,9 @@ public class StandbyApplication {
 	public class CommandLineAppStartupRunner implements CommandLineRunner {
 		@Autowired
 		UserService userService;
+		
+		@Autowired
+		NotificationConfigurationService notificationConfigurationService;
 		
 	    @Override
 	    public void run(String... args) throws Exception {
@@ -36,6 +42,16 @@ public class StandbyApplication {
 			filmmaker.setPhone("675987432");
 			userService.register(filmmaker);
 			
+			NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
+			notificationConfiguration.setByComments(true);
+			notificationConfiguration.setByRatings(true);
+			notificationConfiguration.setBySubscriptions(true);
+			notificationConfiguration.setByPrivacyRequests(false);
+			notificationConfiguration.setUser(filmmaker);
+			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
+			filmmaker.setConfiguration(notificationConfiguration);
+			userService.saveUser(filmmaker);
+			
 			Company company = new Company();
 			company.setName("honeymoneystudios");
 			company.setPassword("yeahmaincra");
@@ -46,6 +62,16 @@ public class StandbyApplication {
 			company.setOfficeAddress("Calle Manzana 4");
 			company.setTaxIDNumber(1231521512);
 			userService.register(company);
+			
+			notificationConfiguration = new NotificationConfiguration();
+			notificationConfiguration.setByComments(false);
+			notificationConfiguration.setByRatings(false);
+			notificationConfiguration.setBySubscriptions(false);
+			notificationConfiguration.setByPrivacyRequests(true);
+			notificationConfiguration.setUser(company);
+			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
+			company.setConfiguration(notificationConfiguration);
+			userService.saveUser(company);
 	    }
 	}
 }
