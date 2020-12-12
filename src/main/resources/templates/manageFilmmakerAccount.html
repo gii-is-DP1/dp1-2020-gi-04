@@ -33,15 +33,6 @@
                     </div>
                 </form>
                 <br>
-                <form data-th-object="${notificationConfiguration}">
-                    <label class="form-text text-muted">Notification configuration</label>
-                    <div class="form-group">
-                        <input data-th-replace="~{@{/fragments/form} :: switch(name='byComments', label='Notifications for comments published in my short films')}">
-                        <input data-th-replace="~{@{/fragments/form} :: switch(name='byRatings', label='Notifications for ratings in my short films')}">
-                        <input data-th-replace="~{@{/fragments/form} :: switch(name='bySubscriptions', label='Notifications for subscriptions of other users')}">
-                    </div>
-                    <br>
-                </form>
                 <hr>
                 <div class="form-group">
                     <a data-th-href="@{/deleteAccount}" type="button" class="btn btn-outline-danger btn-block">Delete my account</a>

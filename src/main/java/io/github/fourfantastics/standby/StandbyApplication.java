@@ -46,6 +46,7 @@ public class StandbyApplication {
 			notificationConfiguration.setByComments(true);
 			notificationConfiguration.setByRatings(true);
 			notificationConfiguration.setBySubscriptions(true);
+			notificationConfiguration.setByPrivacyRequests(false);
 			notificationConfiguration.setUser(filmmaker);
 			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
 			filmmaker.setConfiguration(notificationConfiguration);
@@ -63,6 +64,9 @@ public class StandbyApplication {
 			userService.register(company);
 			
 			notificationConfiguration = new NotificationConfiguration();
+			notificationConfiguration.setByComments(false);
+			notificationConfiguration.setByRatings(false);
+			notificationConfiguration.setBySubscriptions(false);
 			notificationConfiguration.setByPrivacyRequests(true);
 			notificationConfiguration.setUser(company);
 			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
