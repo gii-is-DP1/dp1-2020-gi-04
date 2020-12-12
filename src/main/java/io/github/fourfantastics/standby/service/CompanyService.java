@@ -3,10 +3,12 @@ package io.github.fourfantastics.standby.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.repository.CompanyRepository;
 
+@Service
 public class CompanyService {
 	@Autowired 
 	CompanyRepository companyRepository;
