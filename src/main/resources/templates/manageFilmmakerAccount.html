@@ -7,7 +7,7 @@
         <div class="row align-middle">
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
-                <form data-th-object="${filmmaker}">
+                <form data-th-action="@{/manageFilmmakerAccount}" method="POST" data-th-object="${filmmaker}">
                     <div data-th-replace="~{@{/fragments/form} :: errors}"></div>
                     <label class="form-text text-muted">Personal information</label>
                     <input data-th-replace="~{@{/fragments/form} :: input(name='fullname', label='Full name', placeholder='Menganito García')}">
@@ -24,50 +24,28 @@
                     <div class="form-group">
                         <div class="form-row">
                             <div class="col-12 col-md-6">
-                                <button type="button" class="btn btn-outline-secondary btn-block">Cancel</button>
+                                <a data-th-href="@{/}" type="button" class="btn btn-outline-secondary btn-block">Cancel</a>
                             </div>
                             <div class="col-12 col-md-6">
-                                <button type="button" class="btn btn-primary btn-block">Update information</button>
+                                <button type="submit" class="btn btn-primary btn-block">Apply changes</button>
                             </div>
                         </div>
                     </div>
                 </form>
-                <form>
-                    <br>
+                <br>
+                <form data-th-object="${notificationConfiguration}">
                     <label class="form-text text-muted">Notification configuration</label>
                     <div class="form-group">
-                        <div class="custom-control custom-switch">
-                          <input class="custom-control-input" type="checkbox" id="check1">
-                          <label class="custom-control-label" for="check1">Ratings given to my short films</label>
-                        </div>
-                        <div class="custom-control custom-switch">
-                          <input class="custom-control-input" type="checkbox" id="check2">
-                          <label class="custom-control-label" for="check2">Comments in my short films</label>
-                        </div>
-                        <div class="custom-control custom-switch">
-                          <input class="custom-control-input" type="checkbox" id="check3">
-                          <label class="custom-control-label" for="check3">Subscriptions to my profile</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="form-group">
-                        <div class="form-row">
-                            <div class="col-12 col-md-6">
-                                <button type="button" class="btn btn-outline-secondary btn-block">Cancel</button>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <button type="button" class="btn btn-primary btn-block">Apply changes</button>
-                            </div>
-                        </div>
+                        <input data-th-replace="~{@{/fragments/form} :: switch(name='byComments', label='Notifications for comments published in my short films')}">
+                        <input data-th-replace="~{@{/fragments/form} :: switch(name='byRatings', label='Notifications for ratings in my short films')}">
+                        <input data-th-replace="~{@{/fragments/form} :: switch(name='bySubscriptions', label='Notifications for subscriptions of other users')}">
                     </div>
                     <br>
                 </form>
                 <hr>
-                <form>
-                    <div class="form-group">
-                        <button type="button" class="btn btn-outline-danger btn-block">Delete my account</button>
-                    </div>
-                </form>
+                <div class="form-group">
+                    <a data-th-href="@{/deleteAccount}" type="button" class="btn btn-outline-danger btn-block">Delete my account</a>
+                </div>
             </div>
             <div class="col-0 col-sm-1"></div>
         </div>
