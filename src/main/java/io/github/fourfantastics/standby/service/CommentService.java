@@ -3,12 +3,13 @@ package io.github.fourfantastics.standby.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.Comment;
 import io.github.fourfantastics.standby.repository.CommentRepository;
 
+@Service
 public class CommentService {
-	
 	@Autowired 
 	CommentRepository commentRepository;
 	
@@ -19,5 +20,4 @@ public class CommentService {
 	public void saveComment(Comment comment) {
 		commentRepository.save(comment);
 	}
-	
 }
