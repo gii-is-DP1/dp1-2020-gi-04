@@ -94,19 +94,16 @@ public class UserController {
 		if (user.getType() == UserType.Filmmaker) {
 			Filmmaker filmmaker = (Filmmaker) user;
 			model.put("filmmaker", filmmaker);
-			model.put("notificationConfiguration", filmmaker.getConfiguration());
 			return "manageFilmmakerAccount";
 		} else {
 			Company company = (Company) user;
 			model.put("company", company);
-			model.put("notificationConfiguration", company.getConfiguration());
 			return "manageCompanyAccount";
 		}
 	}
 	
 	@PostMapping("/manageFilmmakerAccount")
 	public String doManageAccount(HttpSession session, @ModelAttribute("filmmaker") Filmmaker filmmaker,
-			@ModelAttribute("notificationConfiguration") NotificationConfiguration notificationConfiguration,
 			BindingResult result, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
