@@ -8,21 +8,21 @@
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
                 <form data-th-action="@{/manageFilmmakerAccount}" method="POST" data-th-object="${filmmakerData}">
-                    <div data-th-replace="~{@{/fragments/form} :: errors}"></div>
+                    <div data-th-replace="~{@{/fragments/form/errors}}"></div>
                     <label class="form-text text-muted">Personal information</label>
-                    <input data-th-replace="~{@{/fragments/form} :: input(name='fullname', label='Full name', placeholder='Menganito García', required='true')}">
+                    <input data-th-replace="~{@{/fragments/form/input}(name='fullname', label='Full name', placeholder='Menganito García', required='true')}">
                     <div class="form-row">
                         <div class="col-12 col-md-6">
-                            <input data-th-replace="~{@{/fragments/form} :: input(name='country', label='Country', placeholder='Spain', required='true')}">
+                            <input data-th-replace="~{@{/fragments/form/input}(name='country', label='Country', placeholder='Spain', required='true')}">
                         </div>
                         <div class="col-12 col-md-6">
-                            <input data-th-replace="~{@{/fragments/form} :: input(name='city', label='City', placeholder='Seville', required='true')}">
+                            <input data-th-replace="~{@{/fragments/form/input}(name='city', label='City', placeholder='Seville', required='true')}">
                         </div>
                     </div>
-                    <input data-th-replace="~{@{/fragments/form} :: input(name='phone', label='Phone', placeholder='612345678', required='true')}">
-                    <input data-th-replace="~{@{/fragments/form} :: switch(name='byComments', label='Be notified by comments in your short films')}">
-                    <input data-th-replace="~{@{/fragments/form} :: switch(name='byRatings', label='Be notified by ratings in your short film')}">
-                    <input data-th-replace="~{@{/fragments/form} :: switch(name='bySubscriptions', label='Be notified by subscriptions')}">
+                    <input data-th-replace="~{@{/fragments/form/input}(name='phone', label='Phone', placeholder='612345678', required='true')}">
+                    <input data-th-replace="~{@{/fragments/form/switch}(name='byComments', label='Be notified by comments in your short films')}">
+                    <input data-th-replace="~{@{/fragments/form/switch}(name='byRatings', label='Be notified by ratings in your short film')}">
+                    <input data-th-replace="~{@{/fragments/form/switch}(name='bySubscriptions', label='Be notified by subscriptions')}">
                     <hr>
                     <br>
                     <div class="form-group">

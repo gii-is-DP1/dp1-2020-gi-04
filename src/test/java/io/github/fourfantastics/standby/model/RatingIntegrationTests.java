@@ -41,7 +41,7 @@ class RatingIntegrationTests {
 		company.setBusinessPhone("6125125125");
 		company.setCompanyName("The boring company");
 		company.setOfficeAddress("Sillicon Valley");
-		company.setTaxIDNumber(12315272);
+		company.setTaxIDNumber("123-45-1234567");
 		company = companyRepository.save(company);
 
 		assertNotNull(company);

@@ -1,0 +1,5 @@
+<div data-th-fragment="fieldError(name)"
+data-th-if="${#fields != null and #fields.hasErrors('__${name}__')}"
+data-th-text="${#fields.errors('__${name}__')[0]}"
+class="invalid-feedback">
+</div>
