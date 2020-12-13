@@ -35,41 +35,21 @@ public class UserController {
 
 	@Autowired
 	NotificationConfigurationService notificationConfigurationService;
-<<<<<<< HEAD
 
-	@InitBinder("credentials")
-	public void initBinderCredentials(WebDataBinder dataBinder) {
-		dataBinder.setAllowedFields("name", "password");
-	}
-
-=======
-	
->>>>>>> 32880f92fcd910bd4b15d29102ceb1f56faccf8f
 	@GetMapping("/login")
 	public String getLogin(HttpSession session, Map<String, Object> model) {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
-<<<<<<< HEAD
 
-		model.put("credentials", new User());
-=======
-		
 		model.put("credentials", new Credentials());
->>>>>>> 32880f92fcd910bd4b15d29102ceb1f56faccf8f
 		return "login.html";
 	}
 
 	@PostMapping("/login")
-<<<<<<< HEAD
 	public String doLogin(HttpSession session, @ModelAttribute("credentials") User credentials, BindingResult result,
 			Map<String, Object> model) {
 		if (userService.getLoggedUser(session).isPresent()) {
-=======
-	public String doLogin(HttpSession session, @ModelAttribute("credentials") Credentials credentials,
-			BindingResult result, Map<String, Object> model) {
-		if (userService.isLogged(session)) {
->>>>>>> 32880f92fcd910bd4b15d29102ceb1f56faccf8f
 			return "redirect:/";
 		}
 
@@ -121,7 +101,8 @@ public class UserController {
 	}
 
 	@PostMapping("/manageFilmmakerAccount")
-	public String doManageAccount(HttpSession session, @ModelAttribute("filmmakerConfigurationData") FilmmakerConfigurationData filmmakerConfigurationData,
+	public String doManageAccount(HttpSession session,
+			@ModelAttribute("filmmakerConfigurationData") FilmmakerConfigurationData filmmakerConfigurationData,
 			BindingResult result, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
@@ -139,18 +120,14 @@ public class UserController {
 		Filmmaker userFilmmaker = (Filmmaker) user;
 		filmmakerConfigurationData.copyToFilmmaker(userFilmmaker);
 		userFilmmaker = (Filmmaker) userService.saveUser(userFilmmaker);
-<<<<<<< HEAD
 
-		model.put("filmmakerData", filmmakerData);
-=======
-			
 		model.put("filmmakerData", filmmakerConfigurationData);
->>>>>>> 32880f92fcd910bd4b15d29102ceb1f56faccf8f
 		return "redirect:/manageAccount";
 	}
 
 	@PostMapping("/manageCompanyAccount")
-	public String doManageAccount(HttpSession session, @ModelAttribute(" companyConfigurationData") CompanyConfigurationData companyConfigurationData,
+	public String doManageAccount(HttpSession session,
+			@ModelAttribute(" companyConfigurationData") CompanyConfigurationData companyConfigurationData,
 			BindingResult result, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
@@ -168,13 +145,8 @@ public class UserController {
 		Company userCompany = (Company) user;
 		companyConfigurationData.copyToCompany(userCompany);
 		userCompany = (Company) userService.saveUser(userCompany);
-<<<<<<< HEAD
 
-		model.put("companyData", companyData);
-=======
-			
 		model.put("companyData", companyConfigurationData);
->>>>>>> 32880f92fcd910bd4b15d29102ceb1f56faccf8f
 		return "redirect:/manageAccount";
 	}
 }
