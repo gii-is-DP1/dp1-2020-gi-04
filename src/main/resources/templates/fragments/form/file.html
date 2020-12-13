@@ -1,0 +1,19 @@
+<th-block data-th-fragment="file(name)">
+<div class="form-group">
+	<style
+		data-th-utext="'#fuploadlbl-' + ${name} + '::after {content: &quot;' + (${buttonLabel}?: 'Browse') + '&quot;}'"></style>
+	<label data-th-if="${label}" data-th-text="${label}"></label>
+	<div class="custom-file">
+		<input type="file" class="custom-file-input"
+			data-th-field="*{__${name}__}" data-th-id="'fupload-'+${name}"
+			data-th-disabled="${disabled}?: null" data-th-form="${form}?: null"
+			data-th-accept="${accept}?: null"
+			data-th-autofocus="${autofocus}?: null"
+			data-th-required="${required}?: null"
+			data-th-multiple="${multiple}?: null"> <label
+			class="custom-file-label" data-th-for="'fupload-'+${name}"
+			data-th-text="${fileLabel}?: ''" data-th-id="'fuploadlbl-'+${name}"></label>
+	</div>
+	<div data-th-replace="~{@{/fragments/form/fieldError}(${name})}"></div>
+</div>
+</th-block>

@@ -20,6 +20,7 @@ public class IndexController {
 	@RequestMapping("/")
 	public String getIndex(HttpSession session, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
+
 		if (!optionalUser.isPresent()) {
 			return "redirect:/login";
 		}

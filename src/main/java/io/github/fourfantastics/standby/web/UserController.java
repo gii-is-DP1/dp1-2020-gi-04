@@ -1,5 +1,7 @@
 package io.github.fourfantastics.standby.web;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Map;
 
 import java.util.Optional;
@@ -47,8 +49,8 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public String doLogin(HttpSession session, @ModelAttribute("credentials") Credentials credentials, BindingResult result,
-			Map<String, Object> model) {
+	public String doLogin(HttpSession session, @ModelAttribute("credentials") Credentials credentials,
+			BindingResult result, Map<String, Object> model) {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
