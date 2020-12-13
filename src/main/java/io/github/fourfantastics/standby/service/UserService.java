@@ -29,9 +29,13 @@ public class UserService {
 	public User saveUser(User user) {
 		return userRepository.save(user);
 	}
-
+	
+	public Optional<User> findByName(String name) {
+		 return userRepository.findByName(name);
+	}
+	
 	public User register(User user) throws NotUniqueException {
-		Optional<User> foundUser = userRepository.findByName(user.getName());
+		Optional<User> foundUser = findByName(user.getName());
 		if (foundUser.isPresent()) {
 			throw new NotUniqueException("Username already registered!", Utils.hashSet("name"));
 		}
