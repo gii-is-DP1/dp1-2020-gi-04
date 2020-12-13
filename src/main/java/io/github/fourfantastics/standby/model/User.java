@@ -3,6 +3,7 @@ package io.github.fourfantastics.standby.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
+import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -65,7 +67,7 @@ public class User {
 	@ManyToMany(fetch = FetchType.EAGER) // subscribe List<Filmmaker> filmmakers;
 	Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();
 
-	@OneToMany(mappedBy = "user") // receive
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER) // receive
 	Set<Notification> notifications = new HashSet<Notification>();
 
 	@OneToOne(fetch = FetchType.EAGER) // configures NotificationConfiguration

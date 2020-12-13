@@ -14,6 +14,7 @@ import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.UserRepository;
 import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
 import io.github.fourfantastics.standby.service.exceptions.NotFoundException;
+import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
 import io.github.fourfantastics.standby.utils.Utils;
 
 @Service
@@ -24,12 +25,16 @@ public class UserService {
 	public Optional<User> getUserById(Long id) {
 		return userRepository.findById(id);
 	}
-	
+
 	public User saveUser(User user) {
 		return userRepository.save(user);
 	}
-	
-	public User register(User user) {
+
+	public User register(User user) throws NotUniqueException {
+		Optional<User> foundUser = userRepository.findByName(user.getName());
+		if (foundUser.isPresent()) {
+			throw new NotUniqueException("Username already registered!", Utils.hashSet("name"));
+		}
 		encryptPassword(user);
 		user.setCreationDate(Instant.now().getEpochSecond());
 		return userRepository.save(user);
@@ -40,43 +45,41 @@ public class UserService {
 		String encryptedPassword = getEncoder().encode(password);
 		user.setPassword(encryptedPassword);
 	}
-	
+
 	public User authenticate(String name, String password) throws NotFoundException, DataMismatchException {
 		Optional<User> foundUser = userRepository.findByName(name);
 		if (!foundUser.isPresent()) {
-			throw new NotFoundException("Username not found!", Utils.hashSet("username"));
+			throw new NotFoundException("Username not found!", Utils.hashSet("name"));
 		}
-		
+
 		User user = foundUser.get();
 		if (!getEncoder().matches(password, user.getPassword())) {
 			throw new DataMismatchException("The entered password doesn't match", Utils.hashSet("password"));
 		}
-		
+
 		return user;
 	}
-	
-	public boolean isLogged(HttpSession session) {
-		return session.getAttribute("userId") != null;
-	}
-	
+
 	public Optional<User> getLoggedUser(HttpSession session) {
-		if (!isLogged(session)) {
+		if (session.getAttribute("userId") == null) {
 			return Optional.empty();
 		}
-		
-		return userRepository.findById((Long) session.getAttribute("userId"));
+
+		Optional<User> user = userRepository.findById((Long) session.getAttribute("userId"));
+		if (!user.isPresent()) {
+			logOut(session);
+		}
+		return user;
 	}
-	
+
 	public void logIn(HttpSession session, User user) {
 		session.setAttribute("userId", user.getId());
-		session.setAttribute("userType", user.getType().toString());
 	}
-	
+
 	public void logOut(HttpSession session) {
 		session.removeAttribute("userId");
-		session.removeAttribute("userType");
 	}
-	
+
 	public PasswordEncoder getEncoder() {
 		return new BCryptPasswordEncoder();
 	}
