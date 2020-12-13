@@ -1,6 +1,7 @@
 package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
+
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
@@ -17,9 +18,11 @@ import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
-import io.github.fourfantastics.standby.model.form.CompanyData;
+import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
+import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
+
 import io.github.fourfantastics.standby.model.form.Credentials;
-import io.github.fourfantastics.standby.model.form.FilmmakerData;
+
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
@@ -88,17 +91,17 @@ public class UserController {
 		User user = optionalUser.get();
 		if (user.getType() == UserType.Filmmaker) {
 			Filmmaker filmmaker = (Filmmaker) user;
-			model.put("filmmakerData", FilmmakerData.fromFilmmaker(filmmaker));
+			model.put("filmmakerConfigurationData", FilmmakerConfigurationData.fromFilmmaker(filmmaker));
 			return "manageFilmmakerAccount";
 		} else {
 			Company company = (Company) user;
-			model.put("companyData", CompanyData.fromCompany(company));
+			model.put("companyConfigurationData", CompanyConfigurationData.fromCompany(company));
 			return "manageCompanyAccount";
 		}
 	}
 	
 	@PostMapping("/manageFilmmakerAccount")
-	public String doManageAccount(HttpSession session, @ModelAttribute("filmmakerData") FilmmakerData filmmakerData,
+	public String doManageAccount(HttpSession session, @ModelAttribute("filmmakerConfigurationData") FilmmakerConfigurationData filmmakerConfigurationData,
 			BindingResult result, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
@@ -114,15 +117,15 @@ public class UserController {
 		}
 		
 		Filmmaker userFilmmaker = (Filmmaker) user;
-		filmmakerData.copyToFilmmaker(userFilmmaker);
+		filmmakerConfigurationData.copyToFilmmaker(userFilmmaker);
 		userFilmmaker = (Filmmaker) userService.saveUser(userFilmmaker);
 			
-		model.put("filmmakerData", filmmakerData);
+		model.put("filmmakerData", filmmakerConfigurationData);
 		return "redirect:/manageAccount";
 	}
 	
 	@PostMapping("/manageCompanyAccount")
-	public String doManageAccount(HttpSession session, @ModelAttribute("companyData") CompanyData companyData,
+	public String doManageAccount(HttpSession session, @ModelAttribute(" companyConfigurationData") CompanyConfigurationData companyConfigurationData,
 			BindingResult result, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
@@ -138,10 +141,10 @@ public class UserController {
 			return "redirect:/manageAccount";
 		}
 		Company userCompany = (Company) user;
-		companyData.copyToCompany(userCompany);
+		companyConfigurationData.copyToCompany(userCompany);
 		userCompany = (Company) userService.saveUser(userCompany);
 			
-		model.put("companyData", companyData);
+		model.put("companyData", companyConfigurationData);
 		return "redirect:/manageAccount";
 	}
 }

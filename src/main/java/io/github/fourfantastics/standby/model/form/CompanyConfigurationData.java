@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class CompanyData {
+public class CompanyConfigurationData {
 	@NotNull
 	String companyName;
 
@@ -24,14 +24,14 @@ public class CompanyData {
 	@NotNull
 	Boolean byPrivacyRequests;
 	
-	public static CompanyData fromCompany(Company company) {
-		CompanyData companyData= new CompanyData();
-		companyData.setBusinessPhone(company.getBusinessPhone());
-		companyData.setCompanyName(company.getCompanyName());
-		companyData.setOfficeAddress(company.getOfficeAddress());
-		companyData.setTaxIDNumber(company.getTaxIDNumber());
-		companyData.setByPrivacyRequests(company.getConfiguration().getByPrivacyRequests());
-		return companyData;
+	public static CompanyConfigurationData fromCompany(Company company) {
+		CompanyConfigurationData companyConfigurationData= new CompanyConfigurationData();
+		companyConfigurationData.setBusinessPhone(company.getBusinessPhone());
+		companyConfigurationData.setCompanyName(company.getCompanyName());
+		companyConfigurationData.setOfficeAddress(company.getOfficeAddress());
+		companyConfigurationData.setTaxIDNumber(company.getTaxIDNumber());
+		companyConfigurationData.setByPrivacyRequests(company.getConfiguration().getByPrivacyRequests());
+		return companyConfigurationData;
 	}
 	
 	public void copyToCompany(Company company) {
