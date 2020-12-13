@@ -36,7 +36,7 @@ public class Company extends User {
 	@NotNull
 	@Column(nullable = false)
 	String officeAddress;
-	
+
 	@OneToMany(fetch = FetchType.EAGER)
 	Set<PrivacyRequest> sentRequests = new HashSet<PrivacyRequest>();
 

@@ -12,11 +12,11 @@ import io.github.fourfantastics.standby.repository.TagRepository;
 public class TagService {
 	@Autowired
 	TagRepository tagRepository;
-	
-	public Optional<Tag> getTagById(Long id){
+
+	public Optional<Tag> getTagById(Long id) {
 		return tagRepository.findById(id);
 	}
-	
+
 	public void saveTag(Tag tag) {
 		tagRepository.save(tag);
 	}

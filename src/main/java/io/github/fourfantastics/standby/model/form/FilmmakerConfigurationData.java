@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class FilmmakerConfigurationData {	
+public class FilmmakerConfigurationData {
 	@NotNull
 	String fullname;
 
@@ -20,16 +20,16 @@ public class FilmmakerConfigurationData {
 
 	@NotNull
 	String phone;
-	
+
 	@NotNull
 	Boolean byComments;
-	
+
 	@NotNull
 	Boolean byRatings;
-	
+
 	@NotNull
 	Boolean bySubscriptions;
-	
+
 	public static FilmmakerConfigurationData fromFilmmaker(Filmmaker filmmaker) {
 		FilmmakerConfigurationData filmmakerConfigurationData = new FilmmakerConfigurationData();
 		filmmakerConfigurationData.setFullname(filmmaker.getFullname());
@@ -41,7 +41,7 @@ public class FilmmakerConfigurationData {
 		filmmakerConfigurationData.setBySubscriptions(filmmaker.getConfiguration().getBySubscriptions());
 		return filmmakerConfigurationData;
 	}
-	
+
 	public void copyToFilmmaker(Filmmaker filmmaker) {
 		filmmaker.setFullname(getFullname());
 		filmmaker.setPhone(getPhone());

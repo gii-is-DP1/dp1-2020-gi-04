@@ -20,22 +20,22 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
-public class PrivacyRequest{
+public class PrivacyRequest {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
-	
+
 	@NotNull
 	@Column(nullable = false)
 	RequestStateType requestState;
-	
+
 	@NotNull
 	@Column(nullable = false)
 	Long requestDate;
-	
-	@ManyToOne(fetch = FetchType.EAGER ,optional=false)//receives
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false) // receives
 	Filmmaker filmmaker;
-	
-	@ManyToOne(fetch = FetchType.EAGER ,optional=false)//send
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false) // send
 	Company company;
 }

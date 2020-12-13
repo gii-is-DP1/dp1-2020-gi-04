@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.Company;
-import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
 import io.github.fourfantastics.standby.repository.CompanyRepository;
@@ -49,7 +48,7 @@ public class CompanyService {
 		configuration.setByRatings(false);
 		configuration.setBySubscriptions(false);
 		configuration = configurationService.saveNotificationConfiguration(configuration);
-		
+
 		company.setConfiguration(configuration);
 		userService.saveUser(company);
 		return company;

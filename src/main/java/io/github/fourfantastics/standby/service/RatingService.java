@@ -15,15 +15,15 @@ import io.github.fourfantastics.standby.repository.RatingRepository;
 public class RatingService {
 	@Autowired
 	RatingRepository ratingRepository;
-	
+
 	public Optional<Rating> getShortRoleById(Long id) {
 		return ratingRepository.findById(id);
 	}
-	
+
 	public void saveRating(Rating rating) {
 		ratingRepository.save(rating);
 	}
-	
+
 	public Set<Rating> getAllGrades() {
 		Set<Rating> grades = new HashSet<>();
 		Iterator<Rating> iterator = ratingRepository.findAll().iterator();
