@@ -8,9 +8,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +18,7 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.CompanyData;
+import io.github.fourfantastics.standby.model.form.Credentials;
 import io.github.fourfantastics.standby.model.form.FilmmakerData;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
@@ -34,23 +33,18 @@ public class UserController {
 	@Autowired
 	NotificationConfigurationService notificationConfigurationService;
 	
-	@InitBinder("credentials")
-	public void initBinderCredentials(WebDataBinder dataBinder) {
-		dataBinder.setAllowedFields("name", "password");
-	}
-	
 	@GetMapping("/login")
 	public String getLogin(HttpSession session, Map<String, Object> model) {
 		if (userService.isLogged(session)) {
 			return "redirect:/";
 		}
 		
-		model.put("credentials", new User());
+		model.put("credentials", new Credentials());
 		return "login.html";
 	}
 	
 	@PostMapping("/login")
-	public String doLogin(HttpSession session, @ModelAttribute("credentials") User credentials,
+	public String doLogin(HttpSession session, @ModelAttribute("credentials") Credentials credentials,
 			BindingResult result, Map<String, Object> model) {
 		if (userService.isLogged(session)) {
 			return "redirect:/";
