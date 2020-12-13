@@ -35,7 +35,7 @@ public class FilmmakerController {
 			return "redirect:/";
 		}
 		model.put("filmmakerRegisterData", new FilmmakerRegisterData());
-		return "registerFilmmaker.html";
+		return "registerFilmmaker";
 	}
 
 	@PostMapping("/register/filmmaker")
@@ -47,7 +47,7 @@ public class FilmmakerController {
 		}
 	
 		if (result.hasErrors()) {
-			return "registerFilmmaker.html";
+			return "registerFilmmaker";
 		}
 
 		try {
@@ -55,12 +55,13 @@ public class FilmmakerController {
 			userService.logIn(session, filmmaker);
 		} catch (DataMismatchException e) {
 			result.rejectValue("confirmPassword", "", e.getMessage());
-			return "registerFilmmaker.html";
+			return "registerFilmmaker";
 		} catch (NotUniqueException e) {
 			result.rejectValue("name", "", e.getMessage());
-			return "registerFilmmaker.html";
+			return "registerFilmmaker";
 		} catch (Exception e) {
 			result.reject("", e.getMessage());
+			return "registerFilmmaker";
 		}
 		return "redirect:/";
 	}

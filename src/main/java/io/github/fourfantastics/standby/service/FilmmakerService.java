@@ -44,6 +44,7 @@ public class FilmmakerService {
 		
 		NotificationConfiguration configuration = new NotificationConfiguration();
 		configuration.setUser(filmmaker);
+		configuration.setByPrivacyRequests(false);
 		configuration = configurationService.saveNotificationConfiguration(configuration);
 		
 		filmmaker.setConfiguration(configuration);
