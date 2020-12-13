@@ -7,24 +7,24 @@
         <div class="row align-middle">
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
-                <form data-th-object="${company}">
+                 <form data-th-action="@{/manageCompanyAccount}" method="POST" data-th-object="${companyData}">
                     <div data-th-replace="~{@{/fragments/form} :: errors}"></div>
                     <label class="form-text text-muted">Personal information</label>
-                    <input data-th-replace="~{@{/fragments/form} :: input(name='companyName', label='Company name', placeholder='Acme Inc.')}">
+                    <input data-th-replace="~{@{/fragments/form} :: input(name='companyName', label='Company name', placeholder='Acme Inc.', required='true')}">
                     <div class="form-row">
                         <div class="col-12 col-md-6">
-                            <input data-th-replace="~{@{/fragments/form} :: input(name='taxIDNumber', label='Tax ID number', placeholder='123-45-1234567')}">
+                            <input data-th-replace="~{@{/fragments/form} :: input(name='taxIDNumber', label='Tax ID number', placeholder='123-45-1234567', required='true')}">
                         </div>
                         <div class="col-12 col-md-6">
-                            <input data-th-replace="~{@{/fragments/form} :: input(name='businessPhone', label='Business phone', placeholder='+46 629382239')}">
+                            <input data-th-replace="~{@{/fragments/form} :: input(name='businessPhone', label='Business phone', placeholder='+46 629382239',required='true')}">
                         </div>
                     </div>
-                    <input data-th-replace="~{@{/fragments/form} :: input(name='officeAddress', label='Office address', placeholder='Polígono Industrial Los Ángeles 8')}">
+                    <input data-th-replace="~{@{/fragments/form} :: input(name='officeAddress', label='Office address', placeholder='PolÃ­gono Industrial Los Ã�ngeles 8',required='true')}">
                     <br>
                     <div class="form-group">
                         <div class="form-row">
                             <div class="col-12 col-md-6">
-                                <button type="button" class="btn btn-outline-secondary btn-block">Cancel</button>
+                                <a data-th-href="@{/}" type="button" class="btn btn-outline-secondary btn-block">Cancel</a>
                             </div>
                             <div class="col-12 col-md-6">
                                 <button type="button" class="btn btn-primary btn-block">Apply changes</button>
@@ -32,28 +32,7 @@
                         </div>
                     </div>
                 </form>
-                <form>
-                    <br>
-                    <label class="form-text text-muted">Notification configuration</label>
-                    <div class="form-group">
-                        <div class="custom-control custom-switch">
-                          <input class="custom-control-input" type="checkbox" id="check1">
-                          <label class="custom-control-label" for="check1">Privacy request status changes</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="form-group">
-                        <div class="form-row">
-                            <div class="col-12 col-md-6">
-                                <button type="button" class="btn btn-outline-secondary btn-block">Cancel</button>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <button type="button" class="btn btn-primary btn-block">Apply changes</button>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                </form>
+                
                 <hr>
                 <form>
                     <div class="form-group">
