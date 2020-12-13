@@ -59,7 +59,7 @@ public class CommentIntegrationTests {
 		company.setBusinessPhone("6125125125");
 		company.setCompanyName("The boring company");
 		company.setOfficeAddress("Sillicon Valley");
-		company.setTaxIDNumber(123152112);
+		company.setTaxIDNumber("123-45-1234567");
 		company = companyRepository.save(company);
 
 		Company savedCompany = companyRepository.findById(company.id).orElse(null);

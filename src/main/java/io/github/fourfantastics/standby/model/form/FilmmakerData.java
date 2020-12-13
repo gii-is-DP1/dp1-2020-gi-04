@@ -1,12 +1,10 @@
 package io.github.fourfantastics.standby.model.form;
 
-import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor

@@ -27,7 +27,7 @@ public class Company extends User {
 
 	@NotNull
 	@Column(unique = true, nullable = false)
-	Integer taxIDNumber;
+	String taxIDNumber;
 
 	@NotNull
 	@Column(nullable = false)
