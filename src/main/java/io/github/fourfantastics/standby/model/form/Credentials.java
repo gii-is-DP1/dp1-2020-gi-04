@@ -17,14 +17,14 @@ public class Credentials {
 
 	@NotNull
 	String password;
-	
+
 	public static Credentials fromUser(User user) {
 		Credentials credentials = new Credentials();
 		credentials.setName(user.getName());
 		credentials.setPassword(user.getPassword());
 		return credentials;
 	}
-	
+
 	public void copyToUser(User user) {
 		user.setName(getName());
 		user.setPassword(getPassword());

@@ -15,10 +15,9 @@ import io.github.fourfantastics.standby.utils.Utils;
 
 @Service
 public class FilmmakerService {
-
 	@Autowired
 	FilmmakerRepository filmmakerRepository;
-	
+
 	@Autowired
 	NotificationConfigurationService configurationService;
 
@@ -33,25 +32,23 @@ public class FilmmakerService {
 		filmmakerRepository.save(filmmaker);
 	}
 
-	public Filmmaker registerFilmmaker(FilmmakerRegisterData filmmakerRegisterData) throws DataMismatchException, NotUniqueException {
-
+	public Filmmaker registerFilmmaker(FilmmakerRegisterData filmmakerRegisterData)
+			throws DataMismatchException, NotUniqueException {
 		if (!filmmakerRegisterData.getPassword().equals(filmmakerRegisterData.getConfirmPassword())) {
 			throw new DataMismatchException("The password doesn't match", Utils.hashSet("password"));
 		}
 
 		Filmmaker filmmaker = filmmakerRegisterData.toFilmmaker();
-		filmmaker =  (Filmmaker) userService.register(filmmaker);
-		
+		filmmaker = (Filmmaker) userService.register(filmmaker);
+
 		NotificationConfiguration configuration = new NotificationConfiguration();
 		configuration.setUser(filmmaker);
 		configuration.setByPrivacyRequests(false);
 		configuration = configurationService.saveNotificationConfiguration(configuration);
-		
+
 		filmmaker.setConfiguration(configuration);
 		userService.saveUser(filmmaker);
-		
-		return filmmaker;
-		
-	}
 
+		return filmmaker;
+	}
 }

@@ -41,7 +41,5 @@ public class ShortFilmService {
 	public Set<Tag> getShortFilmTags(ShortFilm shortFilm) {
 		Long id = shortFilm.getId();
 		return shortFilmRepository.findTagsByShortFilmId(id);
-
 	}
-
 }

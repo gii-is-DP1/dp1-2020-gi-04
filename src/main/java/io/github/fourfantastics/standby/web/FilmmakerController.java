@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
+import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
@@ -21,16 +21,17 @@ import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
 
 @Controller
 public class FilmmakerController {
-
 	@Autowired
 	UserService userService;
 
 	@Autowired
 	FilmmakerService filmmakerService;
+	
+	@Autowired
+	FilmmakerRegisterDataValidator filmmakerRegisterDataValidator;
 
 	@GetMapping("/register/filmmaker")
 	public String getRegisterView(HttpSession session, Map<String, Object> model) {
-
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
@@ -45,7 +46,8 @@ public class FilmmakerController {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
-	
+
+		filmmakerRegisterDataValidator.validate(filmmakerRegisterData, result);
 		if (result.hasErrors()) {
 			return "registerFilmmaker";
 		}

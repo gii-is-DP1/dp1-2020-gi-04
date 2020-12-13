@@ -21,22 +21,22 @@ import lombok.ToString;
 @ToString(exclude = "user")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Notification{
+public class Notification {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
-	
+
 	@NotNull
 	@Column(nullable = false)
 	String text;
-	
+
 	@NotNull
 	@Column(nullable = false)
 	Long emisionDate;
-	
+
 	@Column(nullable = true)
 	Long readDate;
 
-	@ManyToOne(fetch = FetchType.EAGER ,optional = false)//receives
+	@ManyToOne(fetch = FetchType.EAGER, optional = false) // receives
 	User user;
 }
