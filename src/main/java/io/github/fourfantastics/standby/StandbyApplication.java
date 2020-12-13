@@ -11,7 +11,6 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
-import io.github.fourfantastics.standby.service.NotificationService;
 import io.github.fourfantastics.standby.service.UserService;
 
 @SpringBootApplication
@@ -34,7 +33,6 @@ public class StandbyApplication {
 	    	filmmaker.setName("guillex7");
 	    	filmmaker.setPassword("prueba1234");
 	    	filmmaker.setEmail("guillermox7@gmail.com");
-	    	filmmaker.setType(UserType.Filmmaker);
 	    	filmmaker.setPhotoUrl("url photo");
 			filmmaker.setCity("Seville");
 			filmmaker.setCountry("Spain");
@@ -60,7 +58,7 @@ public class StandbyApplication {
 			company.setBusinessPhone("612345678");
 			company.setCompanyName("Honey Money Studios");
 			company.setOfficeAddress("Calle Manzana 4");
-			company.setTaxIDNumber(1231521512);
+			company.setTaxIDNumber("123-45-1234567");
 			userService.register(company);
 			
 			notificationConfiguration = new NotificationConfiguration();

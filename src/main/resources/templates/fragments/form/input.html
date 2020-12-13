@@ -1,0 +1,26 @@
+<th-block data-th-fragment="input(name)">
+<div class="form-group">
+<label data-th-if="${label}" data-th-text="${label}"></label>
+<input data-th-field="*{__${name}__}"
+class="form-control"
+data-th-classappend="${#fields.hasErrors('__${name}__') ? ' is-invalid': ''}"
+data-th-type="${type}?: 'text'"
+data-th-autocomplete="${autocomplete}?: null"
+data-th-autofocus="${autofocus}?: null"
+data-th-disabled="${disabled}?: null"
+data-th-form="${form}?: null"
+data-th-max="${max}?: null"
+data-th-min="${min}?: null"
+data-th-maxlength="${maxlength}?: null"
+data-th-minlength="${minlength}?: null"
+data-th-multiple="${multiple}?: null"
+data-th-pattern="${pattern}?: null"
+data-th-placeholder="${placeholder}?: null"
+data-th-readonly="${readonly}?: null"
+data-th-required="${required}?: null"
+data-th-size="${size}?: null"
+data-th-value="${value}?: null"
+data-th-width="${width}?: null">
+<div data-th-replace="~{@{/fragments/form/fieldError}(${name})}"></div>
+</div>
+</th-block>

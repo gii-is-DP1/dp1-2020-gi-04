@@ -1,6 +1,5 @@
 package io.github.fourfantastics.standby.model.form;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 
 import io.github.fourfantastics.standby.model.Company;
@@ -14,7 +13,7 @@ public class CompanyData {
 	String companyName;
 
 	@NotNull
-	Integer taxIDNumber;
+	String taxIDNumber;
 
 	@NotNull
 	String businessPhone;
@@ -42,5 +41,4 @@ public class CompanyData {
 		company.setTaxIDNumber(getTaxIDNumber());
 		company.getConfiguration().setByPrivacyRequests(getByPrivacyRequests());
 	}
-
 }

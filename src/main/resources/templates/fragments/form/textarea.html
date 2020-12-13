@@ -1,0 +1,20 @@
+<th-block data-th-fragment="textarea(name)">
+<div class="form-group">
+<label data-th-if="${label}" data-th-text="${label}"></label>
+<textarea data-th-field="*{__${name}__}"
+class="form-control"
+data-th-classappend="${#fields.hasErrors('__${name}__') ? ' is-invalid': ''}"
+data-th-autofocus="${autofocus}?: null"
+data-th-disabled="${disabled}?: null"
+data-th-form="${form}?: null"
+data-th-maxlength="${maxlength}?: null" 
+data-th-placeholder="${placeholder}?: null"
+data-th-readonly="${readonly}?: null"
+data-th-required="${required}?: null"
+data-th-rows="${rows}?: null"
+data-th-cols="${cols}?: null"
+data-th-wrap="${wrap}?: null"
+data-th-text="${value}?: null"></textarea>
+<div data-th-replace="~{@{/fragments/form/fieldError}(${name})}"></div>
+</div>
+</th-block>

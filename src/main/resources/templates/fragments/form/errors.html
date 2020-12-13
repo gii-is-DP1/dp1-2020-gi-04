@@ -1,0 +1,8 @@
+<div data-th-fragment="errors()" 
+data-th-if="${#fields != null and #fields.hasGlobalErrors()}" 
+data-th-each="msg : ${#fields.globalErrors()}"
+data-th-text="${msg}" 
+data-th-class="'alert'"
+data-th-classappend="${classes}?: 'alert-danger'"
+role="alert">
+</div>
