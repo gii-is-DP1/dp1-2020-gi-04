@@ -24,7 +24,7 @@ public class CompanyService {
 	@Autowired
 	NotificationConfigurationService configurationService;
 
-	public Optional<Company> getNotificationById(Long id) {
+	public Optional<Company> getCompanyById(Long id) {
 		return companyRepository.findById(id);
 	}
 
