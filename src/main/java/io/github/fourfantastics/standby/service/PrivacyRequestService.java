@@ -14,11 +14,11 @@ import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
 public class PrivacyRequestService {
 	@Autowired
 	PrivacyRequestRepository privacyRequestRepository;
-	
+
 	public void savePrivacyRequest(PrivacyRequest privacyRequest) {
 		privacyRequestRepository.save(privacyRequest);
 	}
-	
+
 	public Set<PrivacyRequest> getAllRoles() {
 		Set<PrivacyRequest> privacyRequests = new HashSet<>();
 		Iterator<PrivacyRequest> iterator = privacyRequestRepository.findAll().iterator();

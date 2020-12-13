@@ -12,14 +12,12 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
 @ToString(exclude = "user")
-@NoArgsConstructor
 @AllArgsConstructor
 public class NotificationConfiguration {
 	@Id
@@ -44,4 +42,13 @@ public class NotificationConfiguration {
 
 	@OneToOne(fetch = FetchType.EAGER, optional = false) // configures
 	User user;
+
+	public NotificationConfiguration() {
+		super();
+		this.byComments = true;
+		this.byRatings = true;
+		this.bySubscriptions = true;
+		this.byPrivacyRequests = true;
+
+	}
 }

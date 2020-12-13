@@ -12,12 +12,13 @@ import io.github.fourfantastics.standby.repository.NotificationConfigurationRepo
 public class NotificationConfigurationService {
 	@Autowired
 	NotificationConfigurationRepository notificationConfigurationRepository;
-	
+
 	public Optional<NotificationConfiguration> getNotificationConfigurationById(Long id) {
 		return notificationConfigurationRepository.findById(id);
 	}
-	
-	public void saveNotificationConfiguration(NotificationConfiguration notificationConfiguration) {
-		notificationConfigurationRepository.save(notificationConfiguration);
+
+	public NotificationConfiguration saveNotificationConfiguration(
+			NotificationConfiguration notificationConfiguration) {
+		return notificationConfigurationRepository.save(notificationConfiguration);
 	}
 }

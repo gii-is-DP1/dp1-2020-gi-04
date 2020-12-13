@@ -10,13 +10,13 @@ import io.github.fourfantastics.standby.repository.CommentRepository;
 
 @Service
 public class CommentService {
-	@Autowired 
+	@Autowired
 	CommentRepository commentRepository;
-	
-	public Optional<Comment> getCommentById(Long id){
+
+	public Optional<Comment> getCommentById(Long id) {
 		return commentRepository.findById(id);
 	}
-	
+
 	public void saveComment(Comment comment) {
 		commentRepository.save(comment);
 	}

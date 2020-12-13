@@ -17,28 +17,28 @@ public class StandbyApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(StandbyApplication.class, args);
 	}
-	
+
 	@Component
 	public class CommandLineAppStartupRunner implements CommandLineRunner {
 		@Autowired
 		UserService userService;
-		
+
 		@Autowired
 		NotificationConfigurationService notificationConfigurationService;
-		
-	    @Override
-	    public void run(String... args) throws Exception {
-	    	Filmmaker filmmaker = new Filmmaker();
-	    	filmmaker.setName("guillex7");
-	    	filmmaker.setPassword("prueba1234");
-	    	filmmaker.setEmail("guillermox7@gmail.com");
-	    	filmmaker.setPhotoUrl("url photo");
+
+		@Override
+		public void run(String... args) throws Exception {
+			Filmmaker filmmaker = new Filmmaker();
+			filmmaker.setName("filmmaker1");
+			filmmaker.setPassword("password");
+			filmmaker.setEmail("filmmaker@gmail.com");
+			filmmaker.setPhotoUrl("url photo");
 			filmmaker.setCity("Seville");
 			filmmaker.setCountry("Spain");
-			filmmaker.setFullname("Guillermo Diz");
+			filmmaker.setFullname("Filmmaker Díaz García");
 			filmmaker.setPhone("675987432");
 			userService.register(filmmaker);
-			
+
 			NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
 			notificationConfiguration.setByComments(true);
 			notificationConfiguration.setByRatings(true);
@@ -48,18 +48,18 @@ public class StandbyApplication {
 			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
 			filmmaker.setConfiguration(notificationConfiguration);
 			userService.saveUser(filmmaker);
-			
+
 			Company company = new Company();
-			company.setName("honeymoneystudios");
-			company.setPassword("yeahmaincra");
-			company.setEmail("business@honeymoney.com");
+			company.setName("company1");
+			company.setPassword("password");
+			company.setEmail("business@company.com");
 			company.setPhotoUrl("url photo");
 			company.setBusinessPhone("612345678");
-			company.setCompanyName("Honey Money Studios");
+			company.setCompanyName("Company Studios");
 			company.setOfficeAddress("Calle Manzana 4");
 			company.setTaxIDNumber("123-45-1234567");
 			userService.register(company);
-			
+
 			notificationConfiguration = new NotificationConfiguration();
 			notificationConfiguration.setByComments(false);
 			notificationConfiguration.setByRatings(false);
@@ -69,6 +69,6 @@ public class StandbyApplication {
 			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
 			company.setConfiguration(notificationConfiguration);
 			userService.saveUser(company);
-	    }
+		}
 	}
 }
