@@ -3,7 +3,6 @@ package io.github.fourfantastics.standby.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,7 +19,6 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
-import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,7 +29,8 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = { "notifications", "ratings", "comments", "favouriteShortFilms", "filmmakersSubscribedTo", "configuration" })
+@ToString(exclude = { "notifications", "ratings", "comments", "favouriteShortFilms", "filmmakersSubscribedTo",
+		"configuration" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -41,7 +40,7 @@ public class User {
 
 	@NotNull
 	UserType type;
-	
+
 	@NotNull
 	@Column(unique = true, nullable = false)
 	@Length(min = 5, max = 64)
@@ -71,7 +70,7 @@ public class User {
 	Set<Notification> notifications = new HashSet<Notification>();
 
 	@OneToOne(fetch = FetchType.EAGER) // configures NotificationConfiguration
-	NotificationConfiguration configuration;			// notificationconfiguration;
+	NotificationConfiguration configuration; // notificationconfiguration;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user") //
 	Set<Rating> ratings = new HashSet<Rating>();

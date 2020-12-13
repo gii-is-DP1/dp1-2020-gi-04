@@ -9,12 +9,10 @@ import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 
-public interface RatingRepository extends CrudRepository<Rating,Long>{
-
+public interface RatingRepository extends CrudRepository<Rating, Long> {
 	public List<Rating> findByUser(User u);
-	
-	public List<Rating> findByShortFilm(ShortFilm shortFilm);
-	
-	public Optional<Rating> findByUserAndShortFilm(User user, ShortFilm shortFilm);
 
+	public List<Rating> findByShortFilm(ShortFilm shortFilm);
+
+	public Optional<Rating> findByUserAndShortFilm(User user, ShortFilm shortFilm);
 }

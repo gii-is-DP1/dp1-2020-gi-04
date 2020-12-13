@@ -16,14 +16,14 @@ import io.github.fourfantastics.standby.service.UserService;
 public class IndexController {
 	@Autowired
 	UserService userService;
-	
+
 	@RequestMapping("/")
 	public String getIndex(HttpSession session, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
 			return "redirect:/login";
 		}
-		
+
 		User user = optionalUser.get();
 		model.put("user", user);
 		return "index";

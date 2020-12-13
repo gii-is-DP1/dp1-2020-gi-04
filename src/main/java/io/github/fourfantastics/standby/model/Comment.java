@@ -21,7 +21,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"user", "shortFilm"})
+@ToString(exclude = { "user", "shortFilm" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {

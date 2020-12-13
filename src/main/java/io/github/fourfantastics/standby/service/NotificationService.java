@@ -10,13 +10,13 @@ import io.github.fourfantastics.standby.repository.NotificationRepository;
 
 @Service
 public class NotificationService {
-	@Autowired 
+	@Autowired
 	NotificationRepository notificationRepository;
-	
-	public Optional<Notification> getNotificationById(Long id){
+
+	public Optional<Notification> getNotificationById(Long id) {
 		return notificationRepository.findById(id);
 	}
-	
+
 	public void saveNotification(Notification notification) {
 		notificationRepository.save(notification);
 	}
