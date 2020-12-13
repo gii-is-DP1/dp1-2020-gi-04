@@ -17,7 +17,7 @@ public class NotificationConfigurationService {
 		return notificationConfigurationRepository.findById(id);
 	}
 	
-	public void saveNotificationConfiguration(NotificationConfiguration notificationConfiguration) {
-		notificationConfigurationRepository.save(notificationConfiguration);
+	public NotificationConfiguration saveNotificationConfiguration(NotificationConfiguration notificationConfiguration) {
+		return notificationConfigurationRepository.save(notificationConfiguration);
 	}
 }

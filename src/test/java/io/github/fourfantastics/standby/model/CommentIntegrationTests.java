@@ -12,6 +12,7 @@ import io.github.fourfantastics.standby.repository.CompanyRepository;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
+import io.github.fourfantastics.standby.service.CompanyService;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest
@@ -62,10 +63,10 @@ public class CommentIntegrationTests {
 		company.setTaxIDNumber("123-45-1234567");
 		company = companyRepository.save(company);
 
-		Company savedCompany = companyRepository.findById(company.id).orElse(null);
+		Company savedCompany = companyRepository.findById(company.getId()).orElse(null);
 		assertNotNull(savedCompany);
 		
-		User savedUser = userRepository.findById(1L).orElse(null);
+		User savedUser = userRepository.findById(company.getId()).orElse(null);
 		assertNotNull(savedUser);
 		
 		ShortFilm shortFilm = new ShortFilm();
@@ -93,5 +94,6 @@ public class CommentIntegrationTests {
 		
 		Comment commonComment =  commentRepository.findByUserAndShortFilm(company, shortFilm).orElse(null);
 		assertNotNull(commonComment);
+		
 	}
 }
