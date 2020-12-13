@@ -7,7 +7,7 @@
         <div class="row align-middle">
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
-                <form data-th-action="@{/manageFilmmakerAccount}" method="POST" data-th-object="${filmmakerData}">
+                <form data-th-action="@{/manageFilmmakerAccount}" method="POST" data-th-object="${filmmakerConfigurationData}">
                     <div data-th-replace="~{@{/fragments/form/errors}}"></div>
                     <label class="form-text text-muted">Personal information</label>
                     <input data-th-replace="~{@{/fragments/form/input}(name='fullname', label='Full name', placeholder='Menganito García', required='true')}">

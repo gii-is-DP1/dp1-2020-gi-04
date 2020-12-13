@@ -7,7 +7,7 @@
         <div class="row align-middle">
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
-                 <form data-th-action="@{/manageCompanyAccount}" method="POST" data-th-object="${companyData}">
+                 <form data-th-action="@{/manageCompanyAccount}" method="POST" data-th-object="${companyConfigurationData}">
                     <div data-th-replace="~{@{/fragments/form/errors}}"></div>
                     <label class="form-text text-muted">Personal information</label>
                     <input data-th-replace="~{@{/fragments/form/input}(name='companyName', label='Company name', placeholder='Acme Inc.', required='true')}">
@@ -20,6 +20,8 @@
                         </div>
                     </div>
                     <input data-th-replace="~{@{/fragments/form/input}(name='officeAddress', label='Office address', placeholder='Polígono Industrial Los Ángeles 8',required='true')}">
+                     <input data-th-replace="~{@{/fragments/form/switch}(name='byPrivacyRequests', label='Be notified by privacy requests')}">
+                     <hr>
                     <br>
                     <div class="form-group">
                         <div class="form-row">
@@ -27,18 +29,16 @@
                                 <a data-th-href="@{/}" type="button" class="btn btn-outline-secondary btn-block">Cancel</a>
                             </div>
                             <div class="col-12 col-md-6">
-                                <button type="button" class="btn btn-primary btn-block">Apply changes</button>
+                                <button type="submit" class="btn btn-primary btn-block">Apply changes</button>
                             </div>
                         </div>
                     </div>
                 </form>
-                
+                <br>
                 <hr>
-                <form>
-                    <div class="form-group">
-                        <button type="button" class="btn btn-outline-danger btn-block">Delete my account</button>
-                    </div>
-                </form>
+                <div class="form-group">
+                    <a data-th-href="@{/deleteAccount}" type="button" class="btn btn-outline-danger btn-block">Delete my account</a>
+                </div>
             </div>
             <div class="col-0 col-sm-1"></div>
         </div>
