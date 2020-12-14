@@ -59,6 +59,12 @@ public class ShortFilmController {
 			result.reject("", result.getAllErrors().toString());
 			return "uploadShortFilm";
 		}
+		try {
+			shortFilmService.upload(shortFilmUploadData, loggedUser);
+		}
+		catch(Exception e) {
+			
+		}
 		return "uploadShortFilm";
 	}
 }

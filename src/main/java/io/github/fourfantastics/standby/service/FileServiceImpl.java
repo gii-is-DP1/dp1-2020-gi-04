@@ -5,6 +5,9 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.springframework.core.io.Resource;
@@ -18,6 +21,19 @@ public class FileServiceImpl implements FileService {
 
 	private final Path root = Paths.get("uploads");
 
+	public static String getFileExtension(String fileName) {
+		String[] fileSplit = fileName.split("\\.");
+		if (fileSplit.length < 2) {
+			return null;
+		}
+
+		String extension = fileSplit[fileSplit.length - 1];
+		if (extension.isEmpty()) {
+			return null;
+		}
+		return "."+extension;
+	}
+
 	@Override
 	public void init() {
 		try {
@@ -28,12 +44,16 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public void save(MultipartFile file) {
+	public String save(MultipartFile file) {
+
+		String filePath = null;
 		try {
-			Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+			filePath = UUID.randomUUID().toString() + getFileExtension(file.getOriginalFilename());
+			Files.copy(file.getInputStream(), this.root.resolve(filePath));
 		} catch (Exception e) {
 			throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
 		}
+		return filePath;
 	}
 
 	@Override

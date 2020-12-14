@@ -12,8 +12,22 @@
 			data-th-required="${required}?: null"
 			data-th-multiple="${multiple}?: null"> <label
 			class="custom-file-label" data-th-for="'fupload-'+${name}"
-			data-th-text="${fileLabel}?: ''" data-th-id="'fuploadlbl-'+${name}"></label>
+			data-th-text="${fileLabel}?: ''" data-th-id="'fuploadlabel-'+${name}"></label>
 	</div>
 	<div data-th-replace="~{@{/fragments/form/fieldError}(${name})}"></div>
+	<script th:inline="javascript">
+	const fieldName = [[${name}]];
+	const inputId = "#fupload-"+fieldName;
+	const labelId = "#fuploadlabel-"+fieldName;
+	$(inputId).on('change',function() {
+        //get the file name
+        const filePath = $(this).val();
+        const fileName = filePath.substring(filePath.lastIndexOf("\\") + 1, filePath.length);
+        //replace the "Choose a file" label
+        
+        $(labelId).text(fileName);
+    })
+
+	</script>
 </div>
 </th-block>

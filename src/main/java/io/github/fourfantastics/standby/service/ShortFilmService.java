@@ -50,6 +50,8 @@ public class ShortFilmService {
 
 	public ShortFilm upload(ShortFilmUploadData uploadData, User uploader) {
 		ShortFilm shortFilm = new ShortFilm();
+		String path = fileService.save(uploadData.getFile());
+		System.out.println(path);
 		return shortFilm;
 	}
 }
