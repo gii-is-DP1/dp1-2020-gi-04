@@ -12,7 +12,6 @@ import io.github.fourfantastics.standby.model.Tag;
 
 @Repository
 public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
-	
 	@Query("SELECT sf.tags FROM ShortFilm sf WHERE sf.id = :id")
 	Set<Tag> findTagsByShortFilmId(@Param("id") Long id);
 }

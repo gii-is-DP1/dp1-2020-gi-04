@@ -7,8 +7,8 @@ import java.util.Set;
 public class Utils {
 	@SafeVarargs
 	public static final <T> Set<T> hashSet(T... objs) {
-	    Set<T> set = new HashSet<T>();
-	    Collections.addAll(set, objs);
-	    return set;
+		Set<T> set = new HashSet<T>();
+		Collections.addAll(set, objs);
+		return set;
 	}
 }

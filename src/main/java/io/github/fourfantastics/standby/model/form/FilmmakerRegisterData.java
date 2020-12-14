@@ -29,7 +29,6 @@ public class FilmmakerRegisterData {
 	String city;
 
 	String phone;
-	
 
 	public Filmmaker toFilmmaker() {
 		Filmmaker filmmaker = new Filmmaker();

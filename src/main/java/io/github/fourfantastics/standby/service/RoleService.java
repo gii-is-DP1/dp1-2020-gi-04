@@ -15,15 +15,15 @@ import io.github.fourfantastics.standby.repository.RoleRepository;
 public class RoleService {
 	@Autowired
 	RoleRepository roleRepository;
-	
+
 	public Optional<Role> getRoleById(Long id) {
 		return roleRepository.findById(id);
 	}
-	
+
 	public void saveRole(Role role) {
 		roleRepository.save(role);
 	}
-	
+
 	public Set<Role> getAllRoles() {
 		Set<Role> roles = new HashSet<>();
 		Iterator<Role> iterator = roleRepository.findAll().iterator();
@@ -32,7 +32,7 @@ public class RoleService {
 		}
 		return roles;
 	}
-	
+
 	public void deleteRole(Role role) {
 		roleRepository.delete(role);
 	}

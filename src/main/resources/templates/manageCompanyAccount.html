@@ -7,7 +7,7 @@
         <div class="row align-middle">
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
-                 <form data-th-action="@{/manageCompanyAccount}" method="POST" data-th-object="${companyConfigurationData}">
+                 <form data-th-action="@{/account/company}" method="POST" data-th-object="${companyConfigurationData}">
                     <div data-th-replace="~{@{/fragments/form/errors}}"></div>
                     <label class="form-text text-muted">Personal information</label>
                     <input data-th-replace="~{@{/fragments/form/input}(name='companyName', label='Company name', placeholder='Acme Inc.', required='true')}">
@@ -19,7 +19,7 @@
                             <input data-th-replace="~{@{/fragments/form/input}(name='businessPhone', label='Business phone', placeholder='+46 629382239',required='true')}">
                         </div>
                     </div>
-                    <input data-th-replace="~{@{/fragments/form/input}(name='officeAddress', label='Office address', placeholder='Polígono industrial Los Ángeles 8',required='true')}">
+                    <input data-th-replace="~{@{/fragments/form/input}(name='officeAddress', label='Office address', placeholder='Polï¿½gono industrial Los ï¿½ngeles 8',required='true')}">
                      <input data-th-replace="~{@{/fragments/form/switch}(name='byPrivacyRequests', label='Be notified by privacy requests')}">
                      <hr>
                     <br>
@@ -37,7 +37,7 @@
                 <br>
                 <hr>
                 <div class="form-group">
-                    <a data-th-href="@{/deleteAccount}" type="button" class="btn btn-outline-danger btn-block">Delete my account</a>
+                    <a data-th-href="@{/account/delete}" type="button" class="btn btn-outline-danger btn-block">Delete my account</a>
                 </div>
             </div>
             <div class="col-0 col-sm-1"></div>

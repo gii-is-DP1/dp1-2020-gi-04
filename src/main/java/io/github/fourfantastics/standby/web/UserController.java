@@ -22,7 +22,9 @@ import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
-
+import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
+import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
+import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.form.Credentials;
 
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
@@ -37,6 +39,15 @@ public class UserController {
 
 	@Autowired
 	NotificationConfigurationService notificationConfigurationService;
+	
+	@Autowired
+	CredentialsValidator credentialsValidator;
+	
+	@Autowired
+	FilmmakerConfigurationDataValidator filmmakerConfigurationDataValidator;
+	
+	@Autowired
+	CompanyConfigurationDataValidator companyConfigurationDataValidator;
 
 	@GetMapping("/login")
 	public String getLogin(HttpSession session, Map<String, Object> model) {
@@ -55,6 +66,7 @@ public class UserController {
 			return "redirect:/";
 		}
 
+		credentialsValidator.validate(credentials, result);
 		if (result.hasErrors()) {
 			return "login.html";
 		}
@@ -83,7 +95,7 @@ public class UserController {
 		return "redirect:/";
 	}
 
-	@GetMapping("/manageAccount")
+	@GetMapping("/account")
 	public String getManageAccount(HttpSession session, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
@@ -102,7 +114,7 @@ public class UserController {
 		}
 	}
 
-	@PostMapping("/manageFilmmakerAccount")
+	@PostMapping("/account/filmmaker")
 	public String doManageAccount(HttpSession session,
 			@ModelAttribute("filmmakerConfigurationData") FilmmakerConfigurationData filmmakerConfigurationData,
 			BindingResult result, Map<String, Object> model) {
@@ -115,8 +127,9 @@ public class UserController {
 			return "redirect:/manageAccount";
 		}
 
+		filmmakerConfigurationDataValidator.validate(filmmakerConfigurationData, result);
 		if (result.hasErrors()) {
-			return "redirect:/manageAccount";
+			return "manageFilmmakerAccount";
 		}
 
 		Filmmaker userFilmmaker = (Filmmaker) user;
@@ -124,12 +137,12 @@ public class UserController {
 		userFilmmaker = (Filmmaker) userService.saveUser(userFilmmaker);
 
 		model.put("filmmakerData", filmmakerConfigurationData);
-		return "redirect:/manageAccount";
+		return "manageFilmmakerAccount";
 	}
 
-	@PostMapping("/manageCompanyAccount")
+	@PostMapping("/account/company")
 	public String doManageAccount(HttpSession session,
-			@ModelAttribute(" companyConfigurationData") CompanyConfigurationData companyConfigurationData,
+			@ModelAttribute("companyConfigurationData") CompanyConfigurationData companyConfigurationData,
 			BindingResult result, Map<String, Object> model) {
 		Optional<User> optionalUser = userService.getLoggedUser(session);
 		if (!optionalUser.isPresent()) {
@@ -141,14 +154,15 @@ public class UserController {
 			return "redirect:/manageAccount";
 		}
 
+		companyConfigurationDataValidator.validate(companyConfigurationData, result);
 		if (result.hasErrors()) {
-			return "redirect:/manageAccount";
+			return "manageCompanyAccount";
 		}
 		Company userCompany = (Company) user;
 		companyConfigurationData.copyToCompany(userCompany);
 		userCompany = (Company) userService.saveUser(userCompany);
 
 		model.put("companyData", companyConfigurationData);
-		return "redirect:/manageAccount";
+		return "manageCompanyAccount";
 	}
 }

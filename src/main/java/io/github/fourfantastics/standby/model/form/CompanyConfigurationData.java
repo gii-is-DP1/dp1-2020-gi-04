@@ -20,12 +20,12 @@ public class CompanyConfigurationData {
 
 	@NotNull
 	String officeAddress;
-	
+
 	@NotNull
 	Boolean byPrivacyRequests;
-	
+
 	public static CompanyConfigurationData fromCompany(Company company) {
-		CompanyConfigurationData companyConfigurationData= new CompanyConfigurationData();
+		CompanyConfigurationData companyConfigurationData = new CompanyConfigurationData();
 		companyConfigurationData.setBusinessPhone(company.getBusinessPhone());
 		companyConfigurationData.setCompanyName(company.getCompanyName());
 		companyConfigurationData.setOfficeAddress(company.getOfficeAddress());
@@ -33,7 +33,7 @@ public class CompanyConfigurationData {
 		companyConfigurationData.setByPrivacyRequests(company.getConfiguration().getByPrivacyRequests());
 		return companyConfigurationData;
 	}
-	
+
 	public void copyToCompany(Company company) {
 		company.setBusinessPhone(getBusinessPhone());
 		company.setCompanyName(getCompanyName());

@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import io.github.fourfantastics.standby.model.Company;
 
-public interface CompanyRepository extends CrudRepository<Company,Long> {
+public interface CompanyRepository extends CrudRepository<Company, Long> {
 
 }
