@@ -14,6 +14,8 @@ import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.service.UserService;
+import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
+import io.github.fourfantastics.standby.service.exceptions.NotFoundException;
 import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -59,6 +61,43 @@ public class UserServiceTest {
 		assert(exception);
 	}
 	
-
+	@Test
+	void authenticateTest(){
+		Boolean exception = false;
+		Optional<User> user = userService.findByName("filmmaker1");
+		try {
+			userService.authenticate("filmmaker1", "password");
+		} 
+		catch(NotFoundException e) {
+			exception = true;
+		}
+		catch(DataMismatchException e) {
+			exception = true;
+		}
+		assert(!exception);
+		//DataMismatchException
+		try {
+			userService.authenticate("filmmaker1", "InventedPassword");
+		} 
+		catch(NotFoundException e) {
+			exception = true;
+		}
+		catch(DataMismatchException e) {
+			exception = true;
+		}
+		assert(exception);
+		exception = false;
+		//NotFoundException
+		try {
+			userService.authenticate("InvenetedUserName", "password");
+		} 
+		catch(NotFoundException e) {
+			exception = true;
+		}
+		catch(DataMismatchException e) {
+			exception = true;
+		}
+		assert(exception);
+	}
 	
 }
