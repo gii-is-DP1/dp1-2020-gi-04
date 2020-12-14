@@ -1,14 +1,11 @@
 package io.github.fourfantastic.standby.service;
 
-
-
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.User;
@@ -44,13 +41,13 @@ public class UserServiceTest {
 	void registerUserTest() throws NotUniqueException {
 		User prueba = new User();
 		Boolean exception = false;
-		prueba.setName("Táctico");
+		prueba.setName("TÃ¡ctico");
 		prueba.setCreationDate(2L);
 		prueba.setEmail("Davinci@gmail.com");
 		prueba.setPassword("weak password");
 		prueba.setType(UserType.Filmmaker);
 		userService.register(prueba);
-		assert(userService.findByName("Táctico").isPresent());
+		assert(userService.findByName("Tï¿½ctico").isPresent());
 		try {
 			userService.register(prueba);
 		}
