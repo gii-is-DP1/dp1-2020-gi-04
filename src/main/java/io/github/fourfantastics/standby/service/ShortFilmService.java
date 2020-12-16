@@ -10,12 +10,17 @@ import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
+import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 
 @Service
 public class ShortFilmService {
 	@Autowired
 	ShortFilmRepository shortFilmRepository;
+
+	@Autowired
+	FileService fileService;
 
 	public Optional<ShortFilm> getShortFilmById(Long id) {
 		return shortFilmRepository.findById(id);
@@ -41,5 +46,12 @@ public class ShortFilmService {
 	public Set<Tag> getShortFilmTags(ShortFilm shortFilm) {
 		Long id = shortFilm.getId();
 		return shortFilmRepository.findTagsByShortFilmId(id);
+	}
+
+	public ShortFilm upload(ShortFilmUploadData uploadData, User uploader) {
+		ShortFilm shortFilm = new ShortFilm();
+		String path = fileService.save(uploadData.getFile());
+		System.out.println(path);
+		return shortFilm;
 	}
 }

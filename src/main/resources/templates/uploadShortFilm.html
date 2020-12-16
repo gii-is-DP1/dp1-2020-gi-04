@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html
+	data-th-replace="~{@{/fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+<title>Upload a short film - Standby</title>
+<section>
+	<h3>Upload a short film</h3>
+	<hr />
+	<div class="row">
+		<div class="col-0 col-sm-1"></div>
+		<div class="col-12 col-sm-10">
+			<form method="POST" enctype="multipart/form-data"
+				data-th-action="@{/upload}" data-th-object="${shortFilmUploadData}">
+				<div data-th-replace="~{@{/fragments/form/errors}}"></div>
+
+				<label class="form-text text-muted">Short film information</label> <input
+					data-th-replace="~{@{/fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2', required='true')}" />
+				<input
+					data-th-replace="~{@{/fragments/form/input}(name='description', label='Description', placeholder='A super awesome description', required='true')}" />
+
+				<input
+					data-th-replace="~{@{/fragments/form/file}(name = 'file', label = 'Short Film', buttonLabel = 'Upload')}" />
+				<br>
+				<button type="submit" class="btn btn-success btn-block">Upload
+					the film</button>
+			</form>
+		</div>
+		<div class="col-0 col-sm-1"></div>
+	</div>
+</section>
+</html>

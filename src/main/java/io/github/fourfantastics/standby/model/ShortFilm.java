@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -59,5 +60,8 @@ public class ShortFilm {
 	Set<User> favouriteUsers = new HashSet<User>();
 
 	@OneToMany(fetch = FetchType.EAGER)
-	Set<Role> madeBy = new HashSet<Role>();
+	Set<Role> roles = new HashSet<Role>();
+	
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	Filmmaker uploader;
 }

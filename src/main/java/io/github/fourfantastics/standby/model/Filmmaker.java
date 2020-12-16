@@ -43,6 +43,9 @@ public class Filmmaker extends User {
 	@OneToMany(fetch = FetchType.EAGER)
 	Set<Role> participateAs = new HashSet<Role>();
 
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "uploader")
+	Set<ShortFilm> uploadedShortFilms = new HashSet<ShortFilm>();
+	
 	public Filmmaker() {
 		super();
 		setType(UserType.Filmmaker);
