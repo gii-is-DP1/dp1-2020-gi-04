@@ -12,7 +12,7 @@ import org.springframework.core.io.Resource;
 public interface FileService {
 	public void init();
 
-	public String save(MultipartFile file) throws InvalidExtensionException;
+	public String save(MultipartFile file) throws InvalidExtensionException, RuntimeException;
 
 	public Resource load(String filename);
 

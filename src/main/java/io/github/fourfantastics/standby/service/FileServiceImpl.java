@@ -33,7 +33,7 @@ public class FileServiceImpl implements FileService {
 		if (extension.isEmpty()) {
 			return null;
 		}
-		return "."+extension;
+		return "." + extension;
 	}
 
 	@Override
@@ -46,14 +46,14 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public String save(MultipartFile file) throws InvalidExtensionException {
+	public String save(MultipartFile file) throws InvalidExtensionException, RuntimeException {
 		String filePath = null;
 		String extension = getFileExtension(file.getOriginalFilename());
-		
+
 		if (!allowedFileExtensions.contains(extension)) {
 			throw new InvalidExtensionException("Invalid extension for the file");
 		}
-		
+
 		try {
 			filePath = UUID.randomUUID().toString() + getFileExtension(file.getOriginalFilename());
 			Files.copy(file.getInputStream(), this.root.resolve(filePath));
