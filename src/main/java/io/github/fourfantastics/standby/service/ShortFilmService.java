@@ -1,5 +1,6 @@
 package io.github.fourfantastics.standby.service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class ShortFilmService {
 
 	@Autowired
 	FileService fileService;
-	
+
 	public Optional<ShortFilm> getShortFilmById(Long id) {
 		return shortFilmRepository.findById(id);
 	}
@@ -50,10 +51,13 @@ public class ShortFilmService {
 		return shortFilmRepository.findTagsByShortFilmId(id);
 	}
 
-	public ShortFilm upload(ShortFilmUploadData uploadData, Filmmaker uploader) throws InvalidExtensionException, RuntimeException {
+	public ShortFilm upload(ShortFilmUploadData uploadData, Filmmaker uploader)
+			throws InvalidExtensionException, RuntimeException {
 		ShortFilm shortFilm = uploadData.toShortFilm();
 		String path = fileService.save(uploadData.getFile());
+		Date now = new Date();
 		shortFilm.setFileUrl(path);
+		shortFilm.setUploadDate(now.getTime());
 		shortFilm.setUploader(uploader);
 		shortFilmRepository.save(shortFilm);
 		return shortFilm;

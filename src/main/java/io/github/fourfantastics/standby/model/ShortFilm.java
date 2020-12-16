@@ -33,8 +33,8 @@ public class ShortFilm {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@NotNull
 	@NotEmpty
-	@Length(min = 5)
 	String name;
 
 	@NotEmpty
@@ -43,8 +43,8 @@ public class ShortFilm {
 	@NotNull
 	Long uploadDate;
 
+	@NotNull
 	@NotEmpty
-	@Length(min = 10)
 	String description;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")

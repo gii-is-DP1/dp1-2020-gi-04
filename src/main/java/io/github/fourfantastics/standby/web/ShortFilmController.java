@@ -61,6 +61,7 @@ public class ShortFilmController {
 		}
 		try {
 			shortFilmService.upload(shortFilmUploadData,(Filmmaker) loggedUser);
+	
 		}
 		catch(Exception e) {
 			result.reject("", e.getMessage());
