@@ -1,7 +1,6 @@
 package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
-
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
@@ -19,12 +18,11 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
+import io.github.fourfantastics.standby.model.form.Credentials;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
-import io.github.fourfantastics.standby.model.form.Credentials;
-
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;

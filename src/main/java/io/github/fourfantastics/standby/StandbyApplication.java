@@ -35,7 +35,7 @@ public class StandbyApplication {
 			filmmaker.setPhotoUrl("url photo");
 			filmmaker.setCity("Seville");
 			filmmaker.setCountry("Spain");
-			filmmaker.setFullname("Filmmaker Díaz García");
+			filmmaker.setFullname("Filmmaker DÃ­az GarcÃ­a");
 			filmmaker.setPhone("675987432");
 			userService.register(filmmaker);
 
