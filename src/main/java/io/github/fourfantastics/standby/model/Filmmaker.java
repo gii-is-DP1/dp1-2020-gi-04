@@ -18,7 +18,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString(exclude = { "userSubscriptions", "receivedRequests", "participateAs" })
+@ToString(exclude = { "userSubscriptions", "receivedRequests", "participateAs", "uploadedShortFilms" })
 @AllArgsConstructor
 public class Filmmaker extends User {
 	@NotNull

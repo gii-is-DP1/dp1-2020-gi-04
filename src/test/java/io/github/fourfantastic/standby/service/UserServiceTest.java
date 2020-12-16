@@ -41,13 +41,13 @@ public class UserServiceTest {
 	void registerUserTest() throws NotUniqueException {
 		User prueba = new User();
 		Boolean exception = false;
-		prueba.setName("TÃ¡ctico");
+		prueba.setName("Táctico");
 		prueba.setCreationDate(2L);
 		prueba.setEmail("Davinci@gmail.com");
 		prueba.setPassword("weak password");
 		prueba.setType(UserType.Filmmaker);
 		userService.register(prueba);
-		assert(userService.findByName("Tï¿½ctico").isPresent());
+		assert(userService.findByName("Táctico").isPresent());
 		try {
 			userService.register(prueba);
 		}

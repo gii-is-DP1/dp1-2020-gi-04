@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.model.form;
 
-import javax.validation.constraints.NotNull;
-
 import io.github.fourfantastics.standby.model.Filmmaker;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,25 +7,25 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class FilmmakerConfigurationData {
-	@NotNull
+	//NotNull
 	String fullname;
 
-	@NotNull
+	//NotNull
 	String country;
 
-	@NotNull
+	//NotNull
 	String city;
 
-	@NotNull
+	//NotNull
 	String phone;
 
-	@NotNull
+	//NotNull
 	Boolean byComments;
 
-	@NotNull
+	//NotNull
 	Boolean byRatings;
 
-	@NotNull
+	//NotNull
 	Boolean bySubscriptions;
 
 	public static FilmmakerConfigurationData fromFilmmaker(Filmmaker filmmaker) {
