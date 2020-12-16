@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.model.form;
 
-import javax.validation.constraints.NotNull;
-
 import io.github.fourfantastics.standby.model.Filmmaker;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,19 +7,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class FilmmakerRegisterData {
-	@NotNull
+	//NotNull
 	String name;
 
-	@NotNull
+	//NotNull
 	String email;
 
-	@NotNull
+	//NotNull
 	String password;
 
-	@NotNull
+	//NotNull
 	String confirmPassword;
 
-	@NotNull
+	//NotNull
 	String fullname;
 
 	String country;

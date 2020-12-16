@@ -25,7 +25,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = { "ratings", "comments", "tags", "favouriteUsers", "madeBy" })
+@ToString(exclude = { "ratings", "comments", "tags", "favouriteUsers", "uploader" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShortFilm {
