@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
@@ -56,15 +57,15 @@ public class ShortFilmController {
 		}
 
 		if (result.hasErrors()) {
-			result.reject("", result.getAllErrors().toString());
 			return "uploadShortFilm";
 		}
 		try {
-			shortFilmService.upload(shortFilmUploadData, loggedUser);
+			shortFilmService.upload(shortFilmUploadData,(Filmmaker) loggedUser);
 		}
 		catch(Exception e) {
-			
+			result.reject("", e.getMessage());
+			return "uploadShortFilm";
 		}
-		return "uploadShortFilm";
+		return "redirect:/";//temporal,provisional
 	}
 }
