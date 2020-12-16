@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class NotUniqueException extends Exception {
-	private static final long serialVersionUID = 8869846933485274617L;
+	private static final long serialVersionUID = 1L;
 
 	private Set<String> reasons;
 

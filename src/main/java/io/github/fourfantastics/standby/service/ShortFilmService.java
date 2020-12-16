@@ -13,6 +13,7 @@ import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
+import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
 
 @Service
 public class ShortFilmService {
@@ -48,10 +49,10 @@ public class ShortFilmService {
 		return shortFilmRepository.findTagsByShortFilmId(id);
 	}
 
-	public ShortFilm upload(ShortFilmUploadData uploadData, User uploader) {
+	public ShortFilm upload(ShortFilmUploadData uploadData, User uploader) throws InvalidExtensionException {
 		ShortFilm shortFilm = new ShortFilm();
 		String path = fileService.save(uploadData.getFile());
-		System.out.println(path);
+		/* Paco diosssssssssssssssssssssssssss */
 		return shortFilm;
 	}
 }
