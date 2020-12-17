@@ -5,9 +5,8 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.springframework.core.io.Resource;
@@ -16,10 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
+import io.github.fourfantastics.standby.utils.Utils;
+
 @Service
 public class FileServiceImpl implements FileService {
-
 	private final Path root = Paths.get("uploads");
+	private final Set<String> allowedFileExtensions = Utils.hashSet(".mp4", ".avi", ".wmv", ".webm");
 
 	public static String getFileExtension(String fileName) {
 		String[] fileSplit = fileName.split("\\.");
@@ -31,7 +33,7 @@ public class FileServiceImpl implements FileService {
 		if (extension.isEmpty()) {
 			return null;
 		}
-		return "."+extension;
+		return "." + extension;
 	}
 
 	@Override
@@ -44,9 +46,14 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public String save(MultipartFile file) {
-
+	public String save(MultipartFile file) throws InvalidExtensionException, RuntimeException {
 		String filePath = null;
+		String extension = getFileExtension(file.getOriginalFilename());
+
+		if (!allowedFileExtensions.contains(extension)) {
+			throw new InvalidExtensionException("Invalid extension for the file");
+		}
+
 		try {
 			filePath = UUID.randomUUID().toString() + getFileExtension(file.getOriginalFilename());
 			Files.copy(file.getInputStream(), this.root.resolve(filePath));

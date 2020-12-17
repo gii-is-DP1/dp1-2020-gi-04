@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.model.form;
 
-import javax.validation.constraints.NotNull;
-
 import io.github.fourfantastics.standby.model.Company;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,28 +8,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CompanyRegisterData {
 
-	@NotNull
+	//NotNull
 	String name;
 
-	@NotNull
+	//NotNull
 	String companyName;
 
-	@NotNull
+	//NotNull
 	String taxIDNumber;
 
-	@NotNull
+	//NotNull
 	String businessPhone;
 
-	@NotNull
+	//NotNull
 	String officeAddress;
 
-	@NotNull
+	//NotNull
 	String email;
 
-	@NotNull
+	//NotNull
 	String password;
 
-	@NotNull
+	//NotNull
 	String confirmPassword;
 
 	public Company companyFromForm() {

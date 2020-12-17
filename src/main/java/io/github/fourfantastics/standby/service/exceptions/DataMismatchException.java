@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class DataMismatchException extends Exception {
-	private static final long serialVersionUID = -2937937724522019448L;
+	private static final long serialVersionUID = 1L;
 
 	private Set<String> reasons;
 

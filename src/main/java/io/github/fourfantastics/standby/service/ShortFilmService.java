@@ -8,11 +8,13 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
+import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
 
 @Service
 public class ShortFilmService {
@@ -21,7 +23,7 @@ public class ShortFilmService {
 
 	@Autowired
 	FileService fileService;
-
+	
 	public Optional<ShortFilm> getShortFilmById(Long id) {
 		return shortFilmRepository.findById(id);
 	}
@@ -48,10 +50,12 @@ public class ShortFilmService {
 		return shortFilmRepository.findTagsByShortFilmId(id);
 	}
 
-	public ShortFilm upload(ShortFilmUploadData uploadData, User uploader) {
-		ShortFilm shortFilm = new ShortFilm();
+	public ShortFilm upload(ShortFilmUploadData uploadData, Filmmaker uploader) throws InvalidExtensionException, RuntimeException {
+		ShortFilm shortFilm = uploadData.toShortFilm();
 		String path = fileService.save(uploadData.getFile());
-		System.out.println(path);
+		shortFilm.setFileUrl(path);
+		shortFilm.setUploader(uploader);
+		shortFilmRepository.save(shortFilm);
 		return shortFilm;
 	}
 }

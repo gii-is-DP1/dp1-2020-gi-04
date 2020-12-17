@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.model.form;
 
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.Length;
 
 import io.github.fourfantastics.standby.model.User;
@@ -11,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Credentials {
-	@NotNull
+	//NotNull
 	@Length(min = 5, max = 64)
 	String name;
 
-	@NotNull
+	//NotNull
 	String password;
 
 	public static Credentials fromUser(User user) {
