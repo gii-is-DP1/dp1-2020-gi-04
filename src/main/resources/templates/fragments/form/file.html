@@ -16,7 +16,7 @@
 	</div>
 	<div data-th-replace="~{@{/fragments/form/fieldError}(${name})}"></div>
 	<script th:inline="javascript">
-	const fieldName = [[${name}]];
+	(() => {const fieldName = [[${name}]];
 	const inputId = "#fupload-"+fieldName;
 	const labelId = "#fuploadlabel-"+fieldName;
 	$(inputId).on('change',function() {
@@ -26,7 +26,8 @@
         //replace the "Choose a file" label
         
         $(labelId).text(fileName);
-    })
+    })})()
+	
 
 	</script>
 </div>

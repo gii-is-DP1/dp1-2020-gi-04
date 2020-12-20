@@ -11,8 +11,7 @@
 			<form method="POST" enctype="multipart/form-data"
 				data-th-action="@{/upload}" data-th-object="${shortFilmUploadData}"
 				id="upload-form">
-				<div data-th-replace="~{@{/fragments/form/errors}}"></div>
-
+				<div id="general-error-container" class="alert alert-danger d-none" ></div>
 				<label class="form-text text-muted">Short film information</label> <input
 					data-th-replace="~{@{/fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2', required='true')}" />
 				<input
@@ -30,7 +29,8 @@
 			</form>
 		
 			<script>
-				const formId = "#upload-form";
+			
+				(() => {const formId = "#upload-form";
 				const progressId = "#progress-file";
 				
 				$(formId).on("submit",function (event) {
@@ -59,13 +59,29 @@
 							}
 							return req;
 						},
-						success: function(data) {
-							const newDoc = document.open("text/html", "replace");
-							newDoc.write(data);
-							newDoc.close();
+						success: function(data) {		
+							const status = data.status;
+							const message = data.message;
+							
+							switch(status) {
+							case 500:
+							
+							case 400: {
+								const errorContainer = $("#general-error-container");
+								errorContainer.removeClass("d-none");
+								errorContainer.text(message);
+							}break;
+							case 302: {
+								const url = data.url;
+								window.location = "/shortFilm"+url+"/edit"; 
+
+							}break;
+							}
+
 						}
+						
 					})
-				})
+				})})();
 			</script>
 		</div>
 		<div class="col-0 col-sm-1"></div>
