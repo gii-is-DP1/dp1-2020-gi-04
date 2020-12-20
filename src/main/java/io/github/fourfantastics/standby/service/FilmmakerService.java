@@ -27,6 +27,10 @@ public class FilmmakerService {
 	public Optional<Filmmaker> getFilmmmakerById(Long id) {
 		return filmmakerRepository.findById(id);
 	}
+	
+	public Optional<Filmmaker> getFilmmmakerByName(String name) {
+		return filmmakerRepository.findByName(name);
+	}
 
 	public void saveFilmmaker(Filmmaker filmmaker) {
 		filmmakerRepository.save(filmmaker);
