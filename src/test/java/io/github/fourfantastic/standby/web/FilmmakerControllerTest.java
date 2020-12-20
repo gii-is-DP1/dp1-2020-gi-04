@@ -35,37 +35,32 @@ import io.github.fourfantastics.standby.service.exceptions.DataMismatchException
 import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
 import io.github.fourfantastics.standby.web.FilmmakerController;
 
-
-@ContextConfiguration(classes=StandbyApplication.class)
-@WebMvcTest(controllers=FilmmakerController.class,
-excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
-excludeAutoConfiguration= SecurityConfiguration.class)
+@ContextConfiguration(classes = StandbyApplication.class)
+@WebMvcTest(controllers = FilmmakerController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
 public class FilmmakerControllerTest {
-	
+
 	@SuppressWarnings("unused")
 	@Autowired
 	private FilmmakerController filmmakerController;
-	
+
 	@MockBean
 	private FilmmakerService filmmakerService;
-	
+
 	@MockBean
 	private UserService userService;
-	
+
 	@MockBean
 	private NotificationConfigurationService notificationConfigurationService;
-	
-	
+
 	@MockBean
 	private FilmmakerRegisterDataValidator filmmakerRegisterDataValidator;
-	
-	
+
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	@BeforeEach
 	void setup() throws DataMismatchException, NotUniqueException {
-		
+
 		FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
 		filmmakerRegisterData.setName("Filmmaker1");
 		filmmakerRegisterData.setFullname("Filmmaker1 Surname");
@@ -75,69 +70,43 @@ public class FilmmakerControllerTest {
 		filmmakerRegisterData.setPhone("678543167");
 		filmmakerRegisterData.setPassword("patata");
 		filmmakerRegisterData.setConfirmPassword("patata");
-		
-		Filmmaker filmmaker = this.filmmakerService.registerFilmmaker(filmmakerRegisterData );
-		
+
+		Filmmaker filmmaker = this.filmmakerService.registerFilmmaker(filmmakerRegisterData);
+
 		given(this.filmmakerService.registerFilmmaker(filmmakerRegisterData)).willReturn(filmmaker);
 
 	}
-	
-	
-	
-	
-	
+
 	@WithMockUser(value = "spring")
 	@Test
 	void testRegisterFilmmaker() throws Exception {
-		mockMvc.perform(post("/register/filmmaker")
-		.param("type", "Filmmaker")
-		.param("name", "Filmmaker4")
-		.param("email", "filmmaker4@gmail.com")
-		.param("password", "patataa")
-		.param("creationDate", "12/12/2020")
-		.param("photoUrl", "url photo")
-		.with(csrf())
-		.param("fullname", "Filmmaker4 Surname")
-		.param("country", "Spain")
-		.param("city", "Seville")
-		.param("phone", "678908432"))
-		.andExpect(status().is3xxRedirection());
+		mockMvc.perform(post("/register/filmmaker").param("type", "Filmmaker").param("name", "Filmmaker4")
+				.param("email", "filmmaker4@gmail.com").param("password", "patataa").param("creationDate", "12/12/2020")
+				.param("photoUrl", "url photo").with(csrf()).param("fullname", "Filmmaker4 Surname")
+				.param("country", "Spain").param("city", "Seville").param("phone", "678908432"))
+				.andExpect(status().is3xxRedirection());
 	}
-	
-	@WithMockUser(value = "spring")
-    @Test
-    void testGetRegisterView() throws Exception {
-		mockMvc.perform(get("/register/filmmaker")).andExpect(status().isOk())
-		.andExpect(model().attributeExists("filmmakerRegisterData")).andExpect(view().name("registerFilmmaker"));
-	}
-	
-	
-	
+
 	@WithMockUser(value = "spring")
 	@Test
-	void testRegisterFilmmakerHasErrors() throws Exception,DataMismatchException,NotUniqueException {
-		mockMvc.perform(post("/register/filmmaker")
-		.with(csrf())
-		.param("type", "Filmmaker")
-		.param("name", "Filmmaker4")
-		.param("password", "patataa")
-		.param("creationDate", "12/12/2020")
-		.param("photoUrl", "url photo")
-		.param("fullname", "Filmmaker4 Surname")
-		.param("country", "Spain")
-		.param("city", "Seville")
-		.param("phone", "678908432"))
-		.andExpect(status().isFound())
-		.andExpect(model().attributeDoesNotExist("email"));
-		
-		
-		Optional<Filmmaker> filmmaker= filmmakerService.getFilmmmakerByName("Filmmaker4");
-		assertThat(filmmaker.isPresent()).isEqualTo(true);
-		
-		
+	void testGetRegisterView() throws Exception {
+		mockMvc.perform(get("/register/filmmaker")).andExpect(status().isOk())
+				.andExpect(model().attributeExists("filmmakerRegisterData"))
+				.andExpect(view().name("registerFilmmaker"));
 	}
-	
-	
-	
+
+	@WithMockUser(value = "spring")
+	@Test
+	void testRegisterFilmmakerHasErrors() throws Exception, DataMismatchException, NotUniqueException {
+		mockMvc.perform(post("/register/filmmaker").with(csrf()).param("type", "Filmmaker").param("name", "Filmmaker4")
+				.param("password", "patataa").param("creationDate", "12/12/2020").param("photoUrl", "url photo")
+				.param("fullname", "Filmmaker4 Surname").param("country", "Spain").param("city", "Seville")
+				.param("phone", "678908432")).andExpect(status().isFound())
+				.andExpect(model().attributeDoesNotExist("email"));
+
+		Optional<Filmmaker> filmmaker = filmmakerService.getFilmmmakerByName("Filmmaker4");
+		assertThat(filmmaker.isPresent()).isEqualTo(true);
+
+	}
 
 }

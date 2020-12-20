@@ -21,80 +21,74 @@ public class UserServiceTest {
 
 	@Autowired
 	UserService userService;
-	
+
 	@Test
 	void findUserbyIdTest() {
-		
 		Optional<User> user = userService.getUserById(1L);
-		assert(user!=null);
+		assert (user != null);
 		Optional<User> user1 = userService.getUserById(777L);
-		assert(user1.isPresent()==false);
+		assert (user1.isPresent() == false);
 	}
+
 	@Test
-	void findUserByNameTest(){
+	void findUserByNameTest() {
 		Optional<User> user = userService.findByName("filmmaker1");
-		assert(user.isPresent()==true);
+		assert (user.isPresent() == true);
 		Optional<User> user1 = userService.findByName("InventedName");
-		assert(user1.isPresent()==false);
+		assert (user1.isPresent() == false);
 	}
+
 	@Test
 	void registerUserTest() throws NotUniqueException {
 		User prueba = new User();
 		Boolean exception = false;
-		prueba.setName("Táctico");
+		prueba.setName("Tï¿½ctico");
 		prueba.setCreationDate(2L);
 		prueba.setEmail("Davinci@gmail.com");
 		prueba.setPassword("weak password");
 		prueba.setType(UserType.Filmmaker);
 		userService.register(prueba);
-		assert(userService.findByName("Táctico").isPresent());
+		assert (userService.findByName("Tï¿½ctico").isPresent());
 		try {
 			userService.register(prueba);
-		}
-		catch(NotUniqueException e) {
+		} catch (NotUniqueException e) {
 			exception = true;
 		}
-		
-		assert(exception);
+
+		assert (exception);
 	}
-	
+
 	@Test
-	void authenticateTest(){
+	void authenticateTest() {
 		Boolean exception = false;
 		Optional<User> user = userService.findByName("filmmaker1");
 		try {
 			userService.authenticate("filmmaker1", "password");
-		} 
-		catch(NotFoundException e) {
+		} catch (NotFoundException e) {
+			exception = true;
+		} catch (DataMismatchException e) {
 			exception = true;
 		}
-		catch(DataMismatchException e) {
-			exception = true;
-		}
-		assert(!exception);
-		//DataMismatchException
+		assert (!exception);
+		// DataMismatchException
 		try {
 			userService.authenticate("filmmaker1", "InventedPassword");
-		} 
-		catch(NotFoundException e) {
+		} catch (NotFoundException e) {
+			exception = true;
+		} catch (DataMismatchException e) {
 			exception = true;
 		}
-		catch(DataMismatchException e) {
-			exception = true;
-		}
-		assert(exception);
+		assert (exception);
 		exception = false;
-		//NotFoundException
+		// NotFoundException
 		try {
 			userService.authenticate("InvenetedUserName", "password");
-		} 
-		catch(NotFoundException e) {
+		} catch (NotFoundException e) {
+			exception = true;
+		} catch (DataMismatchException e) {
 			exception = true;
 		}
-		catch(DataMismatchException e) {
-			exception = true;
-		}
-		assert(exception);
+		assert (exception);
 	}
-	
+
 }
