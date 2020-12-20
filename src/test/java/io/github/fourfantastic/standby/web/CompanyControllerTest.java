@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,12 +33,13 @@ import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
 import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
 import io.github.fourfantastics.standby.web.CompanyController;
+import io.github.fourfantastics.standby.web.FilmmakerController;
 
 @ContextConfiguration(classes = StandbyApplication.class)
-@WebMvcTest(controllers = CompanyController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = CompanyController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE), excludeAutoConfiguration = SecurityConfiguration.class)
 public class CompanyControllerTest {
 
-	@SuppressWarnings("unused")
 	@Autowired
 	private CompanyController companyController;
 
@@ -55,23 +58,6 @@ public class CompanyControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@BeforeEach
-	void setup() throws DataMismatchException, NotUniqueException {
-
-		CompanyRegisterData companyRegisterData = new CompanyRegisterData();
-		companyRegisterData.setBusinessPhone("675849765");
-		companyRegisterData.setCompanyName("Company1 Surname");
-		companyRegisterData.setName("Company1");
-		companyRegisterData.setEmail("company1@gmail.com");
-		companyRegisterData.setOfficeAddress("Calle Manzanita 3");
-		companyRegisterData.setTaxIDNumber("123-78-1234567");
-		companyRegisterData.setPassword("patata");
-		companyRegisterData.setConfirmPassword("patata");
-
-		Company company = this.companyService.registerCompany(companyRegisterData);
-
-		given(this.companyService.registerCompany(companyRegisterData)).willReturn(company);
-	}
 
 	@WithMockUser(value = "spring")
 	@Test
@@ -83,11 +69,7 @@ public class CompanyControllerTest {
 	@WithMockUser(value = "spring")
 	@Test
 	void testRegisterFilmmaker() throws Exception {
-		mockMvc.perform(post("/register/company").param("type", "Company").param("name", "Company4")
-				.param("email", "company4@gmail.com").param("password", "patataa").param("creationDate", "12/12/2020")
-				.param("photoUrl", "url photo").with(csrf()).param("companyName", "Company4 Studios")
-				.param("taxIDNumber", "123-98-1674567").param("businessPhone", "685493865")
-				.param("officeAddress", "Calle Manzana 1")).andExpect(status().is3xxRedirection());
+		mockMvc.perform(post("/register/company"));
 	}
 
 }
