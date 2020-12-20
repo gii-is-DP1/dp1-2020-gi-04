@@ -14,8 +14,6 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.Length;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,8 +31,8 @@ public class ShortFilm {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@NotNull
 	@NotEmpty
-	@Length(min = 5)
 	String name;
 
 	@NotEmpty
@@ -43,8 +41,8 @@ public class ShortFilm {
 	@NotNull
 	Long uploadDate;
 
+	@NotNull
 	@NotEmpty
-	@Length(min = 10)
 	String description;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
@@ -61,7 +59,7 @@ public class ShortFilm {
 
 	@OneToMany(fetch = FetchType.EAGER)
 	Set<Role> roles = new HashSet<Role>();
-	
+
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	Filmmaker uploader;
 }
