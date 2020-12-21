@@ -10,8 +10,12 @@ import io.github.fourfantastics.standby.repository.CommentRepository;
 
 @Service
 public class CommentService {
-	@Autowired
 	CommentRepository commentRepository;
+
+	@Autowired
+	public CommentService(CommentRepository commentRepository) {
+		this.commentRepository = commentRepository;
+	}
 
 	public Optional<Comment> getCommentById(Long id) {
 		return commentRepository.findById(id);

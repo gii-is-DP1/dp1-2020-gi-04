@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ShortFilmUploadData {
-
 	String title;
 	
 	String description;
@@ -19,9 +18,8 @@ public class ShortFilmUploadData {
 	
 	public ShortFilm toShortFilm() {
 		ShortFilm film = new ShortFilm();
-		film.setName(this.getTitle());
+		film.setTitle(this.getTitle());
 		film.setDescription(this.getDescription());
 		return film;
-		
 	}
 }

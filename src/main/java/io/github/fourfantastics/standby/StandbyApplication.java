@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
+import io.github.fourfantastics.standby.service.FileService;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
 
@@ -20,11 +21,17 @@ public class StandbyApplication {
 
 	@Component
 	public class CommandLineAppStartupRunner implements CommandLineRunner {
-		@Autowired
 		UserService userService;
+		@Autowired
+		FileService fileService;
+		NotificationConfigurationService notificationConfigurationService;
 
 		@Autowired
-		NotificationConfigurationService notificationConfigurationService;
+		public CommandLineAppStartupRunner(UserService userService,
+				NotificationConfigurationService notificationConfigurationService) {
+			this.userService = userService;
+			this.notificationConfigurationService = notificationConfigurationService;
+		}
 
 		@Override
 		public void run(String... args) throws Exception {

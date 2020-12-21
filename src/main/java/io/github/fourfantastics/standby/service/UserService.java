@@ -19,8 +19,12 @@ import io.github.fourfantastics.standby.utils.Utils;
 
 @Service
 public class UserService {
-	@Autowired
 	UserRepository userRepository;
+
+	@Autowired
+	public UserService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
 	public Optional<User> getUserById(Long id) {
 		return userRepository.findById(id);

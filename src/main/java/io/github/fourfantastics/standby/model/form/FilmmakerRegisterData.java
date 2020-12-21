@@ -7,19 +7,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class FilmmakerRegisterData {
-	//NotNull
+	// NotNull
 	String name;
 
-	//NotNull
+	// NotNull
 	String email;
 
-	//NotNull
+	// NotNull
 	String password;
 
-	//NotNull
+	// NotNull
 	String confirmPassword;
 
-	//NotNull
+	// NotNull
 	String fullname;
 
 	String country;
@@ -34,7 +34,7 @@ public class FilmmakerRegisterData {
 		filmmaker.setCountry(getCountry());
 		filmmaker.setEmail(getEmail());
 		filmmaker.setFullname(getFullname());
-		filmmaker.setPassword(getConfirmPassword());
+		filmmaker.setPassword(getPassword());
 		filmmaker.setName(getName());
 		filmmaker.setPhone(getPhone());
 		return filmmaker;

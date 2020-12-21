@@ -7,29 +7,28 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CompanyRegisterData {
-
-	//NotNull
+	// NotNull
 	String name;
 
-	//NotNull
+	// NotNull
 	String companyName;
 
-	//NotNull
+	// NotNull
 	String taxIDNumber;
 
-	//NotNull
+	// NotNull
 	String businessPhone;
 
-	//NotNull
+	// NotNull
 	String officeAddress;
 
-	//NotNull
+	// NotNull
 	String email;
 
-	//NotNull
+	// NotNull
 	String password;
 
-	//NotNull
+	// NotNull
 	String confirmPassword;
 
 	public Company companyFromForm() {

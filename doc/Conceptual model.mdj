@@ -667,7 +667,7 @@
 											"top": 452,
 											"width": 211,
 											"height": 13,
-											"text": "name",
+											"text": "title",
 											"horizontalAlignment": 0
 										},
 										{
@@ -7347,9 +7347,9 @@
 										"$ref": "AAAAAAF2XaoE7Dbc0VA="
 									},
 									"font": "Arial;13;0",
-									"left": 852,
+									"left": 851,
 									"top": 419,
-									"width": 5.05908203125,
+									"width": 6.5,
 									"height": 13,
 									"alpha": -0.6610434380815491,
 									"distance": 22.80350850198276,
@@ -7723,8 +7723,7 @@
 							"_parent": {
 								"$ref": "AAAAAAF1g+BBl7QwEVE="
 							},
-							"name": "name",
-							"type": ""
+							"name": "title"
 						},
 						{
 							"_type": "UMLAttribute",

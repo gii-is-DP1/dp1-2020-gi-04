@@ -18,16 +18,23 @@ import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionExcep
 
 @Service
 public class ShortFilmService {
-	@Autowired
 	ShortFilmRepository shortFilmRepository;
-
-	@Autowired
 	FileService fileService;
 
+	@Autowired
+	public ShortFilmService(ShortFilmRepository shortFilmRepository, FileService fileService) {
+		this.shortFilmRepository = shortFilmRepository;
+		this.fileService = fileService;
+	}
+	
 	public Optional<ShortFilm> getShortFilmById(Long id) {
 		return shortFilmRepository.findById(id);
 	}
-
+	
+	public Optional<ShortFilm> getShortFilmByTitle(String title) {
+		return shortFilmRepository.findByTitle(title);
+	}
+	
 	public ShortFilm save(ShortFilm shortFilm) {
 		return shortFilmRepository.save(shortFilm);
 	}

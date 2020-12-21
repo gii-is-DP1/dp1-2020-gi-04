@@ -1,22 +1,90 @@
 package io.github.fourfantastics.standby.service;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
-
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-public interface FileService {
-	public void init();
+import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
+import io.github.fourfantastics.standby.utils.Utils;
 
-	public String save(MultipartFile file) throws InvalidExtensionException, RuntimeException;
+@Service
+public class FileService {
+	final Path root = Paths.get("uploads");
+	final Set<String> allowedFileExtensions = Utils.hashSet(".mp4", ".avi", ".wmv", ".webm");
 
-	public Resource load(String filename);
+	public static String getFileExtension(String fileName) {
+		String[] fileSplit = fileName.split("\\.");
+		if (fileSplit.length < 2) {
+			return null;
+		}
 
-	public void deleteAll();
+		String extension = fileSplit[fileSplit.length - 1];
+		if (extension.isEmpty()) {
+			return null;
+		}
+		return "." + extension;
+	}
 
-	public Stream<Path> loadAll();
+	public void init() {
+		try {
+			Files.createDirectory(root);
+		} catch (IOException e) {
+			throw new RuntimeException("Could not initialize folder for upload!");
+		}
+	}
+
+	public String save(MultipartFile file) throws InvalidExtensionException, RuntimeException {
+		String filePath = null;
+		String extension = getFileExtension(file.getOriginalFilename());
+
+		if (!allowedFileExtensions.contains(extension)) {
+			throw new InvalidExtensionException("Invalid extension for the file");
+		}
+
+		try {
+			filePath = UUID.randomUUID().toString() + getFileExtension(file.getOriginalFilename());
+			Files.copy(file.getInputStream(), this.root.resolve(filePath));
+		} catch (Exception e) {
+			throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+		}
+		return filePath;
+	}
+
+	public Resource load(String filename) {
+		try {
+			Path file = root.resolve(filename);
+			Resource resource = new UrlResource(file.toUri());
+
+			if (resource.exists() || resource.isReadable()) {
+				return resource;
+			} else {
+				throw new RuntimeException("Could not read the file!");
+			}
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("Error: " + e.getMessage());
+		}
+	}
+
+	public void deleteAll() {
+		FileSystemUtils.deleteRecursively(root.toFile());
+	}
+
+	public Stream<Path> loadAll() {
+		try {
+			return Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
+		} catch (IOException e) {
+			throw new RuntimeException("Could not load the files!");
+		}
+	}
 }

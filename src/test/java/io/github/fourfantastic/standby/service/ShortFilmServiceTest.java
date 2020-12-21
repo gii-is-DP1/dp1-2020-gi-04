@@ -1,132 +1,98 @@
 package io.github.fourfantastic.standby.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.StandbyApplication;
-import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
-import io.github.fourfantastics.standby.model.Tag;
-import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
+import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
+import io.github.fourfantastics.standby.service.FileService;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
+import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = StandbyApplication.class)
 public class ShortFilmServiceTest {
+	@Autowired
+	ShortFilmService shortFilmService;
 
 	@Autowired
-	protected ShortFilmService shortFilmService;
+	FilmmakerService filmmakerService;
+	
 	@Autowired
-	protected FilmmakerService filmmakerService;
+	FileService fileService;
 
 	@Test
-	void getShortFilmByIdTest() throws DataMismatchException, NotUniqueException {
-		FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
-		filmmakerRegisterData.setName("Filmmaker2");
-		filmmakerRegisterData.setFullname("Filmmaker2 Surnam2e");
-		filmmakerRegisterData.setCity("Seville");
-		filmmakerRegisterData.setCountry("Spain");
-		filmmakerRegisterData.setEmail("filmmaker2@gmail.com");
-		filmmakerRegisterData.setPhone("678543877");
-		filmmakerRegisterData.setPassword("patata");
-		filmmakerRegisterData.setConfirmPassword("patata");
-		Filmmaker filmmaker = this.filmmakerService.registerFilmmaker(filmmakerRegisterData);
+	void uploadTest() throws NotUniqueException {
+		final String title = "Title";
+		final byte[] content = "This is an example".getBytes();
 
-		ShortFilm shortFilm = new ShortFilm();
-		shortFilm.setName("Film name");
-		shortFilm.setUploadDate(16 - 12 - 2020L);
-		shortFilm.setFileUrl("url");
-		shortFilm.setDescription("description");
-		shortFilm.setUploader(filmmaker);
-		shortFilmService.save(shortFilm);
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		MultipartFile exampleFile = new MockMultipartFile("example", "example.mp4", "video/mp4", content);
+		uploadData.setTitle(title);
+		uploadData.setDescription("Description");
+		uploadData.setFile(exampleFile);
 
-		Optional<ShortFilm> shortFilm1 = this.shortFilmService.getShortFilmById(shortFilm.getId());
-		assertThat(shortFilm1.isPresent()).isEqualTo(true);
-
-		Optional<ShortFilm> shortFilm2 = this.shortFilmService.getShortFilmById(84l);
-		assertThat(shortFilm2.isPresent()).isEqualTo(false);
+		assertDoesNotThrow(() -> {
+			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+		});
+		
+		Optional<ShortFilm> optionalShortFilm = shortFilmService.getShortFilmByTitle(title);
+		assertTrue(optionalShortFilm.isPresent());
+		ShortFilm shortFilm = optionalShortFilm.get();
+		
+		assertThat(shortFilm.getTitle()).isEqualTo(uploadData.getTitle());
+		assertThat(shortFilm.getDescription()).isEqualTo(uploadData.getDescription());
+		
+		File uploadedFile = new File(shortFilm.getFileUrl());
+		assertThat(uploadedFile).isNotEqualTo(null);
+		
+		Resource diskFile = null;
+		try {
+			diskFile = fileService.load(shortFilm.getFileUrl());
+		} catch (Exception e) {
+			fail("Couldn't load uploaded file!");
+		}
+		
+		try {
+			InputStream inputStream = diskFile.getInputStream();
+			assertThat(inputStream.readAllBytes()).isEqualTo(content);
+			inputStream.close();
+		} catch (Exception e) {
+			fail("Couldn't read the uploaded file!");
+		}
 	}
-
+	
 	@Test
-	void getShortFilmTags() throws DataMismatchException, NotUniqueException {
+	public void uploadInvalidExtensionTest() {
+		final String title = "Title";
+		final byte[] content = "This is an example".getBytes();
 
-		FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
-		filmmakerRegisterData.setName("Filmmaker2");
-		filmmakerRegisterData.setFullname("Filmmaker2 Surname2");
-		filmmakerRegisterData.setCity("Seville");
-		filmmakerRegisterData.setCountry("Spain");
-		filmmakerRegisterData.setEmail("filmmaker2@gmail.com");
-		filmmakerRegisterData.setPhone("678543877");
-		filmmakerRegisterData.setPassword("patata");
-		filmmakerRegisterData.setConfirmPassword("patata");
-		Filmmaker filmmaker = this.filmmakerService.registerFilmmaker(filmmakerRegisterData);
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		MultipartFile exampleFile = new MockMultipartFile("example", "example.txt", "text/plain", content);
+		uploadData.setTitle(title);
+		uploadData.setDescription("Description");
+		uploadData.setFile(exampleFile);
 
-		ShortFilm shortFilm = new ShortFilm();
-		shortFilm.setName("Film name");
-		shortFilm.setUploadDate(16 - 12 - 2020L);
-		shortFilm.setFileUrl("url");
-		shortFilm.setDescription("description");
-		shortFilm.setUploader(filmmaker);
-
-		Set<Tag> tags = this.shortFilmService.getShortFilmTags(shortFilm);
-		assertThat(tags.isEmpty()).isEqualTo(true);
-
-		/*
-		 * Tag tag =new Tag(); tag.setTagname("drama"); Set<Tag> tags1 = new
-		 * HashSet<Tag>(); tags1.add(tag);
-		 * 
-		 * ShortFilm shortFilm2 = new ShortFilm(); shortFilm2.setName("Film name 2");
-		 * shortFilm2.setUploadDate(16-12-2020L); shortFilm2.setFileUrl("url2");
-		 * shortFilm2.setDescription("description2"); shortFilm2.setTags(tags1);
-		 * shortFilm2.setUploader(filmmaker);
-		 * 
-		 * 
-		 * Set<ShortFilm> setShortFilms = new HashSet<>();
-		 * setShortFilms.add(shortFilm2); tag.setMovies(setShortFilms);
-		 * 
-		 * Set<Tag> tags2 = this.shortFilmService.getShortFilmTags(shortFilm2);
-		 * assertThat(tags2.isEmpty()).isEqualTo(true);
-		 * 
-		 */
-
+		assertThrows(InvalidExtensionException.class, () -> {
+			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+		});
 	}
-
-	/*
-	 * @Test void uploadTest() throws DataMismatchException, NotUniqueException,
-	 * IOException, InvalidExtensionException, RuntimeException{
-	 * 
-	 * FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
-	 * filmmakerRegisterData.setName("Filmmaker3");
-	 * filmmakerRegisterData.setFullname("Filmmaker3 Surname3");
-	 * filmmakerRegisterData.setCity("Seville");
-	 * filmmakerRegisterData.setCountry("Spain");
-	 * filmmakerRegisterData.setEmail("filmmaker3@gmail.com");
-	 * filmmakerRegisterData.setPhone("678546879");
-	 * filmmakerRegisterData.setPassword("patata");
-	 * filmmakerRegisterData.setConfirmPassword("patata"); Filmmaker filmmaker =
-	 * this.filmmakerService.registerFilmmaker(filmmakerRegisterData);
-	 * 
-	 * ShortFilmUploadData uploadData = new ShortFilmUploadData(); MultipartFile
-	 * file=(MultipartFile) File.createTempFile("example", ".mp4");
-	 * 
-	 * uploadData.setTitle("Title"); uploadData.setDescription("Description");
-	 * uploadData.setFile(file);
-	 * 
-	 * ShortFilm shortFilm= this.shortFilmService.upload(uploadData, filmmaker);
-	 * assertThat(shortFilm.getName()).isEqualTo("Title");
-	 * 
-	 * }
-	 * 
-	 */
-
 }

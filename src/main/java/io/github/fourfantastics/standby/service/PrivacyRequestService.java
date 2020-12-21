@@ -12,8 +12,12 @@ import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
 
 @Service
 public class PrivacyRequestService {
-	@Autowired
 	PrivacyRequestRepository privacyRequestRepository;
+
+	@Autowired
+	public PrivacyRequestService(PrivacyRequestRepository privacyRequestRepository) {
+		this.privacyRequestRepository = privacyRequestRepository;
+	}
 
 	public void savePrivacyRequest(PrivacyRequest privacyRequest) {
 		privacyRequestRepository.save(privacyRequest);
