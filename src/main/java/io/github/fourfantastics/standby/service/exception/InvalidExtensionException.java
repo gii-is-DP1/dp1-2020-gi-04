@@ -1,4 +1,4 @@
-package io.github.fourfantastics.standby.service.exceptions;
+package io.github.fourfantastics.standby.service.exception;
 
 import java.util.Set;
 
