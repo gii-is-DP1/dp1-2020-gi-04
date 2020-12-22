@@ -2,97 +2,113 @@ package io.github.fourfantastic.standby.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
-import java.io.File;
-import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.AdditionalAnswers;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.StandbyApplication;
+import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
-import io.github.fourfantastics.standby.service.FileService;
+import io.github.fourfantastics.standby.repository.FileRepository;
+import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = StandbyApplication.class)
 public class ShortFilmServiceTest {
-	@Autowired
 	ShortFilmService shortFilmService;
 
-	@Autowired
+	@Mock
+	ShortFilmRepository shortFilmRepository;
+
+	@Mock
+	FileRepository fileRepository;
+
+	@Mock
 	FilmmakerService filmmakerService;
-	
-	@Autowired
-	FileService fileService;
+
+	@BeforeEach
+	public void setup() throws InvalidExtensionException, RuntimeException {
+		shortFilmService = new ShortFilmService(shortFilmRepository, fileRepository);
+
+		Filmmaker filmmaker1 = new Filmmaker();
+		filmmaker1.setId(1L);
+		filmmaker1.setName("filmmaker1");
+		filmmaker1.setPassword("password");
+		filmmaker1.setEmail("filmmaker@gmail.com");
+		filmmaker1.setPhotoUrl("url photo");
+		filmmaker1.setCity("Seville");
+		filmmaker1.setCountry("Spain");
+		filmmaker1.setFullname("Filmmaker Díaz García");
+		filmmaker1.setPhone("675987432");
+		when(filmmakerService.getFilmmmakerByName("filmmaker1")).thenReturn(Optional.of(filmmaker1));
+		when(fileRepository.saveFile(any(MultipartFile.class), any(Path.class))).thenReturn(true);
+		when(shortFilmRepository.save(any(ShortFilm.class))).then(AdditionalAnswers.returnsFirstArg());
+	}
 
 	@Test
-	void uploadTest() throws NotUniqueException {
-		final String title = "Title";
-		final byte[] content = "This is an example".getBytes();
-
+	void uploadTest() {
+		final String extension = ".mp4";
+		final long size = 1000L;
+		
+		MultipartFile mockFile = mock(MultipartFile.class);
+		when(mockFile.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
+		
 		ShortFilmUploadData uploadData = new ShortFilmUploadData();
-		MultipartFile exampleFile = new MockMultipartFile("example", "example.mp4", "video/mp4", content);
-		uploadData.setTitle(title);
+		uploadData.setTitle("Title");
 		uploadData.setDescription("Description");
-		uploadData.setFile(exampleFile);
+		uploadData.setFile(mockFile);
 
 		assertDoesNotThrow(() -> {
-			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
-		});
-		
-		Optional<ShortFilm> optionalShortFilm = shortFilmService.getShortFilmByTitle(title);
-		assertTrue(optionalShortFilm.isPresent());
-		ShortFilm shortFilm = optionalShortFilm.get();
-		
-		assertThat(shortFilm.getTitle()).isEqualTo(uploadData.getTitle());
-		assertThat(shortFilm.getDescription()).isEqualTo(uploadData.getDescription());
-		
-		File uploadedFile = new File(shortFilm.getFileUrl());
-		assertThat(uploadedFile).isNotEqualTo(null);
-		
-		Resource diskFile = null;
-		try {
-			diskFile = fileService.load(shortFilm.getFileUrl());
-		} catch (Exception e) {
-			fail("Couldn't load uploaded file!");
-		}
-		
-		try {
-			InputStream inputStream = diskFile.getInputStream();
-			assertThat(inputStream.readAllBytes()).isEqualTo(content);
-			inputStream.close();
-		} catch (Exception e) {
-			fail("Couldn't read the uploaded file!");
-		}
-	}
-	
-	@Test
-	public void uploadInvalidExtensionTest() {
-		final String title = "Title";
-		final byte[] content = "This is an example".getBytes();
+			ShortFilm shortFilm = shortFilmService.upload(uploadData,
+					filmmakerService.getFilmmmakerByName("filmmaker1").get());
 
-		ShortFilmUploadData uploadData = new ShortFilmUploadData();
-		MultipartFile exampleFile = new MockMultipartFile("example", "example.txt", "text/plain", content);
-		uploadData.setTitle(title);
-		uploadData.setDescription("Description");
-		uploadData.setFile(exampleFile);
+			assertThat(shortFilm.getTitle()).isEqualTo(uploadData.getTitle());
+			assertThat(shortFilm.getDescription()).isEqualTo(uploadData.getDescription());
+			assertThat(shortFilm.getFileUrl()).isNotEmpty();
+			assertNotNull(shortFilm.getUploadDate());
 
-		assertThrows(InvalidExtensionException.class, () -> {
-			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+			verify(fileRepository, times(1)).getFileExtension(mockFile);
+			verify(mockFile, only()).getSize();
+			verify(fileRepository, times(1)).saveFile(eq(mockFile), any(Path.class));
+			verifyNoMoreInteractions(fileRepository);
+			verify(shortFilmRepository, only()).save(any(ShortFilm.class));
 		});
+
+		/*
+		 * USE FOR FILESERVICE TEST
+		 * 
+		 * File uploadedFile = new File(shortFilm.getFileUrl());
+		 * assertThat(uploadedFile).isNotEqualTo(null);
+		 * 
+		 * Resource diskFile = null; try { diskFile =
+		 * fileService.load(shortFilm.getFileUrl()); } catch (Exception e) {
+		 * fail("Couldn't load uploaded file!"); }
+		 * 
+		 * try { InputStream inputStream = diskFile.getInputStream();
+		 * assertThat(inputStream.readAllBytes()).isEqualTo(content);
+		 * inputStream.close(); } catch (Exception e) {
+		 * fail("Couldn't read the uploaded file!"); }
+		 */
 	}
 }

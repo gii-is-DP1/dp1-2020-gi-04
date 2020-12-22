@@ -46,10 +46,8 @@ public class FilmmakerService {
 		configuration.setUser(filmmaker);
 		configuration.setByPrivacyRequests(false);
 		configuration = configurationService.saveNotificationConfiguration(configuration);
-
 		filmmaker.setConfiguration(configuration);
-		userService.saveUser(filmmaker);
-
-		return filmmaker;
+		
+		return (Filmmaker) userService.saveUser(filmmaker);
 	}
 }

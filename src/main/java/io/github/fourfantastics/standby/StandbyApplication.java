@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
-import io.github.fourfantastics.standby.service.FileService;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
+import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 
 @SpringBootApplication
@@ -22,14 +22,14 @@ public class StandbyApplication {
 	@Component
 	public class CommandLineAppStartupRunner implements CommandLineRunner {
 		UserService userService;
-		@Autowired
-		FileService fileService;
+		ShortFilmService shortFilmService;
 		NotificationConfigurationService notificationConfigurationService;
 
 		@Autowired
-		public CommandLineAppStartupRunner(UserService userService,
+		public CommandLineAppStartupRunner(UserService userService, ShortFilmService shortFilmService,
 				NotificationConfigurationService notificationConfigurationService) {
 			this.userService = userService;
+			this.shortFilmService = shortFilmService;
 			this.notificationConfigurationService = notificationConfigurationService;
 		}
 
@@ -76,6 +76,8 @@ public class StandbyApplication {
 			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
 			company.setConfiguration(notificationConfiguration);
 			userService.saveUser(company);
+
+			shortFilmService.init();
 		}
 	}
 }

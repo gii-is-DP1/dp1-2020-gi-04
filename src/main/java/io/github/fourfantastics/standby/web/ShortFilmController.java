@@ -24,6 +24,8 @@ import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.model.validator.ShortFilmUploadDataValidator;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
+import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
+import io.github.fourfantastics.standby.service.exceptions.TooBigException;
 
 @Controller
 public class ShortFilmController {
@@ -77,18 +79,14 @@ public class ShortFilmController {
 			res.put("message", "");
 			return res;
 		}
-
-		long gigabyte = 1000L * 1000L * 1000L;
-		if (shortFilmUploadData.getFile().getSize() > gigabyte) {
-			res.put("status", 400);
-			res.put("message", "File limit exceeded, file too large");
-			return res;
-		}
 		
-		ShortFilm shortFilm;
+		ShortFilm shortFilm = null;
 		try {
 			shortFilm = shortFilmService.upload(shortFilmUploadData, (Filmmaker) loggedUser);
-		} catch (Exception e) {
+		} catch (InvalidExtensionException | TooBigException e) {
+			res.put("status", 400);
+			res.put("message", e.getMessage());
+		} catch (RuntimeException e) {
 			res.put("status", 500);
 			res.put("message", e.getMessage());
 			return res;

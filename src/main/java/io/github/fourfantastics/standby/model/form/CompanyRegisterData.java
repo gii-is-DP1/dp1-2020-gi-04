@@ -31,7 +31,7 @@ public class CompanyRegisterData {
 	// NotNull
 	String confirmPassword;
 
-	public Company companyFromForm() {
+	public Company toCompany() {
 		Company company = new Company();
 		company.setBusinessPhone(getBusinessPhone());
 		company.setCompanyName(getCompanyName());
