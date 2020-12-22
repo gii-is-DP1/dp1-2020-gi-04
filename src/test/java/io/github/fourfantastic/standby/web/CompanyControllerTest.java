@@ -21,8 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.configuration.SecurityConfiguration;
 import io.github.fourfantastics.standby.model.validator.CompanyRegisterDataValidator;
+import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.service.CompanyService;
-import io.github.fourfantastics.standby.service.FileService;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.web.CompanyController;
@@ -35,7 +35,7 @@ public class CompanyControllerTest {
 	private CompanyController companyController;
 
 	@MockBean 
-	FileService fileService;
+	private FileRepository fileRepository;
 	
 	@MockBean
 	private CompanyService companyService;

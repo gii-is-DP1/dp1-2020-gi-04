@@ -30,16 +30,16 @@ public class UserService {
 		return userRepository.findById(id);
 	}
 
+	public Optional<User> getUserByName(String name) {
+		return userRepository.findByName(name);
+	}
+	
 	public User saveUser(User user) {
 		return userRepository.save(user);
 	}
 	
-	public Optional<User> findByName(String name) {
-		 return userRepository.findByName(name);
-	}
-	
 	public User register(User user) throws NotUniqueException {
-		Optional<User> foundUser = findByName(user.getName());
+		Optional<User> foundUser = getUserByName(user.getName());
 		if (foundUser.isPresent()) {
 			throw new NotUniqueException("Username already registered!", Utils.hashSet("name"));
 		}
@@ -49,9 +49,7 @@ public class UserService {
 	}
 
 	private void encryptPassword(User user) {
-		String password = user.getPassword();
-		String encryptedPassword = getEncoder().encode(password);
-		user.setPassword(encryptedPassword);
+		user.setPassword(getEncoder().encode(user.getPassword()));
 	}
 
 	public User authenticate(String name, String password) throws NotFoundException, DataMismatchException {

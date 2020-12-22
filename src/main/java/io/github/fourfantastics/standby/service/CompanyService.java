@@ -15,14 +15,14 @@ import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
 public class CompanyService {
 	CompanyRepository companyRepository;
 	UserService userService;
-	NotificationConfigurationService configurationService;
+	NotificationConfigurationService notificationConfigurationService;
 	
 	@Autowired
 	public CompanyService(CompanyRepository companyRepository, UserService userService,
-			NotificationConfigurationService configurationService) {
+			NotificationConfigurationService notificationConfigurationService) {
 		this.companyRepository = companyRepository;
 		this.userService = userService;
-		this.configurationService = configurationService;
+		this.notificationConfigurationService = notificationConfigurationService;
 	}
 
 	public Optional<Company> getCompanyById(Long id) {
@@ -39,7 +39,7 @@ public class CompanyService {
 
 	public Company registerCompany(CompanyRegisterData companyRegisterData)
 			throws NotUniqueException {
-		Company company = companyRegisterData.companyFromForm();
+		Company company = companyRegisterData.toCompany();
 		company = (Company) userService.register(company);
 
 		NotificationConfiguration configuration = new NotificationConfiguration();
@@ -47,10 +47,9 @@ public class CompanyService {
 		configuration.setByComments(false);
 		configuration.setByRatings(false);
 		configuration.setBySubscriptions(false);
-		configuration = configurationService.saveNotificationConfiguration(configuration);
-
+		configuration = notificationConfigurationService.saveNotificationConfiguration(configuration);
 		company.setConfiguration(configuration);
-		userService.saveUser(company);
-		return company;
+		
+		return (Company) userService.saveUser(company);
 	}
 }
