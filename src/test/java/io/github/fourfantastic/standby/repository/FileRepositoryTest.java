@@ -118,10 +118,7 @@ public class FileRepositoryTest {
 		assertTrue(Files.isReadable(filePath));
 		assertTrue(Files.isWritable(filePath));
 		assertDoesNotThrow(() -> {
-			File savedFile = filePath.toFile();
-			FileInputStream inputStream = new FileInputStream(savedFile);
-			assertThat(inputStream.readAllBytes()).isEqualTo(content);
-			inputStream.close();
+			assertThat(Files.readAllBytes(filePath)).isEqualTo(content);
 		});
 	}
 	
@@ -147,7 +144,7 @@ public class FileRepositoryTest {
 		final Path filePath = root.resolve(fileName);
 		
 		assertTrue(Files.notExists(filePath));
-		assertTrue(fileRepository.getFile(filePath).isEmpty());
+		assertFalse(fileRepository.getFile(filePath).isPresent());
 	}
 	
 	@AfterAll
