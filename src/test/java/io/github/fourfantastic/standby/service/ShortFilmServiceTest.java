@@ -3,6 +3,7 @@ package io.github.fourfantastic.standby.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
@@ -31,6 +32,7 @@ import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
+import io.github.fourfantastics.standby.service.exceptions.TooBigException;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = StandbyApplication.class)
@@ -60,8 +62,8 @@ public class ShortFilmServiceTest {
 		filmmaker1.setCountry("Spain");
 		filmmaker1.setFullname("Filmmaker Díaz García");
 		filmmaker1.setPhone("675987432");
+		
 		when(filmmakerService.getFilmmmakerByName("filmmaker1")).thenReturn(Optional.of(filmmaker1));
-		when(fileRepository.saveFile(any(MultipartFile.class), any(Path.class))).thenReturn(true);
 		when(shortFilmRepository.save(any(ShortFilm.class))).then(AdditionalAnswers.returnsFirstArg());
 	}
 
@@ -69,11 +71,12 @@ public class ShortFilmServiceTest {
 	void uploadTest() {
 		final String extension = ".mp4";
 		final long size = 1000L;
-		
+
 		MultipartFile mockFile = mock(MultipartFile.class);
 		when(mockFile.getSize()).thenReturn(size);
 		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
-		
+		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
+
 		ShortFilmUploadData uploadData = new ShortFilmUploadData();
 		uploadData.setTitle("Title");
 		uploadData.setDescription("Description");
@@ -94,21 +97,65 @@ public class ShortFilmServiceTest {
 			verifyNoMoreInteractions(fileRepository);
 			verify(shortFilmRepository, only()).save(any(ShortFilm.class));
 		});
+	}
 
-		/*
-		 * USE FOR FILESERVICE TEST
-		 * 
-		 * File uploadedFile = new File(shortFilm.getFileUrl());
-		 * assertThat(uploadedFile).isNotEqualTo(null);
-		 * 
-		 * Resource diskFile = null; try { diskFile =
-		 * fileService.load(shortFilm.getFileUrl()); } catch (Exception e) {
-		 * fail("Couldn't load uploaded file!"); }
-		 * 
-		 * try { InputStream inputStream = diskFile.getInputStream();
-		 * assertThat(inputStream.readAllBytes()).isEqualTo(content);
-		 * inputStream.close(); } catch (Exception e) {
-		 * fail("Couldn't read the uploaded file!"); }
-		 */
+	@Test
+	void uploadInvalidExtensionTest() {
+		final String extension = ".txt";
+		final long size = 1000L;
+
+		MultipartFile mockFile = mock(MultipartFile.class);
+		when(mockFile.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
+
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		uploadData.setTitle("Title");
+		uploadData.setDescription("Description");
+		uploadData.setFile(mockFile);
+
+		assertThrows(InvalidExtensionException.class, () -> {
+			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+		});
+	}
+	
+	@Test
+	void uploadTooBigTest() {
+		final String extension = ".mp4";
+		final long size = 1000L * 1000L * 1000L + 1L;
+
+		MultipartFile mockFile = mock(MultipartFile.class);
+		when(mockFile.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
+
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		uploadData.setTitle("Title");
+		uploadData.setDescription("Description");
+		uploadData.setFile(mockFile);
+
+		assertThrows(TooBigException.class, () -> {
+			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+		});
+	}
+	
+	@Test
+	void uploadRuntimeExceptionTest() {
+		final String extension = ".mp4";
+		final long size = 1000L;
+
+		MultipartFile mockFile = mock(MultipartFile.class);
+		when(mockFile.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(false);
+		
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		uploadData.setTitle("Title");
+		uploadData.setDescription("Description");
+		uploadData.setFile(mockFile);
+
+		assertThrows(RuntimeException.class, () -> {
+			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+		});
 	}
 }
