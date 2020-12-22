@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.Filmmaker;
@@ -27,7 +26,6 @@ import io.github.fourfantastics.standby.service.NotificationConfigurationService
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = StandbyApplication.class)
 public class FilmmakerServiceTest {
 	FilmmakerService filmmakerService;
