@@ -20,6 +20,7 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.model.validator.ShortFilmUploadDataValidator;
 import io.github.fourfantastics.standby.service.ShortFilmService;
@@ -96,4 +97,25 @@ public class ShortFilmController {
 		res.put("url", String.format("/shortfilm/%d/edit", shortFilm.getId()));
 		return res;
 	}
+	
+	/*
+	
+	@GetMapping("/upload/editShortfilm")
+	public String getEditShortfilmView(HttpSession session, Map<String, Object> model) {
+		User loggedUser = userService.getLoggedUser(session).orElse(null);
+		if (loggedUser == null) {
+			return "redirect:/login";
+		}
+		
+		if (loggedUser.getType() != UserType.Filmmaker) {
+			return "redirect:/";
+		}
+		
+		Filmmaker filmmaker = (Filmmaker) loggedUser;
+		
+		ShortFilm shortFilm=shortFilmService.upload(shortFilmUploadData, uploader);
+		model.put("shortFilmUploadData", ShortFilmUploadData.fromShortFilm(shortFilm));
+		return "editShortFilm";
+	}
+	*/
 }
