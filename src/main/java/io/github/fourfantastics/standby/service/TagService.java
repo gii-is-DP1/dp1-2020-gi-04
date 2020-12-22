@@ -10,9 +10,13 @@ import io.github.fourfantastics.standby.repository.TagRepository;
 
 @Service
 public class TagService {
-	@Autowired
 	TagRepository tagRepository;
 
+	@Autowired
+	public TagService(TagRepository tagRepository) {
+		this.tagRepository = tagRepository;
+	}
+	
 	public Optional<Tag> getTagById(Long id) {
 		return tagRepository.findById(id);
 	}

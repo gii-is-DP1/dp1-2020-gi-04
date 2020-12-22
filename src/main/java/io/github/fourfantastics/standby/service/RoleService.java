@@ -13,8 +13,12 @@ import io.github.fourfantastics.standby.repository.RoleRepository;
 
 @Service
 public class RoleService {
-	@Autowired
 	RoleRepository roleRepository;
+
+	@Autowired
+	public RoleService(RoleRepository roleRepository) {
+		this.roleRepository = roleRepository;
+	}
 
 	public Optional<Role> getRoleById(Long id) {
 		return roleRepository.findById(id);

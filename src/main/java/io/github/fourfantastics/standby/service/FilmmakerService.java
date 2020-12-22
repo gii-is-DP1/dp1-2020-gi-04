@@ -9,20 +9,21 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
-import io.github.fourfantastics.standby.utils.Utils;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
 @Service
 public class FilmmakerService {
-	@Autowired
 	FilmmakerRepository filmmakerRepository;
-
-	@Autowired
 	NotificationConfigurationService configurationService;
-
-	@Autowired
 	UserService userService;
+	
+	@Autowired
+	public FilmmakerService(FilmmakerRepository filmmakerRepository,
+			NotificationConfigurationService configurationService, UserService userService) {
+		this.filmmakerRepository = filmmakerRepository;
+		this.configurationService = configurationService;
+		this.userService = userService;
+	}
 
 	public Optional<Filmmaker> getFilmmmakerById(Long id) {
 		return filmmakerRepository.findById(id);
@@ -37,11 +38,7 @@ public class FilmmakerService {
 	}
 
 	public Filmmaker registerFilmmaker(FilmmakerRegisterData filmmakerRegisterData)
-			throws DataMismatchException, NotUniqueException {
-		if (!filmmakerRegisterData.getPassword().equals(filmmakerRegisterData.getConfirmPassword())) {
-			throw new DataMismatchException("The password doesn't match", Utils.hashSet("password"));
-		}
-
+			throws NotUniqueException {
 		Filmmaker filmmaker = filmmakerRegisterData.toFilmmaker();
 		filmmaker = (Filmmaker) userService.register(filmmaker);
 
@@ -49,10 +46,8 @@ public class FilmmakerService {
 		configuration.setUser(filmmaker);
 		configuration.setByPrivacyRequests(false);
 		configuration = configurationService.saveNotificationConfiguration(configuration);
-
 		filmmaker.setConfiguration(configuration);
-		userService.saveUser(filmmaker);
-
-		return filmmaker;
+		
+		return (Filmmaker) userService.saveUser(filmmaker);
 	}
 }

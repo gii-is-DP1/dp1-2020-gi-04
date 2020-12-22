@@ -16,8 +16,7 @@ import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.UserService;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
 @Controller
 public class FilmmakerController {
@@ -55,9 +54,6 @@ public class FilmmakerController {
 		try {
 			Filmmaker filmmaker = filmmakerService.registerFilmmaker(filmmakerRegisterData);
 			userService.logIn(session, filmmaker);
-		} catch (DataMismatchException e) {
-			result.rejectValue("confirmPassword", "", e.getMessage());
-			return "registerFilmmaker";
 		} catch (NotUniqueException e) {
 			result.rejectValue("name", "", e.getMessage());
 			return "registerFilmmaker";

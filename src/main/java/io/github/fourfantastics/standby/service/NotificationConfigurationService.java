@@ -10,8 +10,12 @@ import io.github.fourfantastics.standby.repository.NotificationConfigurationRepo
 
 @Service
 public class NotificationConfigurationService {
-	@Autowired
 	NotificationConfigurationRepository notificationConfigurationRepository;
+
+	@Autowired
+	public NotificationConfigurationService(NotificationConfigurationRepository notificationConfigurationRepository) {
+		this.notificationConfigurationRepository = notificationConfigurationRepository;
+	}
 
 	public Optional<NotificationConfiguration> getNotificationConfigurationById(Long id) {
 		return notificationConfigurationRepository.findById(id);

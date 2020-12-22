@@ -7,25 +7,25 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class FilmmakerConfigurationData {
-	//NotNull
+	// NotNull
 	String fullname;
 
-	//NotNull
+	// NotNull
 	String country;
 
-	//NotNull
+	// NotNull
 	String city;
 
-	//NotNull
+	// NotNull
 	String phone;
 
-	//NotNull
+	// NotNull
 	Boolean byComments;
 
-	//NotNull
+	// NotNull
 	Boolean byRatings;
 
-	//NotNull
+	// NotNull
 	Boolean bySubscriptions;
 
 	public static FilmmakerConfigurationData fromFilmmaker(Filmmaker filmmaker) {

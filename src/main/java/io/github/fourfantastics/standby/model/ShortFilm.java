@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.Length;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,7 +35,8 @@ public class ShortFilm {
 
 	@NotNull
 	@NotEmpty
-	String name;
+	@Length(max = 128)
+	String title;
 
 	@NotEmpty
 	String fileUrl;
@@ -42,7 +45,6 @@ public class ShortFilm {
 	Long uploadDate;
 
 	@NotNull
-	@NotEmpty
 	String description;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
