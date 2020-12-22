@@ -16,6 +16,15 @@ public class ShortFilmUploadData {
 	
 	MultipartFile file;
 	
+	public static ShortFilmUploadData fromShortFilm(ShortFilm shortFilm) {
+		ShortFilmUploadData shortFilmUploadData = new ShortFilmUploadData();
+		shortFilmUploadData.setTitle("Title");
+		shortFilmUploadData.setDescription("Description");
+		//shortFilmUploadData.setFile(file);
+		return shortFilmUploadData;
+		
+	}
+	
 	public ShortFilm toShortFilm() {
 		ShortFilm film = new ShortFilm();
 		film.setTitle(this.getTitle());
