@@ -2,6 +2,7 @@ package io.github.fourfantastic.standby.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -169,7 +170,7 @@ public class UserServiceTest {
 		
 		assertDoesNotThrow(() -> {
 			Optional<User> optionalUser = userService.getLoggedUser(session);
-			assertTrue(optionalUser.isEmpty());
+			assertFalse(optionalUser.isPresent());
 		});
 		
 		verify(session, only()).getAttribute("userId");
@@ -187,7 +188,7 @@ public class UserServiceTest {
 		
 		assertDoesNotThrow(() -> {
 			Optional<User> optionalUser = userService.getLoggedUser(session);
-			assertTrue(optionalUser.isEmpty());
+			assertFalse(optionalUser.isPresent());
 		});
 		
 		verify(session, times(2)).getAttribute("userId");
