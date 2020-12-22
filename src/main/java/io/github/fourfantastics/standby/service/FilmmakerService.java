@@ -9,7 +9,7 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
 @Service
 public class FilmmakerService {

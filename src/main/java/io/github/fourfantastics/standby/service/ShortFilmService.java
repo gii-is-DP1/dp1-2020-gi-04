@@ -18,8 +18,8 @@ import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
-import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
-import io.github.fourfantastics.standby.service.exceptions.TooBigException;
+import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
+import io.github.fourfantastics.standby.service.exception.TooBigException;
 import io.github.fourfantastics.standby.utils.Utils;
 
 @Service

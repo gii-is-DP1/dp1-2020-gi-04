@@ -31,8 +31,8 @@ import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
-import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
-import io.github.fourfantastics.standby.service.exceptions.TooBigException;
+import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
+import io.github.fourfantastics.standby.service.exception.TooBigException;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = StandbyApplication.class)

@@ -30,9 +30,9 @@ import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.repository.UserRepository;
 import io.github.fourfantastics.standby.service.UserService;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotFoundException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.DataMismatchException;
+import io.github.fourfantastics.standby.service.exception.NotFoundException;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = StandbyApplication.class)

@@ -24,8 +24,8 @@ import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.model.validator.ShortFilmUploadDataValidator;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
-import io.github.fourfantastics.standby.service.exceptions.InvalidExtensionException;
-import io.github.fourfantastics.standby.service.exceptions.TooBigException;
+import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
+import io.github.fourfantastics.standby.service.exception.TooBigException;
 
 @Controller
 public class ShortFilmController {

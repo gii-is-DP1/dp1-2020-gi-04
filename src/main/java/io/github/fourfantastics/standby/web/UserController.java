@@ -25,8 +25,8 @@ import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotFoundException;
+import io.github.fourfantastics.standby.service.exception.DataMismatchException;
+import io.github.fourfantastics.standby.service.exception.NotFoundException;
 
 @Controller
 public class UserController {

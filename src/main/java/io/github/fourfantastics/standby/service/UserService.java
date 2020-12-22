@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.UserRepository;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotFoundException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.DataMismatchException;
+import io.github.fourfantastics.standby.service.exception.NotFoundException;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 import io.github.fourfantastics.standby.utils.Utils;
 
 @Service
