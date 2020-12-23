@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import io.github.fourfantastics.standby.model.Company;
@@ -19,6 +20,7 @@ public class StandbyApplication {
 		SpringApplication.run(StandbyApplication.class, args);
 	}
 
+	@Profile("!test")
 	@Component
 	public class CommandLineAppStartupRunner implements CommandLineRunner {
 		UserService userService;

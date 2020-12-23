@@ -3,6 +3,7 @@ package io.github.fourfantastic.standby.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.User;
@@ -35,7 +36,7 @@ import io.github.fourfantastics.standby.service.exception.DataMismatchException;
 import io.github.fourfantastics.standby.service.exception.NotFoundException;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
 public class UserServiceTest {
 	UserService userService;
@@ -170,7 +171,7 @@ public class UserServiceTest {
 		
 		assertDoesNotThrow(() -> {
 			Optional<User> optionalUser = userService.getLoggedUser(session);
-			assertTrue(optionalUser.isEmpty());
+			assertFalse(optionalUser.isPresent());
 		});
 		
 		verify(session, only()).getAttribute("userId");
@@ -188,7 +189,7 @@ public class UserServiceTest {
 		
 		assertDoesNotThrow(() -> {
 			Optional<User> optionalUser = userService.getLoggedUser(session);
-			assertTrue(optionalUser.isEmpty());
+			assertFalse(optionalUser.isPresent());
 		});
 		
 		verify(session, times(2)).getAttribute("userId");

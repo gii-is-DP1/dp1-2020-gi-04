@@ -19,17 +19,14 @@ public class ShortFilmUploadDataValidator implements Validator {
 		ShortFilmUploadData shortFilmUploadData = (ShortFilmUploadData) target;
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "", "Title cannot be empty!");
+		ValidationUtils.rejectIfEmpty(errors, "file", "", "You must choose a file to upload!");
 		
-		if (shortFilmUploadData.getTitle().length() > 128) {
+		if (shortFilmUploadData.getTitle() != null && shortFilmUploadData.getTitle().length() > 128) {
 			errors.rejectValue("title", "", "Title cannot be longer than 128 characters");
 		}
 		
-		if (shortFilmUploadData.getDescription().length() > 10000) {
+		if (shortFilmUploadData.getTitle() != null && shortFilmUploadData.getDescription().length() > 10000) {
 			errors.rejectValue("description", "", "Description cannot be longer than 10000 characters");
-		}
-		
-		if (shortFilmUploadData.getFile().isEmpty()) {
-			errors.rejectValue("file", "", "You must choose a file to upload!");
 		}
 	}
 }

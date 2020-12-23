@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,13 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.repository.FileRepository;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
 public class FileRepositoryTest {
 	final static Path root = Paths.get("testFolder");
@@ -118,10 +116,7 @@ public class FileRepositoryTest {
 		assertTrue(Files.isReadable(filePath));
 		assertTrue(Files.isWritable(filePath));
 		assertDoesNotThrow(() -> {
-			File savedFile = filePath.toFile();
-			FileInputStream inputStream = new FileInputStream(savedFile);
-			assertThat(inputStream.readAllBytes()).isEqualTo(content);
-			inputStream.close();
+			assertThat(Files.readAllBytes(filePath)).isEqualTo(content);
 		});
 	}
 	
@@ -147,7 +142,7 @@ public class FileRepositoryTest {
 		final Path filePath = root.resolve(fileName);
 		
 		assertTrue(Files.notExists(filePath));
-		assertTrue(fileRepository.getFile(filePath).isEmpty());
+		assertFalse(fileRepository.getFile(filePath).isPresent());
 	}
 	
 	@AfterAll

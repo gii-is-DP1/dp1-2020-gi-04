@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.Company;
@@ -27,7 +27,7 @@ import io.github.fourfantastics.standby.service.NotificationConfigurationService
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
 public class CompanyServiceTest {
 	CompanyService companyService;

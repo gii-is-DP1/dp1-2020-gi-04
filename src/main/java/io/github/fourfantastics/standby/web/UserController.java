@@ -76,9 +76,6 @@ public class UserController {
 		} catch (DataMismatchException e) {
 			result.rejectValue("password", "", e.getMessage());
 			return "login.html";
-		} catch (Exception e) {
-			result.reject("", "We weren't able to log you in, something went wrong!");
-			return "login.html";
 		}
 
 		userService.logIn(session, loggedUser);
