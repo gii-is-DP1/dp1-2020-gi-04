@@ -7,12 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.validation.BindException;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.form.Credentials;
 import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
 
+@ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
 public class CredentialsValidatorTest {
 	@Autowired

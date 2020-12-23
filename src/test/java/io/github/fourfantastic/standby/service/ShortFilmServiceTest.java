@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.StandbyApplication;
@@ -34,6 +35,7 @@ import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exception.TooBigException;
 
+@ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
 public class ShortFilmServiceTest {
 	ShortFilmService shortFilmService;

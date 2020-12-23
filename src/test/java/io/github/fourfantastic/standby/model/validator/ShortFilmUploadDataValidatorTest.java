@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.validation.BindException;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.model.validator.ShortFilmUploadDataValidator;
 
+@ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
 public class ShortFilmUploadDataValidatorTest {
 	@Autowired
