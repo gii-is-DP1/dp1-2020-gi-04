@@ -19,11 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.repository.FileRepository;
 
+@ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
 public class FileRepositoryTest {
 	final static Path root = Paths.get("testFolder");
