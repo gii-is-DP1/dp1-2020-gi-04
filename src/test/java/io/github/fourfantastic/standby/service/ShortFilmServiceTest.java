@@ -53,7 +53,7 @@ public class ShortFilmServiceTest {
 	public void setup() throws InvalidExtensionException, RuntimeException {
 		shortFilmService = new ShortFilmService(shortFilmRepository, fileRepository);
 
-		Filmmaker filmmaker1 = new Filmmaker();
+		final Filmmaker filmmaker1 = new Filmmaker();
 		filmmaker1.setId(1L);
 		filmmaker1.setName("filmmaker1");
 		filmmaker1.setPassword("password");
@@ -72,8 +72,8 @@ public class ShortFilmServiceTest {
 	void uploadTest() {
 		final String extension = ".mp4";
 		final long size = 1000L;
-
-		MultipartFile mockFile = mock(MultipartFile.class);
+		final MultipartFile mockFile = mock(MultipartFile.class);
+		
 		when(mockFile.getSize()).thenReturn(size);
 		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
 		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
@@ -104,8 +104,8 @@ public class ShortFilmServiceTest {
 	void uploadInvalidExtensionTest() {
 		final String extension = ".txt";
 		final long size = 1000L;
-
-		MultipartFile mockFile = mock(MultipartFile.class);
+		final MultipartFile mockFile = mock(MultipartFile.class);
+		
 		when(mockFile.getSize()).thenReturn(size);
 		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
 		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
@@ -124,8 +124,8 @@ public class ShortFilmServiceTest {
 	void uploadTooBigTest() {
 		final String extension = ".mp4";
 		final long size = 1000L * 1000L * 1000L + 1L;
-
-		MultipartFile mockFile = mock(MultipartFile.class);
+		final MultipartFile mockFile = mock(MultipartFile.class);
+		
 		when(mockFile.getSize()).thenReturn(size);
 		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
 		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
@@ -144,8 +144,8 @@ public class ShortFilmServiceTest {
 	void uploadRuntimeExceptionTest() {
 		final String extension = ".mp4";
 		final long size = 1000L;
-
-		MultipartFile mockFile = mock(MultipartFile.class);
+		final MultipartFile mockFile = mock(MultipartFile.class);
+		
 		when(mockFile.getSize()).thenReturn(size);
 		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
 		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(false);

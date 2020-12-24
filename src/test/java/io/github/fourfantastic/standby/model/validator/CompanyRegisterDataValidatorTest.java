@@ -28,7 +28,7 @@ public class CompanyRegisterDataValidatorTest {
 	
 	@Test
 	public void validateTest() {
-		CompanyRegisterData mockData = new CompanyRegisterData();
+		final CompanyRegisterData mockData = new CompanyRegisterData();
 		mockData.setName("company1");
 		mockData.setEmail("business@company.com");
 		mockData.setPassword("password");
@@ -48,7 +48,7 @@ public class CompanyRegisterDataValidatorTest {
 	
 	@Test
 	public void validatePasswordMismatchTest() {
-		CompanyRegisterData mockData = new CompanyRegisterData();
+		final CompanyRegisterData mockData = new CompanyRegisterData();
 		mockData.setName("company1");
 		mockData.setEmail("business@company.com");
 		mockData.setPassword("password");
@@ -77,7 +77,7 @@ public class CompanyRegisterDataValidatorTest {
 	
 	@Test
 	public void validateMissingDataTest() {
-		CompanyRegisterData mockData = new CompanyRegisterData();
+		final CompanyRegisterData mockData = new CompanyRegisterData();
 		mockData.setName("");
 		mockData.setEmail("business@company.com");
 		mockData.setPassword("password");

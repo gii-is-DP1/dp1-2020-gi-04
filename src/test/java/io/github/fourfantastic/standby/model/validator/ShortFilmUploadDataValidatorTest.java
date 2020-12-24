@@ -32,7 +32,7 @@ public class ShortFilmUploadDataValidatorTest {
 	
 	@Test
 	public void validateTest() {
-		ShortFilmUploadData mockData = new ShortFilmUploadData();
+		final ShortFilmUploadData mockData = new ShortFilmUploadData();
 		mockData.setTitle("Example title for a ShortFilm");
 		mockData.setDescription("Example description for a ShortFilm");
 		mockData.setFile(new MockMultipartFile("example", "example.mp4", "video/mp4", "example".getBytes()));
@@ -47,7 +47,7 @@ public class ShortFilmUploadDataValidatorTest {
 	
 	@Test
 	public void validateMissingDataTest() {
-		ShortFilmUploadData mockData = new ShortFilmUploadData();
+		final ShortFilmUploadData mockData = new ShortFilmUploadData();
 		mockData.setTitle("       ");
 		mockData.setDescription("Example description for a ShortFilm");
 		
@@ -65,7 +65,7 @@ public class ShortFilmUploadDataValidatorTest {
 	
 	@Test
 	public void validateTooLongDataTest() {
-		ShortFilmUploadData mockData = new ShortFilmUploadData();
+		final ShortFilmUploadData mockData = new ShortFilmUploadData();
 		mockData.setTitle(Stream.generate(() -> "a").limit(129).collect(Collectors.joining()));
 		mockData.setDescription(Stream.generate(() -> "a").limit(10001).collect(Collectors.joining()));
 		mockData.setFile(new MockMultipartFile("example", "example.mp4", "video/mp4", "example".getBytes()));

@@ -53,13 +53,9 @@ public class CompanyController {
 
 		try {
 			Company company = companyService.registerCompany(companyRegisterData);
-			System.out.println(company);
 			userService.logIn(session, company);
 		} catch (NotUniqueException e) {
 			result.rejectValue("name", "", e.getMessage());
-			return "registerCompany";
-		} catch (Exception e) {
-			result.reject("", e.getMessage());
 			return "registerCompany";
 		}
 		return "redirect:/";

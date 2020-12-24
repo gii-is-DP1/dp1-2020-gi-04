@@ -53,7 +53,7 @@ public class CompanyServiceTest {
 	
 	@Test
 	void registerCompanyTest() {
-		CompanyRegisterData companyRegisterData = new CompanyRegisterData();
+		final CompanyRegisterData companyRegisterData = new CompanyRegisterData();
 		companyRegisterData.setName("company1");
 		companyRegisterData.setEmail("company1@gmail.com");
 		companyRegisterData.setPassword("password");

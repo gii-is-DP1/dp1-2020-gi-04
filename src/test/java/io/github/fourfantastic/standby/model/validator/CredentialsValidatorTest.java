@@ -28,7 +28,7 @@ public class CredentialsValidatorTest {
 	
 	@Test
 	public void validateTest() {
-		Credentials mockData = new Credentials();
+		final Credentials mockData = new Credentials();
 		mockData.setName("company1");
 		mockData.setPassword("password");
 		
@@ -42,7 +42,7 @@ public class CredentialsValidatorTest {
 	
 	@Test
 	public void validateMissingDataTest() {
-		Credentials mockData = new Credentials();
+		final Credentials mockData = new Credentials();
 		mockData.setName("company1");
 		
 		BindException errors = new BindException(mockData, "CompanyRegisterData");
