@@ -28,7 +28,7 @@ public class FilmmakerConfigurationDataValidatorTest {
 	
 	@Test
 	public void validateTest() {
-		FilmmakerConfigurationData mockData = new FilmmakerConfigurationData();
+		final FilmmakerConfigurationData mockData = new FilmmakerConfigurationData();
 		mockData.setCity("Seville");
 		mockData.setCountry("Spain");
 		mockData.setFullname("Filmmaker Díaz García");
@@ -47,7 +47,7 @@ public class FilmmakerConfigurationDataValidatorTest {
 	
 	@Test
 	public void validateMissingDataTest() {
-		FilmmakerConfigurationData mockData = new FilmmakerConfigurationData();
+		final FilmmakerConfigurationData mockData = new FilmmakerConfigurationData();
 		mockData.setCity("Seville");
 		mockData.setCountry("Spain");
 		mockData.setFullname("              ");
