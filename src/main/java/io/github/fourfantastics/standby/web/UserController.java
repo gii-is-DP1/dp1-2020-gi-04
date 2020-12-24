@@ -1,7 +1,6 @@
 package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -52,7 +51,7 @@ public class UserController {
 		}
 
 		model.put("credentials", new Credentials());
-		return "login.html";
+		return "login";
 	}
 
 	@PostMapping("/login")
@@ -64,7 +63,7 @@ public class UserController {
 
 		credentialsValidator.validate(credentials, result);
 		if (result.hasErrors()) {
-			return "login.html";
+			return "login";
 		}
 
 		User loggedUser;
@@ -72,10 +71,10 @@ public class UserController {
 			loggedUser = userService.authenticate(credentials.getName(), credentials.getPassword());
 		} catch (NotFoundException e) {
 			result.rejectValue("name", "", e.getMessage());
-			return "login.html";
+			return "login";
 		} catch (DataMismatchException e) {
 			result.rejectValue("password", "", e.getMessage());
-			return "login.html";
+			return "login";
 		}
 
 		userService.logIn(session, loggedUser);
@@ -90,12 +89,11 @@ public class UserController {
 
 	@GetMapping("/account")
 	public String getManageAccount(HttpSession session, Map<String, Object> model) {
-		Optional<User> optionalUser = userService.getLoggedUser(session);
-		if (!optionalUser.isPresent()) {
+		User user = userService.getLoggedUser(session).orElse(null);
+		if (user == null) {
 			return "redirect:/login";
 		}
 
-		User user = optionalUser.get();
 		if (user.getType() == UserType.Filmmaker) {
 			Filmmaker filmmaker = (Filmmaker) user;
 			model.put("filmmakerConfigurationData", FilmmakerConfigurationData.fromFilmmaker(filmmaker));
@@ -111,11 +109,11 @@ public class UserController {
 	public String doManageAccount(HttpSession session,
 			@ModelAttribute("filmmakerConfigurationData") FilmmakerConfigurationData filmmakerConfigurationData,
 			BindingResult result, Map<String, Object> model) {
-		Optional<User> optionalUser = userService.getLoggedUser(session);
-		if (!optionalUser.isPresent()) {
+		User user = userService.getLoggedUser(session).orElse(null);
+		if (user == null) {
 			return "redirect:/login";
 		}
-		User user = optionalUser.get();
+		
 		if (user.getType() != UserType.Filmmaker) {
 			return "redirect:/manageAccount";
 		}
@@ -137,12 +135,11 @@ public class UserController {
 	public String doManageAccount(HttpSession session,
 			@ModelAttribute("companyConfigurationData") CompanyConfigurationData companyConfigurationData,
 			BindingResult result, Map<String, Object> model) {
-		Optional<User> optionalUser = userService.getLoggedUser(session);
-		if (!optionalUser.isPresent()) {
+		User user = userService.getLoggedUser(session).orElse(null);
+		if (user == null) {
 			return "redirect:/login";
 		}
 
-		User user = optionalUser.get();
 		if (user.getType() != UserType.Company) {
 			return "redirect:/manageAccount";
 		}

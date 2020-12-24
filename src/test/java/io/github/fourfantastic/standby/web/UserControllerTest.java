@@ -58,20 +58,24 @@ public class UserControllerTest {
 		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/login")).andExpect(status().isOk())
-					.andExpect(model().attribute("credentials", new Credentials()))
-					.andExpect(view().name("login.html"));
+			mockMvc.perform(get("/login"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("credentials", new Credentials()))
+			.andExpect(view().name("login"));
 		});
+		
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 		verifyNoInteractions(notificationConfigurationService);
 	}
 
 	@Test
-	void loginUserIsPresentViewTest() {
+	void loginViewUserIsPresentTest() {
 		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/login")).andExpect(status().isFound()).andExpect(redirectedUrl("/"));
+			mockMvc.perform(get("/login"))
+			.andExpect(status().isFound())
+			.andExpect(redirectedUrl("/"));
 		});
 		
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));
@@ -103,6 +107,47 @@ public class UserControllerTest {
 	}
 	
 	@Test
+	void logInUserIsPresentTest() {
+		final Credentials mockCredentials = new Credentials();
+		mockCredentials.setName("filmmaker");
+		mockCredentials.setPassword("wrong password");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/login").with(csrf())
+					.param("name", mockCredentials.getName())
+					.param("password", mockCredentials.getPassword()))
+			.andExpect(status().isFound())
+			.andExpect(redirectedUrl("/"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verifyNoInteractions(notificationConfigurationService);
+	}
+	
+	@Test
+	void logInMissingDataTest() {
+		final Credentials mockCredentials = new Credentials();
+		mockCredentials.setName("");
+		mockCredentials.setPassword("wrong password");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/login").with(csrf())
+					.param("name", mockCredentials.getName())
+					.param("password", mockCredentials.getPassword()))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasErrors("credentials"))
+			.andExpect(view().name("login"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verifyNoInteractions(notificationConfigurationService);
+	}
+	
+	@Test
 	void logInUserNotFoundTest() throws NotFoundException, DataMismatchException {
 		final Credentials mockCredentials = new Credentials();
 		mockCredentials.setName("inventedName");
@@ -115,8 +160,9 @@ public class UserControllerTest {
 			mockMvc.perform(post("/login").with(csrf())
 					.param("name", mockCredentials.getName())
 					.param("password", mockCredentials.getPassword()))
-					.andExpect(status().isOk())
-					.andExpect(view().name("login.html"));
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("credentials", "name"))
+			.andExpect(view().name("login"));
 		});
 		
 		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
@@ -138,53 +184,14 @@ public class UserControllerTest {
 			mockMvc.perform(post("/login").with(csrf())
 					.param("name", mockCredentials.getName())
 					.param("password", mockCredentials.getPassword()))
-					.andExpect(status().isOk())
-					.andExpect(view().name("login.html"));
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("credentials", "password"))
+			.andExpect(view().name("login"));
 		});
 		
 		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
 		verify(userService, times(1)).authenticate(mockCredentials.getName(), mockCredentials.getPassword());
 		verifyNoMoreInteractions(userService);
-		verifyNoInteractions(notificationConfigurationService);
-	}
-	
-	@Test
-	void logInValidatorMissingData() {
-		final Credentials mockCredentials = new Credentials();
-		mockCredentials.setName("");
-		mockCredentials.setPassword("wrong password");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/login").with(csrf())
-					.param("name", mockCredentials.getName())
-					.param("password", mockCredentials.getPassword()))
-				.andExpect(status().isOk())
-				.andExpect(view().name("login.html"));
-		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
-		verifyNoInteractions(notificationConfigurationService);
-	}	
-	
-	@Test
-	void logInUserIsPresent() {
-		final Credentials mockCredentials = new Credentials();
-		mockCredentials.setName("filmmaker");
-		mockCredentials.setPassword("wrong password");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
-		
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/login").with(csrf())
-					.param("name", mockCredentials.getName())
-					.param("password", mockCredentials.getPassword()))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/"));
-		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 		verifyNoInteractions(notificationConfigurationService);
 	}
 }
