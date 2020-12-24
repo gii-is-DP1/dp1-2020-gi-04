@@ -22,7 +22,6 @@ import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
-import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.DataMismatchException;
 import io.github.fourfantastics.standby.service.exception.NotFoundException;
@@ -31,9 +30,6 @@ import io.github.fourfantastics.standby.service.exception.NotFoundException;
 public class UserController {
 	@Autowired
 	UserService userService;
-
-	@Autowired
-	NotificationConfigurationService notificationConfigurationService;
 	
 	@Autowired
 	CredentialsValidator credentialsValidator;
