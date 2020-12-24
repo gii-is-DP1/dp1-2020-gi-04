@@ -59,7 +59,7 @@ public class UserControllerTest {
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/login")).andExpect(status().isOk())
 					.andExpect(model().attribute("credentials", new Credentials()))
-					.andExpect(view().name("login.html"));
+					.andExpect(view().name("login"));
 		});
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 	}
@@ -107,7 +107,7 @@ public class UserControllerTest {
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/login").with(csrf()).param("name", mockCredentials.getName()).param("password",
-					mockCredentials.getPassword())).andExpect(status().isOk()).andExpect(view().name("login.html"));
+					mockCredentials.getPassword())).andExpect(status().isOk()).andExpect(view().name("login"));
 		});
 
 		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
@@ -127,7 +127,7 @@ public class UserControllerTest {
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/login").with(csrf()).param("name", mockCredentials.getName()).param("password",
-					mockCredentials.getPassword())).andExpect(status().isOk()).andExpect(view().name("login.html"));
+					mockCredentials.getPassword())).andExpect(status().isOk()).andExpect(view().name("login"));
 		});
 
 		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
@@ -145,7 +145,7 @@ public class UserControllerTest {
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/login").with(csrf()).param("name", mockCredentials.getName()).param("password",
-					mockCredentials.getPassword())).andExpect(status().isOk()).andExpect(view().name("login.html"));
+					mockCredentials.getPassword())).andExpect(status().isOk()).andExpect(view().name("login"));
 		});
 
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));
