@@ -28,7 +28,7 @@ public class CompanyConfigurationDataValidatorTest {
 	
 	@Test
 	public void validateTest() {
-		CompanyConfigurationData mockData = new CompanyConfigurationData();
+		final CompanyConfigurationData mockData = new CompanyConfigurationData();
 		mockData.setBusinessPhone("612345678");
 		mockData.setCompanyName("Company Studios");
 		mockData.setOfficeAddress("Calle Manzana 4");
@@ -45,7 +45,7 @@ public class CompanyConfigurationDataValidatorTest {
 	
 	@Test
 	public void validateMissingDataTest() {
-		CompanyConfigurationData mockData = new CompanyConfigurationData();
+		final CompanyConfigurationData mockData = new CompanyConfigurationData();
 		mockData.setBusinessPhone("");
 		mockData.setCompanyName("Company Studios");
 		mockData.setOfficeAddress("");

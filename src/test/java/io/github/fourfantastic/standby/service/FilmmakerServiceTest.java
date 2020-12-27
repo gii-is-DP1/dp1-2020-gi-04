@@ -53,7 +53,7 @@ public class FilmmakerServiceTest {
 	
 	@Test
 	void registerFilmmakerTest() {
-		FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
+		final FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
 		filmmakerRegisterData.setName("filmmaker1");
 		filmmakerRegisterData.setEmail("filmmaker1@gmail.com");
 		filmmakerRegisterData.setPassword("password");

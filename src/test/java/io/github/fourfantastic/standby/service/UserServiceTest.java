@@ -55,16 +55,16 @@ public class UserServiceTest {
 	void registerUserTest() {	
 		final String name = "Táctico";
 		final String rawPassword = "weak password";
+		final User mockUser = new User();
+		mockUser.setName(name);
+		mockUser.setEmail("Davinci@gmail.com");
+		mockUser.setPassword(rawPassword);
+		mockUser.setType(UserType.Filmmaker);
 		
 		when(userRepository.findByName(name)).thenReturn(Optional.empty());
 		
-		User user = new User();
-		user.setName(name);
-		user.setEmail("Davinci@gmail.com");
-		user.setPassword(rawPassword);
-		user.setType(UserType.Filmmaker);
 		assertDoesNotThrow(() -> {
-			User registeredUser = userService.register(user);
+			User registeredUser = userService.register(mockUser);
 			assertTrue(userService.getEncoder().matches(rawPassword, registeredUser.getPassword()));
 			assertNotNull(registeredUser.getCreationDate());
 			
@@ -78,16 +78,16 @@ public class UserServiceTest {
 	void registerUserDuplicatedTest() {
 		final String name = "Táctico";
 		final String rawPassword = "weak password";
+		final User mockUser = new User();
+		mockUser.setName(name);
+		mockUser.setEmail("Davinci@gmail.com");
+		mockUser.setPassword(rawPassword);
+		mockUser.setType(UserType.Filmmaker);
 		
 		when(userRepository.findByName(name)).thenReturn(Optional.of(new User()));
 		
-		User user = new User();
-		user.setName(name);
-		user.setEmail("Davinci@gmail.com");
-		user.setPassword(rawPassword);
-		user.setType(UserType.Filmmaker);
 		assertThrows(NotUniqueException.class, () -> {
-			userService.register(user);
+			userService.register(mockUser);
 		});
 	}
 
@@ -95,10 +95,10 @@ public class UserServiceTest {
 	void authenticateTest() {
 		final String name = "filmmaker1";
 		final String password = "password";
-		
-		User mockUser = new User();
+		final User mockUser = new User();
 		mockUser.setName(name);
 		mockUser.setPassword(userService.getEncoder().encode(password));
+		
 		when(userRepository.findByName("filmmaker1")).thenReturn(Optional.of(mockUser));
 		
 		assertDoesNotThrow(() -> {
@@ -111,10 +111,10 @@ public class UserServiceTest {
 	void authenticateNotFoundTest() {
 		final String name = "filmmaker";
 		final String password = "password";
-		
-		User mockUser = new User();
+		final User mockUser = new User();
 		mockUser.setName(name);
 		mockUser.setPassword(userService.getEncoder().encode(password));
+		
 		when(userRepository.findByName("filmmaker1")).thenReturn(Optional.of(mockUser));
 		
 		assertThrows(NotFoundException.class, () -> {
@@ -126,10 +126,10 @@ public class UserServiceTest {
 	void authenticateDataMismatchTest() {
 		final String name = "filmmaker1";
 		final String password = "password";
-		
-		User mockUser = new User();
+		final User mockUser = new User();
 		mockUser.setName(name);
 		mockUser.setPassword(password);
+		
 		when(userRepository.findByName("filmmaker1")).thenReturn(Optional.of(mockUser));
 		
 		assertThrows(DataMismatchException.class, () -> {
@@ -139,8 +139,7 @@ public class UserServiceTest {
 	
 	@Test
 	void getLoggedUserTest() {
-		HttpSession session = mock(HttpSession.class);
-		
+		final HttpSession session = mock(HttpSession.class);
 		final Long id = 1L;
 		final String name = "filmmaker1";
 		
@@ -165,7 +164,7 @@ public class UserServiceTest {
 	
 	@Test
 	void getLoggedUserEmptyTest() {
-		HttpSession session = mock(HttpSession.class);
+		final HttpSession session = mock(HttpSession.class);
 		
 		when(session.getAttribute("userId")).thenReturn(null);
 		
@@ -180,8 +179,7 @@ public class UserServiceTest {
 	
 	@Test
 	void getLoggedUserInvalidSessionTest() {
-		HttpSession session = mock(HttpSession.class);
-		
+		final HttpSession session = mock(HttpSession.class);
 		final Long id = 1L;
 		
 		when(session.getAttribute("userId")).thenReturn(id);

@@ -28,7 +28,7 @@ public class FilmmakerRegisterDataValidatorTest {
 	
 	@Test
 	public void validateTest() {
-		FilmmakerRegisterData mockData = new FilmmakerRegisterData();
+		final FilmmakerRegisterData mockData = new FilmmakerRegisterData();
 		mockData.setName("filmmaker1");
 		mockData.setEmail("filmmaker@gmail.com");
 		mockData.setPassword("password");
@@ -48,7 +48,7 @@ public class FilmmakerRegisterDataValidatorTest {
 	
 	@Test
 	public void validatePasswordMismatchTest() {
-		FilmmakerRegisterData mockData = new FilmmakerRegisterData();
+		final FilmmakerRegisterData mockData = new FilmmakerRegisterData();
 		mockData.setName("filmmaker1");
 		mockData.setEmail("filmmaker@gmail.com");
 		mockData.setPassword("password");
@@ -77,7 +77,7 @@ public class FilmmakerRegisterDataValidatorTest {
 	
 	@Test
 	public void validateMissingDataTest() {
-		FilmmakerRegisterData mockData = new FilmmakerRegisterData();
+		final FilmmakerRegisterData mockData = new FilmmakerRegisterData();
 		mockData.setName("        ");
 		mockData.setEmail("filmmaker@gmail.com");
 		mockData.setPassword("         ");

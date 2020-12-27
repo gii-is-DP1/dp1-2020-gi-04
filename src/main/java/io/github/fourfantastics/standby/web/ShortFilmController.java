@@ -49,7 +49,6 @@ public class ShortFilmController {
 		}
 
 		model.put("shortFilmUploadData", new ShortFilmUploadData());
-
 		return "uploadShortFilm";
 	}
 
@@ -57,19 +56,22 @@ public class ShortFilmController {
 	public @ResponseBody Object uploadShortFilm(HttpSession session,
 			@ModelAttribute("shortFilmUploadData") ShortFilmUploadData shortFilmUploadData, BindingResult result,
 			Map<String, Object> model) {
+		Map<String, Object> res = new HashMap<String, Object>();
+		
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
-			return "redirect:/login";
+			res.put("status", 302);
+			res.put("url", "/login");
+			return res;
 		}
 		
 		if (loggedUser.getType() != UserType.Filmmaker) {
-			return "redirect:/";
+			res.put("status", 302);
+			res.put("url", "/");
+			return res;
 		}
 
-		Map<String, Object> res = new HashMap<String, Object>();
 		Map<String, String> fieldErrors = new HashMap<String, String>();
-		res.put("fieldErrors", fieldErrors);
-		
 		shortFilmUploadDataValidator.validate(shortFilmUploadData, result);
 		if (result.hasErrors()) {
 			for (FieldError fieldError : result.getFieldErrors()) {
@@ -77,6 +79,7 @@ public class ShortFilmController {
 			}
 			res.put("status", 400);
 			res.put("message", "");
+			res.put("fieldErrors", fieldErrors);
 			return res;
 		}
 		
@@ -86,9 +89,12 @@ public class ShortFilmController {
 		} catch (InvalidExtensionException | TooBigException e) {
 			res.put("status", 400);
 			res.put("message", e.getMessage());
+			res.put("fieldErrors", fieldErrors);
+			return res;
 		} catch (RuntimeException e) {
 			res.put("status", 500);
 			res.put("message", e.getMessage());
+			res.put("fieldErrors", fieldErrors);
 			return res;
 		}
 		

@@ -57,9 +57,6 @@ public class FilmmakerController {
 		} catch (NotUniqueException e) {
 			result.rejectValue("name", "", e.getMessage());
 			return "registerFilmmaker";
-		} catch (Exception e) {
-			result.reject("", e.getMessage());
-			return "registerFilmmaker";
 		}
 		return "redirect:/";
 	}
