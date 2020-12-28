@@ -1211,7 +1211,7 @@
 											"top": 398,
 											"width": 83.8525390625,
 											"height": 13,
-											"text": "photo[0..1]",
+											"text": "photoUrl[0..1]",
 											"horizontalAlignment": 0
 										}
 									],
@@ -7723,7 +7723,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF1g+BBl7QwEVE="
 							},
-							"name": "title"
+							"name": "title",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -8085,9 +8086,7 @@
 							"_parent": {
 								"$ref": "AAAAAAF1g+BejrSEfUM="
 							},
-							"name": "photo",
-							"type": "",
-							"multiplicity": "0..1"
+							"name": "photoUrl[0..1]"
 						}
 					]
 				},
