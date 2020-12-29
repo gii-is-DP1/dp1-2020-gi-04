@@ -16,13 +16,14 @@ public class CompanyService {
 	CompanyRepository companyRepository;
 	UserService userService;
 	NotificationConfigurationService notificationConfigurationService;
-	
+
 	@Autowired
 	public CompanyService(CompanyRepository companyRepository, UserService userService,
 			NotificationConfigurationService notificationConfigurationService) {
 		this.companyRepository = companyRepository;
 		this.userService = userService;
 		this.notificationConfigurationService = notificationConfigurationService;
+
 	}
 
 	public Optional<Company> getCompanyById(Long id) {
@@ -32,13 +33,12 @@ public class CompanyService {
 	public Optional<Company> getCompanyByName(String name) {
 		return companyRepository.findByName(name);
 	}
-	
-	public void saveNotification(Company company) {
+
+	public void saveCompany(Company company) {
 		companyRepository.save(company);
 	}
 
-	public Company registerCompany(CompanyRegisterData companyRegisterData)
-			throws NotUniqueException {
+	public Company registerCompany(CompanyRegisterData companyRegisterData) throws NotUniqueException {
 		Company company = companyRegisterData.toCompany();
 		company = (Company) userService.register(company);
 
@@ -49,7 +49,7 @@ public class CompanyService {
 		configuration.setBySubscriptions(false);
 		configuration = notificationConfigurationService.saveNotificationConfiguration(configuration);
 		company.setConfiguration(configuration);
-		
+
 		return (Company) userService.saveUser(company);
 	}
 }

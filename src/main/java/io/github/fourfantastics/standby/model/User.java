@@ -64,7 +64,7 @@ public class User {
 	String photoUrl;
 
 	@ManyToMany(fetch = FetchType.EAGER) // subscribe List<Filmmaker> filmmakers;
-	Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();
+	Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();//Filmmakers a los que estoy subscrito
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER) // receive
 	Set<Notification> notifications = new HashSet<Notification>();

@@ -16,10 +16,12 @@ public class FilmmakerService {
 	FilmmakerRepository filmmakerRepository;
 	NotificationConfigurationService configurationService;
 	UserService userService;
-	
+
+
 	@Autowired
 	public FilmmakerService(FilmmakerRepository filmmakerRepository,
-			NotificationConfigurationService configurationService, UserService userService) {
+			NotificationConfigurationService configurationService, UserService userService,
+			PrivacyRequestService privacyRequestService) {
 		this.filmmakerRepository = filmmakerRepository;
 		this.configurationService = configurationService;
 		this.userService = userService;
@@ -28,7 +30,7 @@ public class FilmmakerService {
 	public Optional<Filmmaker> getFilmmmakerById(Long id) {
 		return filmmakerRepository.findById(id);
 	}
-	
+
 	public Optional<Filmmaker> getFilmmmakerByName(String name) {
 		return filmmakerRepository.findByName(name);
 	}
@@ -37,8 +39,7 @@ public class FilmmakerService {
 		filmmakerRepository.save(filmmaker);
 	}
 
-	public Filmmaker registerFilmmaker(FilmmakerRegisterData filmmakerRegisterData)
-			throws NotUniqueException {
+	public Filmmaker registerFilmmaker(FilmmakerRegisterData filmmakerRegisterData) throws NotUniqueException {
 		Filmmaker filmmaker = filmmakerRegisterData.toFilmmaker();
 		filmmaker = (Filmmaker) userService.register(filmmaker);
 
@@ -47,7 +48,9 @@ public class FilmmakerService {
 		configuration.setByPrivacyRequests(false);
 		configuration = configurationService.saveNotificationConfiguration(configuration);
 		filmmaker.setConfiguration(configuration);
-		
+
 		return (Filmmaker) userService.saveUser(filmmaker);
 	}
+
+
 }
