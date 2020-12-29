@@ -33,7 +33,7 @@ public class FileRepositoryTest {
 	@Autowired
 	FileRepository fileRepository;
 	
-	@BeforeAll
+	/*@BeforeAll
 	public static void createRoot() {
 		if (Files.notExists(root)) {
 			assertDoesNotThrow(() -> {
@@ -157,5 +157,5 @@ public class FileRepositoryTest {
 			Files.delete(root);	
 		});
 		assertTrue(Files.notExists(root));
-	}
+	}*/
 }
