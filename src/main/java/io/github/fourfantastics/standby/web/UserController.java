@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -19,9 +20,11 @@ import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
 import io.github.fourfantastics.standby.model.form.Credentials;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
+import io.github.fourfantastics.standby.model.form.FilmmakerProfileData;
 import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
+import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.DataMismatchException;
 import io.github.fourfantastics.standby.service.exception.NotFoundException;
@@ -30,13 +33,16 @@ import io.github.fourfantastics.standby.service.exception.NotFoundException;
 public class UserController {
 	@Autowired
 	UserService userService;
-	
+
+	@Autowired
+	ShortFilmService shortFilmService;
+
 	@Autowired
 	CredentialsValidator credentialsValidator;
-	
+
 	@Autowired
 	FilmmakerConfigurationDataValidator filmmakerConfigurationDataValidator;
-	
+
 	@Autowired
 	CompanyConfigurationDataValidator companyConfigurationDataValidator;
 
@@ -109,7 +115,7 @@ public class UserController {
 		if (user == null) {
 			return "redirect:/login";
 		}
-		
+
 		if (user.getType() != UserType.Filmmaker) {
 			return "redirect:/manageAccount";
 		}
@@ -151,20 +157,23 @@ public class UserController {
 		model.put("companyData", companyConfigurationData);
 		return "manageCompanyAccount";
 	}
-	
-	@GetMapping("/profile")
-	public String getProfile(HttpSession session, Map<String, Object> model) {
-		User user = userService.getLoggedUser(session).orElse(null);
-		if (user == null) {
-			return "redirect:/login";
-		}
 
-		if (user.getType() == UserType.Filmmaker) {
-			Filmmaker filmmaker = (Filmmaker) user;
-			return "filmmakerProfile";
-		} else {
-			Company company = (Company) user;
-			return "companyProfile";
+	@GetMapping("/profile/filmmaker/{filmmmakerID}")
+	public String getProfileView(HttpSession session, @PathVariable("filmmmakerID") Long filmmmakerID,
+			Map<String, Object> model) {
+		if (!userService.getUserById(filmmmakerID).isPresent()) {
+			return "redirect:/";
 		}
+		User user = userService.getUserById(filmmmakerID).get();
+		if (user.getType() != UserType.Filmmaker) {
+			return "redirect:/profile/comapany/{companyID}";
+		}
+		Filmmaker filmmaker = (Filmmaker) user;
+		FilmmakerProfileData filmmakerProfileData = FilmmakerProfileData.fromFilmmaker(filmmaker);
+		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmbyFilmmaker(filmmaker));
+
+		model.put("filmmakerProfileData", filmmakerProfileData);
+
+		return "filmmakerProfile";
 	}
 }

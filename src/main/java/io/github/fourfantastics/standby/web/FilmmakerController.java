@@ -1,6 +1,7 @@
 package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -9,9 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
@@ -60,4 +64,6 @@ public class FilmmakerController {
 		}
 		return "redirect:/";
 	}
+	
+
 }
