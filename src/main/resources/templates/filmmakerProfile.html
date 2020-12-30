@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html data-th-replace="~{@{/fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+    <title>Filmmaker profile- Standby</title>
+    <section>
+        <h3>My profile</h3>
+        <hr />
+    	<div class="container">
+    	<div class="row">
+  			<div class="col">
+    		<span class="left" >
+    			Filmmaker
+    		</span>
+    		</div>
+   		 	<div class="col">
+    			<span class="float-right" >
+    				<button  data-th-replace="~{@{/fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
+    			</span>
+    		</div>
+ 		</div></div>
+ 		<br>
+ 		<div class="container">
+  	 	<div class="row">
+  			<div class="col-12 col-md-3">
+				<img src="/static/user-icon.svg" class="img-fluid" alt="Responsive image">
+    		</div>
+    		<div class="col-12 col-md-4">
+    		
+    		</div>
+    		<div class="col-12 col-md-5 float-right">
+				<div class="row">
+				<div class="col-12 col-md-3">
+					30
+    				ShortFilms
+    			</div>
+    			<div class="col-12 col-md-3 ">
+					30000
+    				Followers
+    			</div>
+    			<div class="col-12 col-md-3 ">
+					5674
+    				Followed
+    			</div>
+				</div>
+    		</div>
+   		 	
+    		</div></div>
+ 		
+ 		<br>
+ 		<div class="container">
+  	 	<div class="row">
+  			<div class="col-12 col-md-3">
+				<button type="submit" class="btn btn-primary btn-block">Request contact info</button>
+    		</div>
+   		 	<div class="col-12 col-md-9">
+    			<button type="submit" class="btn btn-primary btn-block">+ Follow</button>
+    		</div>
+ 		</div>
+ 		</div>
+  	 	
+    </section>
+</html>
