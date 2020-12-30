@@ -38,10 +38,6 @@ public class ShortFilmService {
 		this.fileRepository = fileRepository;
 	}
 	
-	public boolean init() {
-		return fileRepository.createDirectory(fileRoot);
-	}
-	
 	public Optional<ShortFilm> getShortFilmById(Long id) {
 		return shortFilmRepository.findById(id);
 	}
@@ -82,6 +78,8 @@ public class ShortFilmService {
 		}
 		
 		String filePath = UUID.randomUUID().toString() + extension;
+		
+		fileRepository.createDirectory(fileRoot);
 		if (!fileRepository.saveFile(file, fileRoot.resolve(filePath))) {
 			throw new RuntimeException("Couldn't upload file");
 		}

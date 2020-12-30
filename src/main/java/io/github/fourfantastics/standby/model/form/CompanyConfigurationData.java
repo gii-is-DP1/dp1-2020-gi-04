@@ -1,5 +1,7 @@
 package io.github.fourfantastics.standby.model.form;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import io.github.fourfantastics.standby.model.Company;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,8 @@ public class CompanyConfigurationData {
 
 	// NotNull
 	Boolean byPrivacyRequests;
+	
+	MultipartFile newPhoto;
 
 	public static CompanyConfigurationData fromCompany(Company company) {
 		CompanyConfigurationData companyConfigurationData = new CompanyConfigurationData();
