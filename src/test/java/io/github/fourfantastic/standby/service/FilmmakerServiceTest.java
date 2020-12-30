@@ -24,6 +24,7 @@ import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
+import io.github.fourfantastics.standby.service.PrivacyRequestService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
@@ -40,10 +41,13 @@ public class FilmmakerServiceTest {
 	
 	@Mock
 	NotificationConfigurationService notificationConfigurationService;
+	
+	@Mock
+	PrivacyRequestService privacyRequestService;
 
 	@BeforeEach
 	public void setup() throws NotUniqueException {
-		filmmakerService = new FilmmakerService(filmmakerRepository, notificationConfigurationService, userService);
+		filmmakerService = new FilmmakerService(filmmakerRepository, notificationConfigurationService, userService,privacyRequestService);
 		
 		when(userService.register(any(Filmmaker.class))).then(AdditionalAnswers.returnsFirstArg());
 		when(notificationConfigurationService.saveNotificationConfiguration(any(NotificationConfiguration.class)))
