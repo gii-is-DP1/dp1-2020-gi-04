@@ -30,6 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
 import io.github.fourfantastics.standby.service.NotificationService;
 import io.github.fourfantastics.standby.service.UserService;
@@ -48,9 +49,12 @@ public class UserServiceTest {
 	@Mock
 	NotificationService notificationService;
 	
+	@Mock
+	FileRepository fileRepository;
+	
 	@BeforeEach
 	public void setup() {
-		userService = new UserService(userRepository,notificationService);
+		userService = new UserService(userRepository, notificationService, fileRepository);
 		
 		when(userRepository.save(any(User.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 	}

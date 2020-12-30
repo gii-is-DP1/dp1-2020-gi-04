@@ -13,14 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.github.fourfantastics.standby.model.Company;
-import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
-import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
 import io.github.fourfantastics.standby.model.form.Credentials;
-import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
-import io.github.fourfantastics.standby.model.form.FilmmakerProfileData;
 import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
@@ -97,83 +92,38 @@ public class UserController {
 		}
 
 		if (user.getType() == UserType.Filmmaker) {
-			Filmmaker filmmaker = (Filmmaker) user;
-			model.put("filmmakerConfigurationData", FilmmakerConfigurationData.fromFilmmaker(filmmaker));
-			return "manageFilmmakerAccount";
+			return "redirect:/account/filmmaker";
 		} else {
-			Company company = (Company) user;
-			model.put("companyConfigurationData", CompanyConfigurationData.fromCompany(company));
-			return "manageCompanyAccount";
+			return "redirect:/account/company";
 		}
 	}
-
-	@PostMapping("/account/filmmaker")
-	public String doManageAccount(HttpSession session,
-			@ModelAttribute("filmmakerConfigurationData") FilmmakerConfigurationData filmmakerConfigurationData,
-			BindingResult result, Map<String, Object> model) {
+	
+	@GetMapping("/profile")
+	public String getProfileView(HttpSession session) {
 		User user = userService.getLoggedUser(session).orElse(null);
 		if (user == null) {
 			return "redirect:/login";
 		}
-
-		if (user.getType() != UserType.Filmmaker) {
-			return "redirect:/manageAccount";
-		}
-
-		filmmakerConfigurationDataValidator.validate(filmmakerConfigurationData, result);
-		if (result.hasErrors()) {
-			return "manageFilmmakerAccount";
-		}
-
-		Filmmaker userFilmmaker = (Filmmaker) user;
-		filmmakerConfigurationData.copyToFilmmaker(userFilmmaker);
-		userFilmmaker = (Filmmaker) userService.saveUser(userFilmmaker);
-
-		model.put("filmmakerData", filmmakerConfigurationData);
-		return "manageFilmmakerAccount";
+		
+		return String.format("redirect:/profile/%d", user.getId());
 	}
 
-	@PostMapping("/account/company")
-	public String doManageAccount(HttpSession session,
-			@ModelAttribute("companyConfigurationData") CompanyConfigurationData companyConfigurationData,
-			BindingResult result, Map<String, Object> model) {
-		User user = userService.getLoggedUser(session).orElse(null);
-		if (user == null) {
-			return "redirect:/login";
-		}
-
-		if (user.getType() != UserType.Company) {
-			return "redirect:/manageAccount";
-		}
-
-		companyConfigurationDataValidator.validate(companyConfigurationData, result);
-		if (result.hasErrors()) {
-			return "manageCompanyAccount";
-		}
-		Company userCompany = (Company) user;
-		companyConfigurationData.copyToCompany(userCompany);
-		userCompany = (Company) userService.saveUser(userCompany);
-
-		model.put("companyData", companyConfigurationData);
-		return "manageCompanyAccount";
-	}
-
-	@GetMapping("/profile/filmmaker/{filmmmakerID}")
-	public String getProfileView(HttpSession session, @PathVariable("filmmmakerID") Long filmmmakerID,
-			Map<String, Object> model) {
-		if (!userService.getUserById(filmmmakerID).isPresent()) {
+	@GetMapping("/profile/{userID}")
+	public String getProfileView(@PathVariable("userID") Long userID) {
+		if (userID == null) {
+			System.out.println("sosioooooooo q la id es nula mi vidaaa");
 			return "redirect:/";
 		}
-		User user = userService.getUserById(filmmmakerID).get();
-		if (user.getType() != UserType.Filmmaker) {
-			return "redirect:/profile/comapany/{companyID}";
+		
+		User user = userService.getUserById(userID).orElse(null);
+		if (user == null) {
+			return "redirect:/";
 		}
-		Filmmaker filmmaker = (Filmmaker) user;
-		FilmmakerProfileData filmmakerProfileData = FilmmakerProfileData.fromFilmmaker(filmmaker);
-		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmbyFilmmaker(filmmaker));
 
-		model.put("filmmakerProfileData", filmmakerProfileData);
-
-		return "filmmakerProfile";
+		if (user.getType() == UserType.Filmmaker) {
+			return String.format("redirect:/profile/filmmaker/%d", userID);
+		} else {
+			return String.format("redirect:/profile/company/%d", userID);
+		}
 	}
 }
