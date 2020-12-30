@@ -11,7 +11,7 @@
                     <div class="input-group col col-12 col-md-auto">
                         <input type="text" size="40" class="form-control" placeholder="Search short films, filmmakers..." />
                         <div class="input-group-append">
-                            <button data-th-replace="~{@{/fragments/button} :: imgBtn(classes='btn-light border-input', src=@{/static/search-icon.svg})}"></button>
+                            <button data-th-replace="~{@{fragments/button} :: imgBtn(classes='btn-light border-input', src=@{static/search-icon.svg})}"></button>
                         </div>
                     </div>
                 </div>
@@ -19,9 +19,9 @@
         </ul>
 
         <ul class="nav mt-4 mt-md-0 justify-content-between" style="height: 40px">
-            <button data-th-replace="~{@{/fragments/button} :: imgBtn(src=@{/static/upload-icon.svg}, href=@{/upload})}"></button>
-            <button data-th-replace="~{@{/fragments/button} :: imgBtn(src=@{/static/notification-icon.svg})}"></button>
-            <button data-th-replace="~{@{/fragments/button} :: imgBtn(src=@{/static/user-icon.svg}, href=@{/profile})}"></button>
+            <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{static/upload-icon.svg}, href=@{/upload})}"></button>
+            <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{static/notification-icon.svg})}"></button>
+            <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{static/user-icon.svg}, href=@{/profile})}"></button>
         </ul>
     </div>
 </nav>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-th-replace="~{@{/fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+<html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
     <title>Manage account - Standby</title>
     <section>
         <h3>Manage my account</h3>
@@ -8,19 +8,19 @@
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
                  <form data-th-action="@{/account/company}" method="POST" data-th-object="${companyConfigurationData}">
-                    <div data-th-replace="~{@{/fragments/form/errors}}"></div>
+                    <div data-th-replace="~{@{fragments/form/errors}}"></div>
                     <label class="form-text text-muted">Personal information</label>
-                    <input data-th-replace="~{@{/fragments/form/input}(name='companyName', label='Company name', placeholder='Acme Inc.', required='true')}">
+                    <input data-th-replace="~{@{fragments/form/input}(name='companyName', label='Company name', placeholder='Acme Inc.', required='true')}">
                     <div class="form-row">
                         <div class="col-12 col-md-6">
-                            <input data-th-replace="~{@{/fragments/form/input}(name='taxIDNumber', label='Tax ID number', placeholder='123-45-1234567', required='true')}">
+                            <input data-th-replace="~{@{fragments/form/input}(name='taxIDNumber', label='Tax ID number', placeholder='123-45-1234567', required='true')}">
                         </div>
                         <div class="col-12 col-md-6">
-                            <input data-th-replace="~{@{/fragments/form/input}(name='businessPhone', label='Business phone', placeholder='+46 629382239',required='true')}">
+                            <input data-th-replace="~{@{fragments/form/input}(name='businessPhone', label='Business phone', placeholder='+46 629382239',required='true')}">
                         </div>
                     </div>
-                    <input data-th-replace="~{@{/fragments/form/input}(name='officeAddress', label='Office address', placeholder='Pol�gono industrial Los �ngeles 8',required='true')}">
-                     <input data-th-replace="~{@{/fragments/form/switch}(name='byPrivacyRequests', label='Be notified by privacy requests')}">
+                    <input data-th-replace="~{@{fragments/form/input}(name='officeAddress', label='Office address', placeholder='Pol�gono industrial Los �ngeles 8',required='true')}">
+                     <input data-th-replace="~{@{fragments/form/switch}(name='byPrivacyRequests', label='Be notified by privacy requests')}">
                      <hr>
                     <br>
                     <div class="form-group">

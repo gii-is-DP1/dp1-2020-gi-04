@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html
-	data-th-replace="~{@{/fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
 <title>Register as a filmmaker - Standby</title>
 <section>
 	<h3>Register as filmmaker</h3>
@@ -10,31 +10,31 @@
 		<div class="col-12 col-sm-10">
 			<form method="POST" data-th-action="@{/register/filmmaker}"
 				data-th-object="${filmmakerRegisterData}">
-				<div data-th-replace="~{@{/fragments/form/errors}}"></div>
+				<div data-th-replace="~{@{fragments/form/errors}}"></div>
 				<label class="form-text text-muted">Account information</label> 
 				<input 
-				data-th-replace="~{@{/fragments/form/input}(name='name', label='User name', placeholder='username', required='true')}" />
+				data-th-replace="~{@{fragments/form/input}(name='name', label='User name', placeholder='username', required='true')}" />
 				<input
-					data-th-replace="~{@{/fragments/form/input}(name='email', label='Email', type='email', placeholder='example@gmail.com', required='true')}" />
+					data-th-replace="~{@{fragments/form/input}(name='email', label='Email', type='email', placeholder='example@gmail.com', required='true')}" />
 				<input
-					data-th-replace="~{@{/fragments/form/input}(name='password', label='Password', type='password', placeholder='**********', required='true')}" />
+					data-th-replace="~{@{fragments/form/input}(name='password', label='Password', type='password', placeholder='**********', required='true')}" />
 				<input
-					data-th-replace="~{@{/fragments/form/input}(name='confirmPassword', label='Confirm password', type='password', placeholder='**********', required='true')}" />
+					data-th-replace="~{@{fragments/form/input}(name='confirmPassword', label='Confirm password', type='password', placeholder='**********', required='true')}" />
 				<br> <label class="form-text text-muted">Personal
 					information</label> <input
-					data-th-replace="~{@{/fragments/form/input}(name='fullname', label='Full name', placeholder='John doe', required='true')}" />
+					data-th-replace="~{@{fragments/form/input}(name='fullname', label='Full name', placeholder='John doe', required='true')}" />
 				<div class="form-row">
 					<div class="col-12 col-md-6">
 						<input
-							data-th-replace="~{@{/fragments/form/input}(name='country', label='Country', placeholder='Spain', required='false')}" />
+							data-th-replace="~{@{fragments/form/input}(name='country', label='Country', placeholder='Spain', required='false')}" />
 					</div>
 					<div class="col-12 col-md-6">
 						<input
-							data-th-replace="~{@{/fragments/form/input}(name='city', label='City', placeholder='Seville', required='false')}" />
+							data-th-replace="~{@{fragments/form/input}(name='city', label='City', placeholder='Seville', required='false')}" />
 					</div>
 				</div>
 				<input
-					data-th-replace="~{@{/fragments/form/input}(name='phone', label='Phone number', placeholder='555-555-555', required='false')}" />
+					data-th-replace="~{@{fragments/form/input}(name='phone', label='Phone number', placeholder='555-555-555', required='false')}" />
 				<br>
 				<button type="submit" class="btn btn-primary btn-block">Submit</button>
 			</form>
