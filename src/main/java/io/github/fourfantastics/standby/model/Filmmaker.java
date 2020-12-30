@@ -18,7 +18,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString(exclude = { "userSubscriptions", "receivedRequests", "participateAs", "uploadedShortFilms" })
+@ToString(exclude = { "filmmakerSubscribers", "receivedRequests", "participateAs", "uploadedShortFilms" })
 @AllArgsConstructor
 public class Filmmaker extends User {
 	@NotNull
@@ -35,7 +35,7 @@ public class Filmmaker extends User {
 	String phone;
 
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "filmmakersSubscribedTo")
-	Set<User> userSubscriptions = new HashSet<User>();
+	Set<User> filmmakerSubscribers = new HashSet<User>();//My followers
 
 	@OneToMany(fetch = FetchType.EAGER)
 	Set<PrivacyRequest> receivedRequests = new HashSet<PrivacyRequest>();
@@ -45,7 +45,7 @@ public class Filmmaker extends User {
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "uploader")
 	Set<ShortFilm> uploadedShortFilms = new HashSet<ShortFilm>();
-	
+
 	public Filmmaker() {
 		super();
 		setType(UserType.Filmmaker);
