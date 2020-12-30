@@ -667,7 +667,7 @@
 											"top": 452,
 											"width": 211,
 											"height": 13,
-											"text": "name",
+											"text": "title",
 											"horizontalAlignment": 0
 										},
 										{
@@ -1211,7 +1211,7 @@
 											"top": 398,
 											"width": 83.8525390625,
 											"height": 13,
-											"text": "photo[0..1]",
+											"text": "photoUrl[0..1]",
 											"horizontalAlignment": 0
 										}
 									],
@@ -7347,9 +7347,9 @@
 										"$ref": "AAAAAAF2XaoE7Dbc0VA="
 									},
 									"font": "Arial;13;0",
-									"left": 852,
+									"left": 851,
 									"top": 419,
-									"width": 5.05908203125,
+									"width": 6.5,
 									"height": 13,
 									"alpha": -0.6610434380815491,
 									"distance": 22.80350850198276,
@@ -7723,7 +7723,7 @@
 							"_parent": {
 								"$ref": "AAAAAAF1g+BBl7QwEVE="
 							},
-							"name": "name",
+							"name": "title",
 							"type": ""
 						},
 						{
@@ -8086,9 +8086,7 @@
 							"_parent": {
 								"$ref": "AAAAAAF1g+BejrSEfUM="
 							},
-							"name": "photo",
-							"type": "",
-							"multiplicity": "0..1"
+							"name": "photoUrl[0..1]"
 						}
 					]
 				},

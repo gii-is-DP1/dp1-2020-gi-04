@@ -1,93 +1,213 @@
 package io.github.fourfantastic.standby.web;
 
-import static org.mockito.BDDMockito.given;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Optional;
+
+import javax.servlet.http.HttpSession;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import io.github.fourfantastics.standby.StandbyApplication;
-import io.github.fourfantastics.standby.configuration.SecurityConfiguration;
-import io.github.fourfantastics.standby.model.Company;
+import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
-import io.github.fourfantastics.standby.model.validator.CompanyRegisterDataValidator;
 import io.github.fourfantastics.standby.service.CompanyService;
-import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.UserService;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
-import io.github.fourfantastics.standby.web.CompanyController;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
+import io.github.fourfantastics.standby.utils.Utils;
 
-@ContextConfiguration(classes = StandbyApplication.class)
-@WebMvcTest(controllers = CompanyController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class), excludeAutoConfiguration = SecurityConfiguration.class)
+@ActiveProfiles("test")
+@SpringBootTest(classes = StandbyApplication.class)
+@AutoConfigureMockMvc
 public class CompanyControllerTest {
-
-	@SuppressWarnings("unused")
 	@Autowired
-	private CompanyController companyController;
+	MockMvc mockMvc;
 
 	@MockBean
-	private CompanyService companyService;
+	CompanyService companyService;
 
 	@MockBean
-	private UserService userService;
-
-	@MockBean
-	private NotificationConfigurationService notificationConfigurationService;
-
-	@MockBean
-	private CompanyRegisterDataValidator companyRegisterDataValidator;
-
-	@Autowired
-	private MockMvc mockMvc;
-
-	@BeforeEach
-	void setup() throws DataMismatchException, NotUniqueException {
-
-		CompanyRegisterData companyRegisterData = new CompanyRegisterData();
-		companyRegisterData.setBusinessPhone("675849765");
-		companyRegisterData.setCompanyName("Company1 Surname");
-		companyRegisterData.setName("Company1");
-		companyRegisterData.setEmail("company1@gmail.com");
-		companyRegisterData.setOfficeAddress("Calle Manzanita 3");
-		companyRegisterData.setTaxIDNumber("123-78-1234567");
-		companyRegisterData.setPassword("patata");
-		companyRegisterData.setConfirmPassword("patata");
-
-		Company company = this.companyService.registerCompany(companyRegisterData);
-
-		given(this.companyService.registerCompany(companyRegisterData)).willReturn(company);
-	}
-
-	@WithMockUser(value = "spring")
+	UserService userService;
+	
 	@Test
-	void testGetRegisterView() throws Exception {
-		mockMvc.perform(get("/register/company")).andExpect(status().isOk())
-				.andExpect(model().attributeExists("companyRegisterData")).andExpect(view().name("registerCompany"));
+	void registerViewTest() {
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/register/company"))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("companyRegisterData", new CompanyRegisterData()))
+				.andExpect(view().name("registerCompany"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verifyNoInteractions(companyService);
 	}
-
-	@WithMockUser(value = "spring")
+	
 	@Test
-	void testRegisterFilmmaker() throws Exception {
-		mockMvc.perform(post("/register/company").param("type", "Company").param("name", "Company4")
-				.param("email", "company4@gmail.com").param("password", "patataa").param("creationDate", "12/12/2020")
-				.param("photoUrl", "url photo").with(csrf()).param("companyName", "Company4 Studios")
-				.param("taxIDNumber", "123-98-1674567").param("businessPhone", "685493865")
-				.param("officeAddress", "Calle Manzana 1")).andExpect(status().is3xxRedirection());
+	void registerViewUserIsPresentTest() {
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/register/company"))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verifyNoInteractions(companyService);
 	}
-
+	
+	@Test
+	void registerCompanyTest() throws Exception {
+		final CompanyRegisterData mockCompanyRegisterData = new CompanyRegisterData();
+		mockCompanyRegisterData.setName("company1");
+		mockCompanyRegisterData.setEmail("company1@gmail.com");
+		mockCompanyRegisterData.setPassword("password");
+		mockCompanyRegisterData.setConfirmPassword("password");
+		mockCompanyRegisterData.setBusinessPhone("675849765");
+		mockCompanyRegisterData.setCompanyName("Company1");
+		mockCompanyRegisterData.setOfficeAddress("Calle Manzanita 3");
+		mockCompanyRegisterData.setTaxIDNumber("123-78-1234567");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(companyService.registerCompany(mockCompanyRegisterData)).then(x -> ((CompanyRegisterData) x.getArgument(0)).toCompany());
+		
+		mockMvc.perform(post("/register/company").with(csrf())
+				.param("name", mockCompanyRegisterData.getName())
+				.param("email", mockCompanyRegisterData.getEmail())
+				.param("password", mockCompanyRegisterData.getPassword())
+				.param("confirmPassword", mockCompanyRegisterData.getConfirmPassword())
+				.param("businessPhone", mockCompanyRegisterData.getBusinessPhone())
+				.param("companyName", mockCompanyRegisterData.getCompanyName())
+				.param("officeAddress", mockCompanyRegisterData.getOfficeAddress())
+				.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber()))
+		.andExpect(status().isFound())
+		.andExpect(redirectedUrl("/"));
+		
+		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(companyService, only()).registerCompany(mockCompanyRegisterData);
+		verifyNoMoreInteractions(companyService);
+		verify(userService, times(1)).logIn(any(HttpSession.class), eq(mockCompanyRegisterData.toCompany()));
+		verifyNoMoreInteractions(userService);
+	}
+	
+	@Test
+	void registerCompanyUserIsPresentTest() throws NotUniqueException {
+		final CompanyRegisterData mockCompanyRegisterData = new CompanyRegisterData();
+		mockCompanyRegisterData.setName("company1");
+		mockCompanyRegisterData.setEmail("company1@gmail.com");
+		mockCompanyRegisterData.setPassword("password");
+		mockCompanyRegisterData.setConfirmPassword("password");
+		mockCompanyRegisterData.setBusinessPhone("675849765");
+		mockCompanyRegisterData.setCompanyName("Company1");
+		mockCompanyRegisterData.setOfficeAddress("Calle Manzanita 3");
+		mockCompanyRegisterData.setTaxIDNumber("123-78-1234567");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/register/company").with(csrf())
+					.param("name", mockCompanyRegisterData.getName())
+					.param("email", mockCompanyRegisterData.getEmail())
+					.param("password", mockCompanyRegisterData.getPassword())
+					.param("confirmPassword", mockCompanyRegisterData.getConfirmPassword())
+					.param("businessPhone", mockCompanyRegisterData.getBusinessPhone())
+					.param("companyName", mockCompanyRegisterData.getCompanyName())
+					.param("officeAddress", mockCompanyRegisterData.getOfficeAddress())
+					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber()))
+			.andExpect(status().isFound())
+			.andExpect(redirectedUrl("/"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verifyNoInteractions(companyService);
+	}
+	
+	@Test
+	void registerCompanyMissingDataTest() throws NotUniqueException {
+		final CompanyRegisterData mockCompanyRegisterData = new CompanyRegisterData();
+		mockCompanyRegisterData.setName("");
+		mockCompanyRegisterData.setEmail("company1@gmail.com");
+		mockCompanyRegisterData.setPassword("password");
+		mockCompanyRegisterData.setConfirmPassword("password");
+		mockCompanyRegisterData.setBusinessPhone("");
+		mockCompanyRegisterData.setCompanyName("Company1");
+		mockCompanyRegisterData.setTaxIDNumber("123-78-1234567");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/register/company").with(csrf())
+					.param("name", mockCompanyRegisterData.getName())
+					.param("email", mockCompanyRegisterData.getEmail())
+					.param("password", mockCompanyRegisterData.getPassword())
+					.param("confirmPassword", mockCompanyRegisterData.getConfirmPassword())
+					.param("businessPhone", mockCompanyRegisterData.getBusinessPhone())
+					.param("companyName", mockCompanyRegisterData.getCompanyName())
+					.param("officeAddress", mockCompanyRegisterData.getOfficeAddress())
+					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber()))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasErrors("companyRegisterData"))
+			.andExpect(view().name("registerCompany"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verifyNoInteractions(companyService);
+	}
+	
+	@Test
+	void registerCompanyAlreadyUsedNameTest() throws NotUniqueException {
+		final CompanyRegisterData mockCompanyRegisterData = new CompanyRegisterData();
+		mockCompanyRegisterData.setName("company1");
+		mockCompanyRegisterData.setEmail("company1@gmail.com");
+		mockCompanyRegisterData.setPassword("password");
+		mockCompanyRegisterData.setConfirmPassword("password");
+		mockCompanyRegisterData.setBusinessPhone("675849765");
+		mockCompanyRegisterData.setCompanyName("Company1");
+		mockCompanyRegisterData.setOfficeAddress("Calle Manzanita 3");
+		mockCompanyRegisterData.setTaxIDNumber("123-78-1234567");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(companyService.registerCompany(mockCompanyRegisterData)).thenThrow(new NotUniqueException("", Utils.hashSet("name")));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/register/company").with(csrf())
+					.param("name", mockCompanyRegisterData.getName())
+					.param("email", mockCompanyRegisterData.getEmail())
+					.param("password", mockCompanyRegisterData.getPassword())
+					.param("confirmPassword", mockCompanyRegisterData.getConfirmPassword())
+					.param("businessPhone", mockCompanyRegisterData.getBusinessPhone())
+					.param("companyName", mockCompanyRegisterData.getCompanyName())
+					.param("officeAddress", mockCompanyRegisterData.getOfficeAddress())
+					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber()))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeHasFieldErrors("companyRegisterData", "name"))
+			.andExpect(view().name("registerCompany"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(companyService, only()).registerCompany(mockCompanyRegisterData);
+	}
 }

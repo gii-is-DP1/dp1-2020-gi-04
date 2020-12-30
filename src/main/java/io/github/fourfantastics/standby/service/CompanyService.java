@@ -9,37 +9,37 @@ import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
 import io.github.fourfantastics.standby.repository.CompanyRepository;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
-import io.github.fourfantastics.standby.utils.Utils;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
 @Service
 public class CompanyService {
-	@Autowired
 	CompanyRepository companyRepository;
-
-	@Autowired
 	UserService userService;
+	NotificationConfigurationService notificationConfigurationService;
 
 	@Autowired
-	NotificationConfigurationService configurationService;
+	public CompanyService(CompanyRepository companyRepository, UserService userService,
+			NotificationConfigurationService notificationConfigurationService) {
+		this.companyRepository = companyRepository;
+		this.userService = userService;
+		this.notificationConfigurationService = notificationConfigurationService;
+
+	}
 
 	public Optional<Company> getCompanyById(Long id) {
 		return companyRepository.findById(id);
 	}
 
-	public void saveNotification(Company company) {
+	public Optional<Company> getCompanyByName(String name) {
+		return companyRepository.findByName(name);
+	}
+
+	public void saveCompany(Company company) {
 		companyRepository.save(company);
 	}
 
-	public Company registerCompany(CompanyRegisterData companyRegisterData)
-			throws DataMismatchException, NotUniqueException {
-
-		if (!companyRegisterData.getPassword().equals(companyRegisterData.getConfirmPassword())) {
-			throw new DataMismatchException("The password doesn't match", Utils.hashSet("password"));
-		}
-
-		Company company = companyRegisterData.companyFromForm();
+	public Company registerCompany(CompanyRegisterData companyRegisterData) throws NotUniqueException {
+		Company company = companyRegisterData.toCompany();
 		company = (Company) userService.register(company);
 
 		NotificationConfiguration configuration = new NotificationConfiguration();
@@ -47,10 +47,9 @@ public class CompanyService {
 		configuration.setByComments(false);
 		configuration.setByRatings(false);
 		configuration.setBySubscriptions(false);
-		configuration = configurationService.saveNotificationConfiguration(configuration);
-
+		configuration = notificationConfigurationService.saveNotificationConfiguration(configuration);
 		company.setConfiguration(configuration);
-		userService.saveUser(company);
-		return company;
+
+		return (Company) userService.saveUser(company);
 	}
 }

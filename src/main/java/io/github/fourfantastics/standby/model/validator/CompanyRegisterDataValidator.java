@@ -16,6 +16,8 @@ public class CompanyRegisterDataValidator implements Validator {
 
 	@Override
 	public void validate(Object target, Errors errors) {
+		CompanyRegisterData companyRegisterData = (CompanyRegisterData) target;
+		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "", "Name cannot be empty!");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "companyName", "", "Company name cannot be empty!");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "taxIDNumber", "", "Tax ID number cannot be empty!");
@@ -25,5 +27,9 @@ public class CompanyRegisterDataValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "", "Password cannot be empty!");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "",
 				"Password confirmation cannot be empty!");
+		
+		if (!companyRegisterData.getPassword().equals(companyRegisterData.getConfirmPassword())) {
+			errors.rejectValue("confirmPassword", "", "Paswords don't match!");
+		}
 	}
 }

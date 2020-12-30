@@ -10,18 +10,25 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ShortFilmUploadData {
-
 	String title;
 	
 	String description;
 	
 	MultipartFile file;
 	
+	public static ShortFilmUploadData fromShortFilm(ShortFilm shortFilm) {
+		ShortFilmUploadData shortFilmUploadData = new ShortFilmUploadData();
+		shortFilmUploadData.setTitle("Title");
+		shortFilmUploadData.setDescription("Description");
+		//shortFilmUploadData.setFile(file);
+		return shortFilmUploadData;
+		
+	}
+	
 	public ShortFilm toShortFilm() {
 		ShortFilm film = new ShortFilm();
-		film.setName(this.getTitle());
+		film.setTitle(this.getTitle());
 		film.setDescription(this.getDescription());
 		return film;
-		
 	}
 }

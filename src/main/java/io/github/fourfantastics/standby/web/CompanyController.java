@@ -16,8 +16,7 @@ import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
 import io.github.fourfantastics.standby.model.validator.CompanyRegisterDataValidator;
 import io.github.fourfantastics.standby.service.CompanyService;
 import io.github.fourfantastics.standby.service.UserService;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
 @Controller
 public class CompanyController {
@@ -54,16 +53,9 @@ public class CompanyController {
 
 		try {
 			Company company = companyService.registerCompany(companyRegisterData);
-			System.out.println(company);
 			userService.logIn(session, company);
-		} catch (DataMismatchException e) {
-			result.rejectValue("confirmPassword", "", e.getMessage());
-			return "registerCompany";
 		} catch (NotUniqueException e) {
 			result.rejectValue("name", "", e.getMessage());
-			return "registerCompany";
-		} catch (Exception e) {
-			result.reject("", e.getMessage());
 			return "registerCompany";
 		}
 		return "redirect:/";

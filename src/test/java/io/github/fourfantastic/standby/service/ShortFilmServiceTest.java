@@ -1,132 +1,162 @@
 package io.github.fourfantastic.standby.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
+import java.nio.file.Path;
 import java.util.Optional;
-import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.AdditionalAnswers;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
-import io.github.fourfantastics.standby.model.Tag;
-import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
+import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
+import io.github.fourfantastics.standby.repository.FileRepository;
+import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
+import io.github.fourfantastics.standby.service.exception.TooBigException;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
 public class ShortFilmServiceTest {
+	ShortFilmService shortFilmService;
 
-	@Autowired
-	protected ShortFilmService shortFilmService;
-	@Autowired
-	protected FilmmakerService filmmakerService;
+	@Mock
+	ShortFilmRepository shortFilmRepository;
 
-	@Test
-	void getShortFilmByIdTest() throws DataMismatchException, NotUniqueException {
-		FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
-		filmmakerRegisterData.setName("Filmmaker2");
-		filmmakerRegisterData.setFullname("Filmmaker2 Surnam2e");
-		filmmakerRegisterData.setCity("Seville");
-		filmmakerRegisterData.setCountry("Spain");
-		filmmakerRegisterData.setEmail("filmmaker2@gmail.com");
-		filmmakerRegisterData.setPhone("678543877");
-		filmmakerRegisterData.setPassword("patata");
-		filmmakerRegisterData.setConfirmPassword("patata");
-		Filmmaker filmmaker = this.filmmakerService.registerFilmmaker(filmmakerRegisterData);
+	@Mock
+	FileRepository fileRepository;
 
-		ShortFilm shortFilm = new ShortFilm();
-		shortFilm.setName("Film name");
-		shortFilm.setUploadDate(16 - 12 - 2020L);
-		shortFilm.setFileUrl("url");
-		shortFilm.setDescription("description");
-		shortFilm.setUploader(filmmaker);
-		shortFilmService.save(shortFilm);
+	@Mock
+	FilmmakerService filmmakerService;
 
-		Optional<ShortFilm> shortFilm1 = this.shortFilmService.getShortFilmById(shortFilm.getId());
-		assertThat(shortFilm1.isPresent()).isEqualTo(true);
+	@BeforeEach
+	public void setup() throws InvalidExtensionException, RuntimeException {
+		shortFilmService = new ShortFilmService(shortFilmRepository, fileRepository);
 
-		Optional<ShortFilm> shortFilm2 = this.shortFilmService.getShortFilmById(84l);
-		assertThat(shortFilm2.isPresent()).isEqualTo(false);
+		final Filmmaker filmmaker1 = new Filmmaker();
+		filmmaker1.setId(1L);
+		filmmaker1.setName("filmmaker1");
+		filmmaker1.setPassword("password");
+		filmmaker1.setEmail("filmmaker@gmail.com");
+		filmmaker1.setPhotoUrl("url photo");
+		filmmaker1.setCity("Seville");
+		filmmaker1.setCountry("Spain");
+		filmmaker1.setFullname("Filmmaker Díaz García");
+		filmmaker1.setPhone("675987432");
+		
+		when(filmmakerService.getFilmmmakerByName("filmmaker1")).thenReturn(Optional.of(filmmaker1));
+		when(shortFilmRepository.save(any(ShortFilm.class))).then(AdditionalAnswers.returnsFirstArg());
 	}
 
 	@Test
-	void getShortFilmTags() throws DataMismatchException, NotUniqueException {
+	void uploadTest() {
+		final String extension = ".mp4";
+		final long size = 1000L;
+		final MultipartFile mockFile = mock(MultipartFile.class);
+		
+		when(mockFile.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
 
-		FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
-		filmmakerRegisterData.setName("Filmmaker2");
-		filmmakerRegisterData.setFullname("Filmmaker2 Surname2");
-		filmmakerRegisterData.setCity("Seville");
-		filmmakerRegisterData.setCountry("Spain");
-		filmmakerRegisterData.setEmail("filmmaker2@gmail.com");
-		filmmakerRegisterData.setPhone("678543877");
-		filmmakerRegisterData.setPassword("patata");
-		filmmakerRegisterData.setConfirmPassword("patata");
-		Filmmaker filmmaker = this.filmmakerService.registerFilmmaker(filmmakerRegisterData);
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		uploadData.setTitle("Title");
+		uploadData.setDescription("Description");
+		uploadData.setFile(mockFile);
 
-		ShortFilm shortFilm = new ShortFilm();
-		shortFilm.setName("Film name");
-		shortFilm.setUploadDate(16 - 12 - 2020L);
-		shortFilm.setFileUrl("url");
-		shortFilm.setDescription("description");
-		shortFilm.setUploader(filmmaker);
+		assertDoesNotThrow(() -> {
+			ShortFilm shortFilm = shortFilmService.upload(uploadData,
+					filmmakerService.getFilmmmakerByName("filmmaker1").get());
 
-		Set<Tag> tags = this.shortFilmService.getShortFilmTags(shortFilm);
-		assertThat(tags.isEmpty()).isEqualTo(true);
+			assertThat(shortFilm.getTitle()).isEqualTo(uploadData.getTitle());
+			assertThat(shortFilm.getDescription()).isEqualTo(uploadData.getDescription());
+			assertThat(shortFilm.getFileUrl()).isNotEmpty();
+			assertNotNull(shortFilm.getUploadDate());
 
-		/*
-		 * Tag tag =new Tag(); tag.setTagname("drama"); Set<Tag> tags1 = new
-		 * HashSet<Tag>(); tags1.add(tag);
-		 * 
-		 * ShortFilm shortFilm2 = new ShortFilm(); shortFilm2.setName("Film name 2");
-		 * shortFilm2.setUploadDate(16-12-2020L); shortFilm2.setFileUrl("url2");
-		 * shortFilm2.setDescription("description2"); shortFilm2.setTags(tags1);
-		 * shortFilm2.setUploader(filmmaker);
-		 * 
-		 * 
-		 * Set<ShortFilm> setShortFilms = new HashSet<>();
-		 * setShortFilms.add(shortFilm2); tag.setMovies(setShortFilms);
-		 * 
-		 * Set<Tag> tags2 = this.shortFilmService.getShortFilmTags(shortFilm2);
-		 * assertThat(tags2.isEmpty()).isEqualTo(true);
-		 * 
-		 */
-
+			verify(fileRepository, times(1)).getFileExtension(mockFile);
+			verify(mockFile, only()).getSize();
+			verify(fileRepository, times(1)).saveFile(eq(mockFile), any(Path.class));
+			verifyNoMoreInteractions(fileRepository);
+			verify(shortFilmRepository, only()).save(any(ShortFilm.class));
+		});
 	}
 
-	/*
-	 * @Test void uploadTest() throws DataMismatchException, NotUniqueException,
-	 * IOException, InvalidExtensionException, RuntimeException{
-	 * 
-	 * FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
-	 * filmmakerRegisterData.setName("Filmmaker3");
-	 * filmmakerRegisterData.setFullname("Filmmaker3 Surname3");
-	 * filmmakerRegisterData.setCity("Seville");
-	 * filmmakerRegisterData.setCountry("Spain");
-	 * filmmakerRegisterData.setEmail("filmmaker3@gmail.com");
-	 * filmmakerRegisterData.setPhone("678546879");
-	 * filmmakerRegisterData.setPassword("patata");
-	 * filmmakerRegisterData.setConfirmPassword("patata"); Filmmaker filmmaker =
-	 * this.filmmakerService.registerFilmmaker(filmmakerRegisterData);
-	 * 
-	 * ShortFilmUploadData uploadData = new ShortFilmUploadData(); MultipartFile
-	 * file=(MultipartFile) File.createTempFile("example", ".mp4");
-	 * 
-	 * uploadData.setTitle("Title"); uploadData.setDescription("Description");
-	 * uploadData.setFile(file);
-	 * 
-	 * ShortFilm shortFilm= this.shortFilmService.upload(uploadData, filmmaker);
-	 * assertThat(shortFilm.getName()).isEqualTo("Title");
-	 * 
-	 * }
-	 * 
-	 */
+	@Test
+	void uploadInvalidExtensionTest() {
+		final String extension = ".txt";
+		final long size = 1000L;
+		final MultipartFile mockFile = mock(MultipartFile.class);
+		
+		when(mockFile.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
 
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		uploadData.setTitle("Title");
+		uploadData.setDescription("Description");
+		uploadData.setFile(mockFile);
+
+		assertThrows(InvalidExtensionException.class, () -> {
+			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+		});
+	}
+	
+	@Test
+	void uploadTooBigTest() {
+		final String extension = ".mp4";
+		final long size = 1000L * 1000L * 1000L + 1L;
+		final MultipartFile mockFile = mock(MultipartFile.class);
+		
+		when(mockFile.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(true);
+
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		uploadData.setTitle("Title");
+		uploadData.setDescription("Description");
+		uploadData.setFile(mockFile);
+
+		assertThrows(TooBigException.class, () -> {
+			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+		});
+	}
+	
+	@Test
+	void uploadRuntimeExceptionTest() {
+		final String extension = ".mp4";
+		final long size = 1000L;
+		final MultipartFile mockFile = mock(MultipartFile.class);
+		
+		when(mockFile.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockFile)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockFile), any(Path.class))).thenReturn(false);
+		
+		ShortFilmUploadData uploadData = new ShortFilmUploadData();
+		uploadData.setTitle("Title");
+		uploadData.setDescription("Description");
+		uploadData.setFile(mockFile);
+
+		assertThrows(RuntimeException.class, () -> {
+			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+		});
+	}
 }

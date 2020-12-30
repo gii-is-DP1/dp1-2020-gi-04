@@ -10,32 +10,40 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.UserRepository;
-import io.github.fourfantastics.standby.service.exceptions.DataMismatchException;
-import io.github.fourfantastics.standby.service.exceptions.NotFoundException;
-import io.github.fourfantastics.standby.service.exceptions.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.DataMismatchException;
+import io.github.fourfantastics.standby.service.exception.NotFoundException;
+import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 import io.github.fourfantastics.standby.utils.Utils;
 
 @Service
 public class UserService {
-	@Autowired
 	UserRepository userRepository;
+	NotificationService notificationService;
+
+	@Autowired
+	public UserService(UserRepository userRepository, NotificationService notificationService) {
+		this.userRepository = userRepository;
+		this.notificationService = notificationService;
+	}
 
 	public Optional<User> getUserById(Long id) {
 		return userRepository.findById(id);
 	}
 
+	public Optional<User> getUserByName(String name) {
+		return userRepository.findByName(name);
+	}
+
 	public User saveUser(User user) {
 		return userRepository.save(user);
 	}
-	
-	public Optional<User> findByName(String name) {
-		 return userRepository.findByName(name);
-	}
-	
+
 	public User register(User user) throws NotUniqueException {
-		Optional<User> foundUser = findByName(user.getName());
+		Optional<User> foundUser = getUserByName(user.getName());
 		if (foundUser.isPresent()) {
 			throw new NotUniqueException("Username already registered!", Utils.hashSet("name"));
 		}
@@ -45,9 +53,7 @@ public class UserService {
 	}
 
 	private void encryptPassword(User user) {
-		String password = user.getPassword();
-		String encryptedPassword = getEncoder().encode(password);
-		user.setPassword(encryptedPassword);
+		user.setPassword(getEncoder().encode(user.getPassword()));
 	}
 
 	public User authenticate(String name, String password) throws NotFoundException, DataMismatchException {
@@ -87,4 +93,21 @@ public class UserService {
 	public PasswordEncoder getEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
+	public void subcribesTo(User follower, Filmmaker followed) {
+		follower.getFilmmakersSubscribedTo().add(followed);
+		followed.getFilmmakerSubscribers().add(follower);
+		if (followed.getConfiguration().getBySubscriptions()) {
+			Notification newFollowerNotification = new Notification();
+			newFollowerNotification.setEmisionDate(Instant.now().getEpochSecond());
+			newFollowerNotification.setText(follower.getName() + " has subscribed to your profile.");
+			newFollowerNotification.setUser(followed);
+			followed.getNotifications().add(newFollowerNotification);
+
+			notificationService.saveNotification(newFollowerNotification);
+		}
+		userRepository.save(follower);
+		userRepository.save(followed);
+	}
+
 }

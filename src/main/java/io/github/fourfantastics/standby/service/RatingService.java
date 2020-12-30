@@ -13,9 +13,13 @@ import io.github.fourfantastics.standby.repository.RatingRepository;
 
 @Service
 public class RatingService {
-	@Autowired
 	RatingRepository ratingRepository;
 
+	@Autowired
+	public RatingService(RatingRepository ratingRepository) {
+		this.ratingRepository = ratingRepository;
+	}
+	
 	public Optional<Rating> getShortRoleById(Long id) {
 		return ratingRepository.findById(id);
 	}
