@@ -27,6 +27,7 @@ public class PrivacyRequestService {
 			NotificationService notificationService, FilmmakerService filmmakerService) {
 		this.privacyRequestRepository = privacyRequestRepository;
 		this.companyService = companyService;
+		this.notificationService = notificationService;
 		this.filmmakerService = filmmakerService;
 	}
 
@@ -34,7 +35,7 @@ public class PrivacyRequestService {
 		privacyRequestRepository.save(privacyRequest);
 	}
 
-	public Set<PrivacyRequest> getAllRoles() {
+	public Set<PrivacyRequest> getAllPrivacyRequest() {
 		Set<PrivacyRequest> privacyRequests = new HashSet<>();
 		Iterator<PrivacyRequest> iterator = privacyRequestRepository.findAll().iterator();
 		while (iterator.hasNext()) {
@@ -66,7 +67,6 @@ public class PrivacyRequestService {
 	}
 	public void acceptPrivacyRequest(PrivacyRequest request) {
 		request.setRequestState(RequestStateType.ACCEPTED);
-		privacyRequestRepository.save(request);
-		
+		privacyRequestRepository.save(request);	
 	}
 }

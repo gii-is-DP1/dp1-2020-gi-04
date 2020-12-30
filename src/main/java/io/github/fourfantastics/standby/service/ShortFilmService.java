@@ -8,12 +8,14 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.repository.FileRepository;
@@ -89,5 +91,10 @@ public class ShortFilmService {
 		shortFilm.setUploadDate(new Date().getTime());
 		shortFilm.setUploader(uploader);
 		return shortFilmRepository.save(shortFilm);
+	}
+	
+	public Set<ShortFilm> getShortFilmbyFilmmaker(Filmmaker filmmaker){
+		Set<Role> roles = filmmaker.getParticipateAs();
+		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet());
 	}
 }
