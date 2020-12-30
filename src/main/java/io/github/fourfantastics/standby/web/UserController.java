@@ -151,4 +151,20 @@ public class UserController {
 		model.put("companyData", companyConfigurationData);
 		return "manageCompanyAccount";
 	}
+	
+	@GetMapping("/profile")
+	public String getProfile(HttpSession session, Map<String, Object> model) {
+		User user = userService.getLoggedUser(session).orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
+
+		if (user.getType() == UserType.Filmmaker) {
+			Filmmaker filmmaker = (Filmmaker) user;
+			return "filmmakerProfile";
+		} else {
+			Company company = (Company) user;
+			return "companyProfile";
+		}
+	}
 }
