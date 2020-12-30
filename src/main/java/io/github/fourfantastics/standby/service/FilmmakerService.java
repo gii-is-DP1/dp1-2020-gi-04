@@ -20,8 +20,7 @@ public class FilmmakerService {
 
 	@Autowired
 	public FilmmakerService(FilmmakerRepository filmmakerRepository,
-			NotificationConfigurationService configurationService, UserService userService,
-			PrivacyRequestService privacyRequestService) {
+			NotificationConfigurationService configurationService, UserService userService) {
 		this.filmmakerRepository = filmmakerRepository;
 		this.configurationService = configurationService;
 		this.userService = userService;
