@@ -31,6 +31,7 @@ import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.repository.UserRepository;
+import io.github.fourfantastics.standby.service.NotificationService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.DataMismatchException;
 import io.github.fourfantastics.standby.service.exception.NotFoundException;
@@ -44,9 +45,12 @@ public class UserServiceTest {
 	@Mock
 	UserRepository userRepository;
 	
+	@Mock
+	NotificationService notificationService;
+	
 	@BeforeEach
 	public void setup() {
-		userService = new UserService(userRepository);
+		userService = new UserService(userRepository,notificationService);
 		
 		when(userRepository.save(any(User.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 	}
