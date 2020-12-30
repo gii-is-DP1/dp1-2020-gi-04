@@ -47,7 +47,7 @@ public class FilmmakerServiceTest {
 
 	@BeforeEach
 	public void setup() throws NotUniqueException {
-		filmmakerService = new FilmmakerService(filmmakerRepository, notificationConfigurationService, userService,privacyRequestService);
+		filmmakerService = new FilmmakerService(filmmakerRepository, notificationConfigurationService, userService);
 		
 		when(userService.register(any(Filmmaker.class))).then(AdditionalAnswers.returnsFirstArg());
 		when(notificationConfigurationService.saveNotificationConfiguration(any(NotificationConfiguration.class)))
