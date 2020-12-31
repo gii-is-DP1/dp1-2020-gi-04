@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import io.github.fourfantastics.standby.model.Company;
+import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
 import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
+import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.CompanyRegisterDataValidator;
 import io.github.fourfantastics.standby.service.CompanyService;
 import io.github.fourfantastics.standby.service.UserService;
@@ -28,6 +32,9 @@ public class CompanyController {
 	
 	@Autowired
 	CompanyRegisterDataValidator companyRegisterDataValidator;
+	
+	@Autowired
+	CompanyConfigurationDataValidator companyConfigurationDataValidator;
 
 	@GetMapping("/register/company")
 	public String registerCompany(HttpSession session, Map<String, Object> model) {
@@ -59,5 +66,58 @@ public class CompanyController {
 			return "registerCompany";
 		}
 		return "redirect:/";
+	}
+	
+	@GetMapping("/account/company")
+	public String getManageAccount(HttpSession session, Map<String, Object> model) {
+		User user = userService.getLoggedUser(session).orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
+
+		if (user.getType() != UserType.Company) {
+			return "redirect:/account";
+		}
+		
+		Company company = (Company) user;
+		model.put("companyConfigurationData", CompanyConfigurationData.fromCompany(company));
+		model.put("photoUrl", user.getPhotoUrl());
+		return "manageCompanyAccount";
+	}
+	
+	@PostMapping("/account/company")
+	public String doManageAccount(HttpSession session,
+			@ModelAttribute("companyConfigurationData") CompanyConfigurationData companyConfigurationData,
+			BindingResult result, Map<String, Object> model) {
+		User user = userService.getLoggedUser(session).orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
+
+		if (user.getType() != UserType.Company) {
+			return "redirect:/manageAccount";
+		}
+
+		companyConfigurationDataValidator.validate(companyConfigurationData, result);
+		if (result.hasErrors()) {
+			return "manageCompanyAccount";
+		}
+		
+		Company userCompany = (Company) user;
+		companyConfigurationData.copyToCompany(userCompany);
+		if (!companyConfigurationData.getNewPhoto().isEmpty()) {
+			try {
+				userService.setProfilePicture(userCompany, companyConfigurationData.getNewPhoto());
+			} catch (Exception e) {
+				result.reject("", e.getMessage());
+				model.put("photoUrl", user.getPhotoUrl());
+				return "manageCompanyAccount";
+			}
+		}
+		userCompany = (Company) userService.saveUser(userCompany);
+
+		model.put("companyData", companyConfigurationData);
+		model.put("photoUrl", user.getPhotoUrl());
+		return "manageCompanyAccount";
 	}
 }

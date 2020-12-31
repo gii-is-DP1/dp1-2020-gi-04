@@ -17,9 +17,6 @@ public class FilmmakerConfigurationDataValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "fullname", "", "Full name cannot be empty!");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "country", "", "Country cannot be empty!");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city", "", "City cannot be empty!");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "", "Phone cannot be empty!");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "byComments", "", "You must do a selection!");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "byRatings", "", "You must do a selection!");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "bySubscriptions", "", "You must do a selection!");

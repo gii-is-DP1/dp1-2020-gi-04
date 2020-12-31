@@ -41,7 +41,7 @@ public class StandbyApplication {
 			filmmaker.setName("filmmaker1");
 			filmmaker.setPassword("password");
 			filmmaker.setEmail("filmmaker@gmail.com");
-			filmmaker.setPhotoUrl("url photo");
+			filmmaker.setPhotoUrl(null);
 			filmmaker.setCity("Seville");
 			filmmaker.setCountry("Spain");
 			filmmaker.setFullname("Filmmaker Díaz García");
@@ -62,7 +62,7 @@ public class StandbyApplication {
 			company.setName("company1");
 			company.setPassword("password");
 			company.setEmail("business@company.com");
-			company.setPhotoUrl("url photo");
+			company.setPhotoUrl(null);
 			company.setBusinessPhone("612345678");
 			company.setCompanyName("Company Studios");
 			company.setOfficeAddress("Calle Manzana 4");
@@ -78,8 +78,6 @@ public class StandbyApplication {
 			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
 			company.setConfiguration(notificationConfiguration);
 			userService.saveUser(company);
-
-			shortFilmService.init();
 		}
 	}
 }

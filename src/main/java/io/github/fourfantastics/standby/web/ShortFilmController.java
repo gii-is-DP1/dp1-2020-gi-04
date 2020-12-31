@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +21,7 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.model.form.ShortFilmEditData;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.model.validator.ShortFilmUploadDataValidator;
 import io.github.fourfantastics.standby.service.ShortFilmService;
@@ -34,7 +36,7 @@ public class ShortFilmController {
 
 	@Autowired
 	ShortFilmService shortFilmService;
-	
+
 	@Autowired
 	ShortFilmUploadDataValidator shortFilmUploadDataValidator;
 
@@ -57,14 +59,14 @@ public class ShortFilmController {
 			@ModelAttribute("shortFilmUploadData") ShortFilmUploadData shortFilmUploadData, BindingResult result,
 			Map<String, Object> model) {
 		Map<String, Object> res = new HashMap<String, Object>();
-		
+
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			res.put("status", 302);
 			res.put("url", "/login");
 			return res;
 		}
-		
+
 		if (loggedUser.getType() != UserType.Filmmaker) {
 			res.put("status", 302);
 			res.put("url", "/");
@@ -82,7 +84,7 @@ public class ShortFilmController {
 			res.put("fieldErrors", fieldErrors);
 			return res;
 		}
-		
+
 		ShortFilm shortFilm = null;
 		try {
 			shortFilm = shortFilmService.upload(shortFilmUploadData, (Filmmaker) loggedUser);
@@ -97,30 +99,25 @@ public class ShortFilmController {
 			res.put("fieldErrors", fieldErrors);
 			return res;
 		}
-		
+
 		res.put("status", 302);
 		res.put("url", String.format("/shortfilm/%d/edit", shortFilm.getId()));
 		return res;
 	}
-	
-	/*
-	
-	@GetMapping("/upload/editShortfilm")
-	public String getEditShortfilmView(HttpSession session, Map<String, Object> model) {
+
+	@GetMapping("/shortfilm/{shortFilmId}/edit")
+	public String getUploadView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
+			BindingResult result, Map<String, Object> model) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
 		}
-		
-		if (loggedUser.getType() != UserType.Filmmaker) {
+		ShortFilm film = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
+		if (film == null || !film.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		
-		Filmmaker filmmaker = (Filmmaker) loggedUser;
-		
-		ShortFilm shortFilm=shortFilmService.upload(shortFilmUploadData, uploader);
-		model.put("shortFilmUploadData", ShortFilmUploadData.fromShortFilm(shortFilm));
+
+		model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(film));
 		return "editShortFilm";
 	}
-	*/
 }

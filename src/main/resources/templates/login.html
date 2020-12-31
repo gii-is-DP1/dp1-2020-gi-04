@@ -1,5 +1,5 @@
 <html
-	data-th-replace="~{@{/fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
 <title>Login - Standby</title>
 <section>
 	<h3>Login</h3>
@@ -9,11 +9,11 @@
 		<div class="col-12 col-md-10">
 			<form method="POST" data-th-action="@{/login}"
 				data-th-object="${credentials}">
-				<div data-th-replace="~{@{/fragments/form/errors}}"></div>
+				<div data-th-replace="~{@{fragments/form/errors}}"></div>
 				<input
-					data-th-replace="~{@{/fragments/form/input}(name='name', label='User name', required='true')}">
+					data-th-replace="~{@{fragments/form/input}(name='name', label='User name', required='true')}">
 				<input
-					data-th-replace="~{@{/fragments/form/input}(name='password', label='Password', type='password', placeholder='********', required='true')}">
+					data-th-replace="~{@{fragments/form/input}(name='password', label='Password', type='password', placeholder='********', required='true')}">
 				<br>
 				<button type="submit" class="btn btn-primary btn-block">Log
 					in</button>

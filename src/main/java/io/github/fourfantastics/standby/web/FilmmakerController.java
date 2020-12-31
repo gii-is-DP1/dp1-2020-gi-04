@@ -1,7 +1,6 @@
 package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -16,9 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
+import io.github.fourfantastics.standby.model.form.FilmmakerProfileData;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
+import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
+import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
@@ -29,9 +32,15 @@ public class FilmmakerController {
 
 	@Autowired
 	FilmmakerService filmmakerService;
-	
+
 	@Autowired
 	FilmmakerRegisterDataValidator filmmakerRegisterDataValidator;
+
+	@Autowired
+	FilmmakerConfigurationDataValidator filmmakerConfigurationDataValidator;
+
+	@Autowired
+	ShortFilmService shortFilmService;
 
 	@GetMapping("/register/filmmaker")
 	public String getRegisterView(HttpSession session, Map<String, Object> model) {
@@ -64,6 +73,78 @@ public class FilmmakerController {
 		}
 		return "redirect:/";
 	}
-	
 
+	@GetMapping("/profile/filmmaker/{filmmmakerID}")
+	public String getProfileView(@PathVariable("filmmmakerID") Long filmmmakerID, Map<String, Object> model) {
+		User user = userService.getUserById(filmmmakerID).orElse(null);
+		if (user == null) {
+			return "redirect:/";
+		}
+
+		if (user.getType() != UserType.Filmmaker) {
+			return "redirect:/profile/{filmmakerID}";
+		}
+
+		Filmmaker filmmaker = (Filmmaker) user;
+		FilmmakerProfileData filmmakerProfileData = FilmmakerProfileData.fromFilmmaker(filmmaker);
+		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmbyFilmmaker(filmmaker));
+
+		model.put("filmmakerProfileData", filmmakerProfileData);
+
+		return "filmmakerProfile";
+	}
+
+	@GetMapping("/account/filmmaker")
+	public String getManageAccount(HttpSession session, Map<String, Object> model) {
+		User user = userService.getLoggedUser(session).orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
+
+		if (user.getType() != UserType.Filmmaker) {
+			return "redirect:/account";
+		}
+
+		Filmmaker filmmaker = (Filmmaker) user;
+		model.put("filmmakerConfigurationData", FilmmakerConfigurationData.fromFilmmaker(filmmaker));
+		model.put("photoUrl", user.getPhotoUrl());
+		return "manageFilmmakerAccount";
+	}
+
+	@PostMapping("/account/filmmaker")
+	public String doManageAccount(HttpSession session,
+			@ModelAttribute("filmmakerConfigurationData") FilmmakerConfigurationData filmmakerConfigurationData,
+			BindingResult result, Map<String, Object> model) {
+		User user = userService.getLoggedUser(session).orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
+
+		if (user.getType() != UserType.Filmmaker) {
+			return "redirect:/account";
+		}
+
+		filmmakerConfigurationDataValidator.validate(filmmakerConfigurationData, result);
+		if (result.hasErrors()) {
+			model.put("photoUrl", user.getPhotoUrl());
+			return "manageFilmmakerAccount";
+		}
+
+		Filmmaker userFilmmaker = (Filmmaker) user;
+		filmmakerConfigurationData.copyToFilmmaker(userFilmmaker);
+		if (!filmmakerConfigurationData.getNewPhoto().isEmpty()) {
+			try {
+				userService.setProfilePicture(userFilmmaker, filmmakerConfigurationData.getNewPhoto());
+			} catch (Exception e) {
+				result.reject("", e.getMessage());
+				model.put("photoUrl", user.getPhotoUrl());
+				return "manageFilmmakerAccount";
+			}
+		}
+		userFilmmaker = (Filmmaker) userService.saveUser(userFilmmaker);
+
+		model.put("filmmakerData", filmmakerConfigurationData);
+		model.put("photoUrl", user.getPhotoUrl());
+		return "manageFilmmakerAccount";
+	}
 }
