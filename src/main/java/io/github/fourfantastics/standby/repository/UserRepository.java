@@ -8,6 +8,4 @@ import io.github.fourfantastics.standby.model.User;
 
 public interface UserRepository extends CrudRepository<User,Long> {
 	public Optional<User> findByName(String name);
-	
-	
 }

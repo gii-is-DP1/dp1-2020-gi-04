@@ -5,12 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Optional;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,11 +32,11 @@ import io.github.fourfantastics.standby.repository.FileRepository;
 @SpringBootTest(classes = StandbyApplication.class)
 public class FileRepositoryTest {
 	final static Path root = Paths.get("testFolder");
-	
+
 	@Autowired
 	FileRepository fileRepository;
-	
-	/*@BeforeAll
+
+	@BeforeAll
 	public static void createRoot() {
 		if (Files.notExists(root)) {
 			assertDoesNotThrow(() -> {
@@ -41,19 +44,20 @@ public class FileRepositoryTest {
 			});
 		}
 	}
-	
-	@BeforeEach
-	public void setup() {
-		assertTrue(Files.exists(root));
-		assertDoesNotThrow(() -> {
-			Iterator<Path> it = Files.list(root).iterator();
-			while (it.hasNext()) {
-				it.next().toFile().delete();
-			}
-			assertThat(Files.list(root).count()).isEqualTo(0L);
-		});
-	}
-	
+
+	/*
+	 * @BeforeEach public void setup() throws IOException { try {
+	 * assertTrue(Files.exists(Paths.get("testFolder"))); assertDoesNotThrow(() -> {
+	 * File[] files = Paths.get("testFolder").toFile().listFiles();
+	 * 
+	 * for (File file : files) { System.out.println(file.getAbsolutePath());
+	 * System.out.println(file.delete()); }
+	 * assertThat(Paths.get("testFolder").toFile().listFiles().length).isEqualTo(0L)
+	 * ; }); } catch(Exception e) { System.out.println(e); }
+	 * 
+	 * }
+	 */
+
 	@Test
 	public void getFileExtensionTest() {
 		final String fileName1 = "example.mp4";
@@ -64,7 +68,7 @@ public class FileRepositoryTest {
 		final String fileName6 = "C:\\Users";
 		final String fileName7 = "C:\\Users.sad.sad.asdasd.sad.exm";
 		final String fileName8 = "asdas.";
-		
+
 		assertThat(fileRepository.getFileExtension(fileName1)).isEqualTo(".mp4");
 		assertThat(fileRepository.getFileExtension(fileName2)).isEqualTo(".txt");
 		assertThat(fileRepository.getFileExtension(fileName3)).isEqualTo(".ogg");
@@ -74,43 +78,26 @@ public class FileRepositoryTest {
 		assertThat(fileRepository.getFileExtension(fileName7)).isEqualTo(".exm");
 		assertThat(fileRepository.getFileExtension(fileName8)).isEqualTo(null);
 	}
-	
+
 	@Test
 	public void getFileExtensionFromMultipartFileTest() {
-		final MultipartFile mockFile = new MockMultipartFile("mockFile", "mockFile.mp4", "text/plain", "This is an example".getBytes());
-		
+		final MultipartFile mockFile = new MockMultipartFile("mockFile", "mockFile.mp4", "text/plain",
+				"This is an example".getBytes());
+
 		assertThat(fileRepository.getFileExtension(mockFile)).isEqualTo(".mp4");
 	}
-	
-	@Test
-	public void createDirectoryTest() {
-		final String folderName = "thisIsATestFolder";
-		final Path folderPath = root.resolve(folderName);
-		
-		assertTrue(Files.notExists(folderPath));
-		
-		assertTrue(fileRepository.createDirectory(folderPath));
-		
-		assertTrue(Files.exists(folderPath));
-		assertTrue(Files.isDirectory(folderPath));
-		assertTrue(Files.isReadable(folderPath));
-		assertTrue(Files.isWritable(folderPath));
-		assertDoesNotThrow(() -> {
-			assertThat(Files.list(folderPath).count()).isEqualTo(0L);
-		});
-	}
-	
+
 	@Test
 	public void saveFileTest() {
 		final byte[] content = "This is an example".getBytes();
 		final MultipartFile mockFile = new MockMultipartFile("mockFile", "mockFile.txt", "text/plain", content);
 		final String fileName = "theNameOfTheFileWhenSaved.txt";
 		final Path filePath = root.resolve(fileName);
-		
+
 		assertTrue(Files.notExists(filePath));
-		
+
 		assertTrue(fileRepository.saveFile(mockFile, filePath));
-		
+
 		assertTrue(Files.exists(filePath));
 		assertFalse(Files.isDirectory(filePath));
 		assertTrue(Files.isReadable(filePath));
@@ -119,7 +106,7 @@ public class FileRepositoryTest {
 			assertThat(Files.readAllBytes(filePath)).isEqualTo(content);
 		});
 	}
-	
+
 	@Test
 	public void getFileTest() {
 		final String fileName = "fileToGet";
@@ -127,7 +114,7 @@ public class FileRepositoryTest {
 		assertDoesNotThrow(() -> {
 			assertTrue(filePath.toFile().createNewFile());
 		});
-		
+
 		assertTrue(Files.exists(filePath));
 		Optional<Resource> optionalResource = fileRepository.getFile(filePath);
 		assertTrue(optionalResource.isPresent());
@@ -135,27 +122,28 @@ public class FileRepositoryTest {
 			assertThat(optionalResource.get().contentLength()).isEqualTo(0L);
 		});
 	}
-	
+
 	@Test
 	public void getFileNotFoundTest() {
 		final String fileName = "nonexistentFile";
 		final Path filePath = root.resolve(fileName);
-		
+
 		assertTrue(Files.notExists(filePath));
 		assertFalse(fileRepository.getFile(filePath).isPresent());
 	}
-	
+
 	@AfterAll
-	public static void cleanUp() {
-		assertTrue(Files.exists(root));
-		assertDoesNotThrow(() -> {
-			Iterator<Path> it = Files.list(root).iterator();
-			while (it.hasNext()) {
-				it.next().toFile().delete();
-			}
-			assertThat(Files.list(root).count()).isEqualTo(0L);
-			Files.delete(root);	
-		});
-		assertTrue(Files.notExists(root));
-	}*/
+	public static void cleanUp() throws IOException {
+
+		assertTrue(Files.exists(Paths.get("testFolder")));
+		File[] files = root.toFile().listFiles();
+
+		for (File file : files) {
+			file.delete();
+		}
+		files = Paths.get("testFolder").toFile().listFiles();
+
+		assertThat(files.length).isEqualTo(0L);
+
+	}
 }

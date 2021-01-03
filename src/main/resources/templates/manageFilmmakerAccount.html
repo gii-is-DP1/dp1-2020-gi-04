@@ -1,48 +1,72 @@
 <!DOCTYPE html>
-<html data-th-replace="~{@{/fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
-    <title>Manage account - Standby</title>
-    <section>
-        <h3>Manage my account</h3>
-        <hr />
-        <div class="row align-middle">
-            <div class="col-0 col-sm-1"></div>
-            <div class="col-12 col-sm-10">
-                <form data-th-action="@{/account/filmmaker}" method="POST" data-th-object="${filmmakerConfigurationData}">
-                    <div data-th-replace="~{@{/fragments/form/errors}}"></div>
-                    <label class="form-text text-muted">Personal information</label>
-                    <input data-th-replace="~{@{/fragments/form/input}(name='fullname', label='Full name', placeholder='Menganito García', required='true')}">
-                    <div class="form-row">
-                        <div class="col-12 col-md-6">
-                            <input data-th-replace="~{@{/fragments/form/input}(name='country', label='Country', placeholder='Spain', required='true')}">
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <input data-th-replace="~{@{/fragments/form/input}(name='city', label='City', placeholder='Seville', required='true')}">
-                        </div>
-                    </div>
-                    <input data-th-replace="~{@{/fragments/form/input}(name='phone', label='Phone', placeholder='612345678', required='true')}">
-                    <input data-th-replace="~{@{/fragments/form/switch}(name='byComments', label='Be notified by comments in your short films')}">
-                    <input data-th-replace="~{@{/fragments/form/switch}(name='byRatings', label='Be notified by ratings in your short film')}">
-                    <input data-th-replace="~{@{/fragments/form/switch}(name='bySubscriptions', label='Be notified by subscriptions')}">
-                    <hr>
-                    <br>
-                    <div class="form-group">
-                        <div class="form-row">
-                            <div class="col-12 col-md-6">
-                                <a data-th-href="@{/}" type="button" class="btn btn-outline-secondary btn-block">Cancel</a>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <button type="submit" class="btn btn-primary btn-block">Apply changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <br>
-                <hr>
-                <div class="form-group">
-                    <a data-th-href="@{/account/delete}" type="button" class="btn btn-outline-danger btn-block">Delete my account</a>
-                </div>
-            </div>
-            <div class="col-0 col-sm-1"></div>
-        </div>
-    </section>
+<html
+	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+<title>Manage account - Standby</title>
+<section>
+	<h3>Manage my account</h3>
+	<hr />
+	<div class="row align-middle">
+		<div class="col-0 col-sm-1"></div>
+		<div class="col-12 col-sm-10">
+			<form data-th-action="@{/account/filmmaker}"
+				enctype="multipart/form-data" method="POST"
+				data-th-object="${filmmakerConfigurationData}">
+				<div data-th-replace="~{@{fragments/form/errors}}"></div>
+				<label class="form-text text-muted">Upload a new profile
+					picture</label>
+				<div class="form-row align-middle mb-0 mb-md-4">
+					<div class="col-12 col-md-2 text-center mt-md-0 mt-2">
+						<img
+							data-th-replace="~{@{fragments/profilePicture}(src=${photoUrl}, class='img-fluid', style='max-height: 100px')}">
+					</div>
+					<div class="col-12 col-md-10 my-md-auto my-0 mt-2">
+						<input
+							data-th-replace="~{@{fragments/form/file}(name='newPhoto', buttonLabel='Upload', accept='image/*')}">
+					</div>
+				</div>
+				<label class="form-text text-muted">Personal information</label> <input
+					data-th-replace="~{@{fragments/form/input}(name='fullname', label='Full name', placeholder='Menganito García', required='true')}">
+				<div class="form-row">
+					<div class="col-12 col-md-6">
+						<input
+							data-th-replace="~{@{fragments/form/input}(name='country', label='Country', placeholder='Spain', required='true')}">
+					</div>
+					<div class="col-12 col-md-6">
+						<input
+							data-th-replace="~{@{fragments/form/input}(name='city', label='City', placeholder='Seville', required='true')}">
+					</div>
+				</div>
+				<input
+					data-th-replace="~{@{fragments/form/input}(name='phone', label='Phone', placeholder='612345678', required='true')}">
+				<input
+					data-th-replace="~{@{fragments/form/switch}(name='byComments', label='Be notified by comments in your short films')}">
+				<input
+					data-th-replace="~{@{fragments/form/switch}(name='byRatings', label='Be notified by ratings in your short film')}">
+				<input
+					data-th-replace="~{@{fragments/form/switch}(name='bySubscriptions', label='Be notified by subscriptions')}">
+				<hr>
+				<br>
+				<div class="form-group">
+					<div class="form-row">
+						<div class="col-12 col-md-6">
+							<a data-th-href="@{/}" type="button"
+								class="btn btn-outline-secondary btn-block">Cancel</a>
+						</div>
+						<div class="col-12 col-md-6">
+							<button type="submit" class="btn btn-primary btn-block">Apply
+								changes</button>
+						</div>
+					</div>
+				</div>
+			</form>
+			<br>
+			<hr>
+			<div class="form-group">
+				<a data-th-href="@{/account/delete}" type="button"
+					class="btn btn-outline-danger btn-block">Delete my account</a>
+			</div>
+		</div>
+		<div class="col-0 col-sm-1"></div>
+	</div>
+</section>
 </html>

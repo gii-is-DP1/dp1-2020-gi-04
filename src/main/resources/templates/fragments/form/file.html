@@ -14,7 +14,7 @@
 			class="custom-file-label" data-th-for="'fupload-'+${name}"
 			data-th-text="${fileLabel}?: ''" data-th-id="'fuploadlabel-'+${name}"></label>
 	</div>
-	<div data-th-replace="~{@{/fragments/form/fieldError}(${name})}"></div>
+	<div data-th-replace="~{@{fragments/form/fieldError}(${name})}"></div>
 	<script th:inline="javascript">
 	(() => {const fieldName = [[${name}]];
 	const inputId = "#fupload-"+fieldName;

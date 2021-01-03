@@ -1,5 +1,7 @@
 package io.github.fourfantastics.standby.model.form;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import io.github.fourfantastics.standby.model.Filmmaker;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +29,8 @@ public class FilmmakerConfigurationData {
 
 	// NotNull
 	Boolean bySubscriptions;
+	
+	MultipartFile newPhoto;
 
 	public static FilmmakerConfigurationData fromFilmmaker(Filmmaker filmmaker) {
 		FilmmakerConfigurationData filmmakerConfigurationData = new FilmmakerConfigurationData();

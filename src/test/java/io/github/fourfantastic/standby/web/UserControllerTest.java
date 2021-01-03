@@ -364,7 +364,7 @@ public class UserControllerTest {
 	}
 	
 	@Test
-	void ManageAccountCompany() {
+	void manageAccountCompany() {
 		final Company mockCompany = new Company();
 		mockCompany.setBusinessPhone("675849765");
 		mockCompany.setCompanyName("Company1");

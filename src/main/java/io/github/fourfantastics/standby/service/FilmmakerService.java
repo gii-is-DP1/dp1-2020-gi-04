@@ -17,7 +17,6 @@ public class FilmmakerService {
 	NotificationConfigurationService configurationService;
 	UserService userService;
 
-
 	@Autowired
 	public FilmmakerService(FilmmakerRepository filmmakerRepository,
 			NotificationConfigurationService configurationService, UserService userService) {
@@ -50,6 +49,5 @@ public class FilmmakerService {
 
 		return (Filmmaker) userService.saveUser(filmmaker);
 	}
-
 
 }
