@@ -21,7 +21,7 @@ public class PrivacyRequestService {
 	CompanyService companyService;
 	NotificationService notificationService;
 	FilmmakerService filmmakerService;
-	
+
 	@Autowired
 	public PrivacyRequestService(PrivacyRequestRepository privacyRequestRepository, CompanyService companyService,
 			NotificationService notificationService, FilmmakerService filmmakerService) {
@@ -43,6 +43,7 @@ public class PrivacyRequestService {
 		}
 		return privacyRequests;
 	}
+
 	public void sendPrivacyRequest(Company company, Filmmaker receiver) {
 		PrivacyRequest request = new PrivacyRequest();
 		request.setCompany(company);
@@ -65,8 +66,14 @@ public class PrivacyRequestService {
 		receiver.getNotifications().add(newPrivacyRequestNotification);
 		filmmakerService.saveFilmmaker(receiver);
 	}
+
 	public void acceptPrivacyRequest(PrivacyRequest request) {
 		request.setRequestState(RequestStateType.ACCEPTED);
-		privacyRequestRepository.save(request);	
+		privacyRequestRepository.save(request);
+	}
+
+	public void declinePrivacyRequest(PrivacyRequest request) {
+		request.setRequestState(RequestStateType.DECLINED);
+		privacyRequestRepository.save(request);
 	}
 }
