@@ -70,10 +70,30 @@ public class PrivacyRequestService {
 	public void acceptPrivacyRequest(PrivacyRequest request) {
 		request.setRequestState(RequestStateType.ACCEPTED);
 		privacyRequestRepository.save(request);
+		if (request.getCompany().getConfiguration().getByPrivacyRequests()) {
+			Company sender = request.getCompany();
+			Notification petitionStateNotification = new Notification();
+			petitionStateNotification.setEmisionDate(Instant.now().getEpochSecond());
+			petitionStateNotification.setText(request.getFilmmaker().getName() + " has accepted your petition");
+			petitionStateNotification.setUser(sender);
+			sender.getNotifications().add(petitionStateNotification);
+
+			notificationService.saveNotification(petitionStateNotification);
+		}
 	}
 
 	public void declinePrivacyRequest(PrivacyRequest request) {
 		request.setRequestState(RequestStateType.DECLINED);
 		privacyRequestRepository.save(request);
+		if (request.getCompany().getConfiguration().getByPrivacyRequests()) {
+			Company sender = request.getCompany();
+			Notification petitionStateNotification = new Notification();
+			petitionStateNotification.setEmisionDate(Instant.now().getEpochSecond());
+			petitionStateNotification.setText(request.getFilmmaker().getName() + " has declined your petition");
+			petitionStateNotification.setUser(sender);
+			sender.getNotifications().add(petitionStateNotification);
+
+			notificationService.saveNotification(petitionStateNotification);
+		}
 	}
 }
