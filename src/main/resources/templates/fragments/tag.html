@@ -1,0 +1,19 @@
+<th-block data-th-fragment="tag(text)">
+    <span data-th-if="${href} == null" data-th-class="'badge ' + (${rounded} ? 'badge-pill ' : '') + 'badge-' + (${type}?: 'primary')">
+	   <span data-th-text="${text}"></span>
+	   <button data-th-if="${closeable}"
+	           data-th-name="${closeAction}?: null" data-th-value="${closeParam}?: null" type="submit" class="close"
+	           aria-label="Close">
+	       <span aria-hidden="true">&times;</span>
+	   </button>
+	</span>
+	<a data-th-if="${href} != null" data-th-href="${href}"
+	   data-th-class="'badge ' + (${rounded} ? 'badge-pill ' : '') + 'badge-' + (${type}?: 'primary')">
+	   <span data-th-text="${text}"></span>
+	   <button data-th-if="${closeable}"
+                data-th-name="${closeAction}?: null" data-th-value="${closeParam}?: null" type="submit" class="close"
+                aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </a>
+</th-block>
