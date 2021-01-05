@@ -107,11 +107,12 @@ public class ShortFilmController {
 
 	@GetMapping("/shortfilm/{shortFilmId}/edit")
 	public String getUploadView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			BindingResult result, Map<String, Object> model) {
+			Map<String, Object> model) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
 		}
+
 		ShortFilm film = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
 		if (film == null || !film.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
