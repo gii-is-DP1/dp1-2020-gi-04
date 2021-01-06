@@ -30,7 +30,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import io.github.fourfantastics.standby.StandbyApplication;
+import io.github.fourfantastics.standby.model.Company;
+import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.UserService;
@@ -210,5 +214,166 @@ public class FilmmakerControllerTest {
 		
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 		verify(filmmakerService, only()).registerFilmmaker(mockFilmmakerRegisterData);
+	}
+	
+	@Test
+	void manageAccountFilmmakerView() {
+		final Filmmaker mockFilmmaker = new Filmmaker();
+		mockFilmmaker.setFullname("Filmmaker1");
+		mockFilmmaker.setCountry("Spain");
+		mockFilmmaker.setCity("Seville");
+		mockFilmmaker.setPhone("678543167");
+		mockFilmmaker.setConfiguration(new NotificationConfiguration());
+
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/account/filmmaker")).andExpect(status().isOk())
+					.andExpect(model().attribute("filmmakerConfigurationData",
+							FilmmakerConfigurationData.fromFilmmaker(mockFilmmaker)))
+					.andExpect(view().name("manageFilmmakerAccount"));
+		});
+
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
+	
+	@Test
+	void manageAccountFilmmaker() {
+		final Filmmaker mockFilmmaker = new Filmmaker();
+		mockFilmmaker.setFullname("Filmmaker1");
+		mockFilmmaker.setCountry("Spain");
+		mockFilmmaker.setCity("Seville");
+		mockFilmmaker.setPhone("678543167");
+		mockFilmmaker.setConfiguration(new NotificationConfiguration());
+
+		final FilmmakerConfigurationData mockConfigFilmmaker = new FilmmakerConfigurationData();
+		mockConfigFilmmaker.setByComments(false);
+		mockConfigFilmmaker.setByRatings(true);
+		mockConfigFilmmaker.setBySubscriptions(true);
+		mockConfigFilmmaker.setCity("Huelva");
+		mockConfigFilmmaker.setCountry("Spain");
+		mockConfigFilmmaker.setFullname("Filmmaker1");
+		mockConfigFilmmaker.setPhone("616449997");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/account/filmmaker").with(csrf())
+					.param("fullname", mockConfigFilmmaker.getFullname())
+					.param("country", mockConfigFilmmaker.getCountry())
+					.param("city", mockConfigFilmmaker.getCity())
+					.param("phone", mockConfigFilmmaker.getPhone())
+					.param("byComments", mockConfigFilmmaker.getByComments().toString())
+					.param("byRatings", mockConfigFilmmaker.getByRatings().toString())
+					.param("bySubscriptions", mockConfigFilmmaker.getBySubscriptions().toString()))
+					.andExpect(status().isOk())
+					.andExpect(view().name("manageFilmmakerAccount"));
+		});
+		
+		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		mockConfigFilmmaker.copyToFilmmaker(mockFilmmaker);
+		verify(userService, times(1)).saveUser(mockFilmmaker);
+		verifyNoMoreInteractions(userService);
+	}
+	
+	@Test
+	void manageAccountFilmmakerNotLogged() {
+		final FilmmakerConfigurationData mockConfigFilmmaker = new FilmmakerConfigurationData();
+		mockConfigFilmmaker.setByComments(false);
+		mockConfigFilmmaker.setByRatings(true);
+		mockConfigFilmmaker.setBySubscriptions(true);
+		mockConfigFilmmaker.setCity("Huelva");
+		mockConfigFilmmaker.setCountry("Spain");
+		mockConfigFilmmaker.setFullname("Filmmaker1");
+		mockConfigFilmmaker.setPhone("616449997");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/account/filmmaker").with(csrf())
+					.param("fullname", mockConfigFilmmaker.getFullname())
+					.param("country", mockConfigFilmmaker.getCountry())
+					.param("city", mockConfigFilmmaker.getCity())
+					.param("phone", mockConfigFilmmaker.getPhone())
+					.param("byComments", mockConfigFilmmaker.getByComments().toString())
+					.param("byRatings", mockConfigFilmmaker.getByRatings().toString())
+					.param("bySubscriptions", mockConfigFilmmaker.getBySubscriptions().toString()))
+					.andExpect(status().isFound())
+					.andExpect(redirectedUrl("/login"));
+		});	
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
+	
+	@Test
+	void manageAccountFilmmakerMissingData() {
+		final Filmmaker mockFilmmaker = new Filmmaker();
+		mockFilmmaker.setFullname("Filmmaker1");
+		mockFilmmaker.setCountry("Spain");
+		mockFilmmaker.setCity("Seville");
+		mockFilmmaker.setPhone("678543167");
+		mockFilmmaker.setConfiguration(new NotificationConfiguration());
+
+		final FilmmakerConfigurationData mockConfigFilmmaker = new FilmmakerConfigurationData();
+		mockConfigFilmmaker.setByComments(false);
+		mockConfigFilmmaker.setByRatings(true);
+		mockConfigFilmmaker.setBySubscriptions(true);
+		mockConfigFilmmaker.setCity("Seville");
+		mockConfigFilmmaker.setCountry("Spain");
+		mockConfigFilmmaker.setFullname("");
+		mockConfigFilmmaker.setPhone("616449997");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/account/filmmaker").with(csrf())
+					.param("fullname", mockConfigFilmmaker.getFullname())
+					.param("country", mockConfigFilmmaker.getCountry())
+					.param("city", mockConfigFilmmaker.getCity())
+					.param("phone", mockConfigFilmmaker.getPhone())
+					.param("byComments", mockConfigFilmmaker.getByComments().toString())
+					.param("byRatings", mockConfigFilmmaker.getByRatings().toString())
+					.param("bySubscriptions", mockConfigFilmmaker.getBySubscriptions().toString()))
+					.andExpect(status().isOk())
+					.andExpect(view().name("manageFilmmakerAccount"));
+		});	
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
+	
+	@Test
+	void manageAccountFilmmakerAsCompany() {
+		final Company mockCompany = new Company();
+		mockCompany.setBusinessPhone("675849765");
+		mockCompany.setCompanyName("Company1");
+		mockCompany.setOfficeAddress("Calle Manzanita 3");
+		mockCompany.setTaxIDNumber("123-78-1234567");
+		mockCompany.setConfiguration(new NotificationConfiguration());
+		
+		final FilmmakerConfigurationData mockConfigFilmmaker = new FilmmakerConfigurationData();
+		mockConfigFilmmaker.setByComments(false);
+		mockConfigFilmmaker.setByRatings(true);
+		mockConfigFilmmaker.setBySubscriptions(true);
+		mockConfigFilmmaker.setCity("");
+		mockConfigFilmmaker.setCountry("");
+		mockConfigFilmmaker.setFullname("Filmmaker1");
+		mockConfigFilmmaker.setPhone("616449997");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/account/filmmaker").with(csrf())
+					.param("fullname", mockConfigFilmmaker.getFullname())
+					.param("country", mockConfigFilmmaker.getCountry())
+					.param("city", mockConfigFilmmaker.getCity())
+					.param("phone", mockConfigFilmmaker.getPhone())
+					.param("byComments", mockConfigFilmmaker.getByComments().toString())
+					.param("byRatings", mockConfigFilmmaker.getByRatings().toString())
+					.param("bySubscriptions", mockConfigFilmmaker.getBySubscriptions().toString()))
+					.andExpect(status().isFound())
+					.andExpect(redirectedUrl("/account"));
+		});	
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 	}
 }

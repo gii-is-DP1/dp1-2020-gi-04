@@ -163,7 +163,7 @@ public class FilmmakerController {
 
 		Filmmaker userFilmmaker = (Filmmaker) user;
 		filmmakerConfigurationData.copyToFilmmaker(userFilmmaker);
-		if (!filmmakerConfigurationData.getNewPhoto().isEmpty()) {
+		if (filmmakerConfigurationData.getNewPhoto() != null && !filmmakerConfigurationData.getNewPhoto().isEmpty()) {
 			try {
 				userService.setProfilePicture(userFilmmaker, filmmakerConfigurationData.getNewPhoto());
 			} catch (Exception e) {

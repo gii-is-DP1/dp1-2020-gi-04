@@ -30,7 +30,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import io.github.fourfantastics.standby.StandbyApplication;
+import io.github.fourfantastics.standby.model.Company;
+import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
 import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
 import io.github.fourfantastics.standby.service.CompanyService;
 import io.github.fourfantastics.standby.service.UserService;
@@ -209,5 +213,151 @@ public class CompanyControllerTest {
 		
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 		verify(companyService, only()).registerCompany(mockCompanyRegisterData);
+	}
+	
+	@Test
+	void manageAccountCompanyView() {
+		final Company mockCompany = new Company();
+		mockCompany.setBusinessPhone("675849765");
+		mockCompany.setCompanyName("Company1");
+		mockCompany.setOfficeAddress("Calle Manzanita 3");
+		mockCompany.setTaxIDNumber("123-78-1234567");
+		mockCompany.setConfiguration(new NotificationConfiguration());
+
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/account/company"))
+					.andExpect(status().isOk())
+					.andExpect(model().attribute("companyConfigurationData",
+							CompanyConfigurationData.fromCompany(mockCompany)))
+					.andExpect(view().name("manageCompanyAccount"));
+		});
+
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
+	
+	@Test
+	void manageAccountCompany() {
+		final Company mockCompany = new Company();
+		mockCompany.setBusinessPhone("675849765");
+		mockCompany.setCompanyName("Company1");
+		mockCompany.setOfficeAddress("Calle Manzanita 3");
+		mockCompany.setTaxIDNumber("123-78-1234567");
+		mockCompany.setConfiguration(new NotificationConfiguration());	
+		
+		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
+		mockConfigCompany.setBusinessPhone("675849765");
+		mockConfigCompany.setByPrivacyRequests(false);
+		mockConfigCompany.setCompanyName("Company2");
+		mockConfigCompany.setOfficeAddress("Apple street 3");
+		mockConfigCompany.setTaxIDNumber("123-78-1234567");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/account/company").with(csrf())
+					.param("companyName", mockConfigCompany.getCompanyName())
+					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+					.param("businessPhone", mockConfigCompany.getBusinessPhone())
+					.param("officeAddress", mockConfigCompany.getOfficeAddress())
+					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isOk())
+					.andExpect(view().name("manageCompanyAccount"));
+		});
+		
+		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		mockConfigCompany.copyToCompany(mockCompany);
+		verify(userService, times(1)).saveUser(mockCompany);
+		verifyNoMoreInteractions(userService);
+	}
+	
+	@Test
+	void manageAccountCompanyNotLogged() {
+		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
+		mockConfigCompany.setBusinessPhone("675849765");
+		mockConfigCompany.setByPrivacyRequests(false);
+		mockConfigCompany.setCompanyName("Company2");
+		mockConfigCompany.setOfficeAddress("Apple street 3");
+		mockConfigCompany.setTaxIDNumber("123-78-1234567");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/account/company").with(csrf())
+					.param("companyName", mockConfigCompany.getCompanyName())
+					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+					.param("businessPhone", mockConfigCompany.getBusinessPhone())
+					.param("officeAddress", mockConfigCompany.getOfficeAddress())
+					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isFound())
+					.andExpect(redirectedUrl("/login"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
+	
+	@Test
+	void manageAccountCompanyMissingData() {
+		final Company mockCompany = new Company();
+		mockCompany.setBusinessPhone("675849765");
+		mockCompany.setCompanyName("Company1");
+		mockCompany.setOfficeAddress("Calle Manzanita 3");
+		mockCompany.setTaxIDNumber("123-78-1234567");
+		mockCompany.setConfiguration(new NotificationConfiguration());	
+		
+		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
+		mockConfigCompany.setBusinessPhone("675849765");
+		mockConfigCompany.setByPrivacyRequests(false);
+		mockConfigCompany.setCompanyName("");
+		mockConfigCompany.setOfficeAddress("Apple street 3");
+		mockConfigCompany.setTaxIDNumber("");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/account/company").with(csrf())
+					.param("companyName", mockConfigCompany.getCompanyName())
+					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+					.param("businessPhone", mockConfigCompany.getBusinessPhone())
+					.param("officeAddress", mockConfigCompany.getOfficeAddress())
+					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isOk())
+					.andExpect(view().name("manageCompanyAccount"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
+	
+	@Test
+	void manageAccountCompanyAsFilmmaker() {
+		final Filmmaker mockFilmmaker = new Filmmaker();
+		mockFilmmaker.setFullname("Filmmaker1");
+		mockFilmmaker.setCountry("Spain");
+		mockFilmmaker.setCity("Seville");
+		mockFilmmaker.setPhone("678543167");
+		mockFilmmaker.setConfiguration(new NotificationConfiguration());
+		
+		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
+		mockConfigCompany.setBusinessPhone("675849765");
+		mockConfigCompany.setByPrivacyRequests(false);
+		mockConfigCompany.setCompanyName("Company2");
+		mockConfigCompany.setOfficeAddress("Apple street 3");
+		mockConfigCompany.setTaxIDNumber("123-78-1234567");
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post("/account/company").with(csrf())
+					.param("companyName", mockConfigCompany.getCompanyName())
+					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+					.param("businessPhone", mockConfigCompany.getBusinessPhone())
+					.param("officeAddress", mockConfigCompany.getOfficeAddress())
+					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isFound())
+					.andExpect(redirectedUrl("/manageAccount"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 	}
 }
