@@ -126,7 +126,7 @@ public class CompanyController {
 
 		Company userCompany = (Company) user;
 		companyConfigurationData.copyToCompany(userCompany);
-		if (!companyConfigurationData.getNewPhoto().isEmpty()) {
+		if (companyConfigurationData.getNewPhoto() != null && !companyConfigurationData.getNewPhoto().isEmpty()) {
 			try {
 				userService.setProfilePicture(userCompany, companyConfigurationData.getNewPhoto());
 			} catch (Exception e) {

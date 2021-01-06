@@ -20,7 +20,7 @@ public class ShortFilmUploadDataValidator implements Validator {
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "", "Title cannot be empty!");
 		
-		if (shortFilmUploadData.getFile().isEmpty()) {
+		if (shortFilmUploadData.getFile() == null || shortFilmUploadData.getFile().isEmpty()) {
 			errors.rejectValue("file", "", "You must choose a file to upload!");
 		}
 		
