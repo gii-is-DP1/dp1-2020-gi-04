@@ -12,6 +12,7 @@ import static org.mockito.Mockito.eq;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,7 +40,9 @@ import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
 import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
 import io.github.fourfantastics.standby.service.CompanyService;
 import io.github.fourfantastics.standby.service.UserService;
+import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.TooBigException;
 import io.github.fourfantastics.standby.utils.Utils;
 
 @ActiveProfiles("test")
@@ -268,6 +272,45 @@ public class CompanyControllerTest {
 		
 		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
 		mockConfigCompany.copyToCompany(mockCompany);
+		verify(userService, times(1)).saveUser(mockCompany);
+		verifyNoMoreInteractions(userService);
+	}
+	
+	@Test
+	void manageAccountCompanyChangePicture() throws TooBigException, InvalidExtensionException, RuntimeException {
+		final Company mockCompany = new Company();
+		mockCompany.setBusinessPhone("675849765");
+		mockCompany.setCompanyName("Company1");
+		mockCompany.setOfficeAddress("Calle Manzanita 3");
+		mockCompany.setTaxIDNumber("123-78-1234567");
+		mockCompany.setConfiguration(new NotificationConfiguration());	
+		
+		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
+		mockConfigCompany.setBusinessPhone("675849765");
+		mockConfigCompany.setByPrivacyRequests(false);
+		mockConfigCompany.setCompanyName("Company2");
+		mockConfigCompany.setOfficeAddress("Apple street 3");
+		mockConfigCompany.setTaxIDNumber("123-78-1234567");
+		mockConfigCompany.setNewPhoto(new MockMultipartFile("newPhoto", "mockFile.png", "image/png", "This is an example".getBytes()));
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(multipart("/account/company")
+					.file((MockMultipartFile) mockConfigCompany.getNewPhoto())
+					.with(csrf())
+					.param("companyName", mockConfigCompany.getCompanyName())
+					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+					.param("businessPhone", mockConfigCompany.getBusinessPhone())
+					.param("officeAddress", mockConfigCompany.getOfficeAddress())
+					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isOk())
+					.andExpect(view().name("manageCompanyAccount"));
+		});
+		
+		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		mockConfigCompany.copyToCompany(mockCompany);
+		verify(userService, times(1)).setProfilePicture(mockCompany, mockConfigCompany.getNewPhoto());
 		verify(userService, times(1)).saveUser(mockCompany);
 		verifyNoMoreInteractions(userService);
 	}

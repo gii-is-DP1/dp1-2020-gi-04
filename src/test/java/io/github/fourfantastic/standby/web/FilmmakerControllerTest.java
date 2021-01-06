@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,7 +40,9 @@ import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.UserService;
+import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
+import io.github.fourfantastics.standby.service.exception.TooBigException;
 import io.github.fourfantastics.standby.utils.Utils;
 
 @ActiveProfiles("test")
@@ -272,6 +276,49 @@ public class FilmmakerControllerTest {
 		
 		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
 		mockConfigFilmmaker.copyToFilmmaker(mockFilmmaker);
+		verify(userService, times(1)).saveUser(mockFilmmaker);
+		verifyNoMoreInteractions(userService);
+	}
+	
+	@Test
+	void manageAccountFilmmakerChangePicture() throws TooBigException, InvalidExtensionException, RuntimeException {
+		final Filmmaker mockFilmmaker = new Filmmaker();
+		mockFilmmaker.setFullname("Filmmaker1");
+		mockFilmmaker.setCountry("Spain");
+		mockFilmmaker.setCity("Seville");
+		mockFilmmaker.setPhone("678543167");
+		mockFilmmaker.setConfiguration(new NotificationConfiguration());
+
+		final FilmmakerConfigurationData mockConfigFilmmaker = new FilmmakerConfigurationData();
+		mockConfigFilmmaker.setByComments(false);
+		mockConfigFilmmaker.setByRatings(true);
+		mockConfigFilmmaker.setBySubscriptions(true);
+		mockConfigFilmmaker.setCity("Huelva");
+		mockConfigFilmmaker.setCountry("Spain");
+		mockConfigFilmmaker.setFullname("Filmmaker1");
+		mockConfigFilmmaker.setPhone("616449997");
+		mockConfigFilmmaker.setNewPhoto(new MockMultipartFile("newPhoto", "mockFile.png", "image/png", "This is an example".getBytes()));
+		
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(multipart("/account/filmmaker")
+					.file((MockMultipartFile) mockConfigFilmmaker.getNewPhoto())
+					.with(csrf())
+					.param("fullname", mockConfigFilmmaker.getFullname())
+					.param("country", mockConfigFilmmaker.getCountry())
+					.param("city", mockConfigFilmmaker.getCity())
+					.param("phone", mockConfigFilmmaker.getPhone())
+					.param("byComments", mockConfigFilmmaker.getByComments().toString())
+					.param("byRatings", mockConfigFilmmaker.getByRatings().toString())
+					.param("bySubscriptions", mockConfigFilmmaker.getBySubscriptions().toString()))
+					.andExpect(status().isOk())
+					.andExpect(view().name("manageFilmmakerAccount"));
+		});
+		
+		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		mockConfigFilmmaker.copyToFilmmaker(mockFilmmaker);
+		verify(userService, times(1)).setProfilePicture(mockFilmmaker, mockConfigFilmmaker.getNewPhoto());
 		verify(userService, times(1)).saveUser(mockFilmmaker);
 		verifyNoMoreInteractions(userService);
 	}
