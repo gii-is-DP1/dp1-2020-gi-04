@@ -1,29 +1,41 @@
 <!DOCTYPE html>
-<html
-	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
-<title data-th-text="|Editing ${shortFilmEditData.title} - Standby|"></title>
-<section>
-	<h3 data-th-text="|Editing shortfilm ${shortFilmEditData.title}|"></h3>
-	<hr />
-	<div class="row">
-		<div class="col-0 col-sm-1"></div>
-		<div class="col-12 col-sm-10">
-			<form method="POST" data-th-action="@{edit}"
-				data-th-object="${shortFilmEditData}" id="upload-form">
-				<div id="general-error-container" class="alert alert-danger d-none"></div>
-				<label class="form-text text-muted">Short film information</label> <input
-					data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2')}" />
-				<textarea
-					data-th-replace="~{@{fragments/form/textarea}(name='description', label='Description', placeholder='A super awesome description')}"></textarea>
-
-				<label class="form-text text-muted">Tags</label>
-				<span data-th-replace="~{@{fragments/tag}(text='wakalaa', rounded='false', closeable='false')}"></span>
-				<br>
-				<button type="submit" class="btn btn-success btn-block">Apply
-					changes</button>
-			</form>
-		</div>
-		<div class="col-0 col-sm-1"></div>
-	</div>
-</section>
+<html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+    <title data-th-text="|Editing ${shortFilmEditData.title} - Standby|"></title>
+    <section>
+        <h3 data-th-text="|Editing shortfilm ${shortFilmEditData.title}|"></h3>
+        <hr />
+        <div class="row">
+            <div class="col-0 col-sm-1"></div>
+            <div class="col-12 col-sm-10">
+                <form method="POST" data-th-action="@{edit}" data-th-object="${shortFilmEditData}">
+                    <div id="general-error-container" class="alert alert-danger d-none"></div>
+                    <label class="form-text text-muted">Short film information</label>
+                    <input data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2')}" />
+                    <textarea data-th-replace="~{@{fragments/form/textarea}(name='description', label='Description', placeholder='A super awesome description')}"></textarea>
+                    <label class="form-text text-muted">Tags</label>
+                    <div class="mb-3" data-th-switch="*{tags != null and !tags.isEmpty()}">
+                        <th-block data-th-case="true">
+                            <th-block data-th-each="tag, stat : *{tags}">
+                                <span data-th-replace="~{@{fragments/tag}(text='__${tag}__', closeable='true', closeAction='removeTag', closeParam='__${tag}__')}"></span>
+                                <input type="hidden" data-th-field="*{tags[__${stat.index}__]}" value="__${tag}__" />
+                            </th-block>
+                        </th-block>
+                        <span data-th-case="false">There are not tags yet!</span>
+                    </div>
+                    <label class="form-text text-muted">Add a new tag</label>
+                    <div class="form-row">
+                        <div class="col-12 col-md-8">
+                            <input data-th-replace="~{@{fragments/form/input}(name='newTagName', placeholder='Action, drama...')}" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <button type="submit" class="btn btn-primary btn-block" name="addTag">Add</button>
+                        </div>
+                    </div>
+                    <br />
+                    <button type="submit" class="btn btn-success btn-block">Apply changes</button>
+                </form>
+            </div>
+            <div class="col-0 col-sm-1"></div>
+        </div>
+    </section>
 </html>
