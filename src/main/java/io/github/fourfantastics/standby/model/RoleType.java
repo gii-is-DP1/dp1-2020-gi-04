@@ -16,17 +16,13 @@ public enum RoleType {
 	GAFFER("Gaffer"),
 	OTHER("Other");
    
-   private String name;
+    private String name;
    
-   RoleType(String name) {
-	   this.name = name;
-   }
+    RoleType(String name) {
+    	this.name = name;
+    }
    
-   public String getName() {
-	   return name;
-   }
-   
-   public String toString() {
-	   return getName();
-   }
+    public String getName() {
+	    return name;
+    }
 }

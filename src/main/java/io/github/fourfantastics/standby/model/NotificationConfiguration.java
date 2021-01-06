@@ -49,6 +49,5 @@ public class NotificationConfiguration {
 		this.byRatings = true;
 		this.bySubscriptions = true;
 		this.byPrivacyRequests = true;
-
 	}
 }

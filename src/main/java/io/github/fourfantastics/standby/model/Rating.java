@@ -42,5 +42,4 @@ public class Rating {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	ShortFilm shortFilm;
-
 }
