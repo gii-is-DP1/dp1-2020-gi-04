@@ -59,7 +59,7 @@ public class ShortFilm {
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "favouriteShortFilms")
 	Set<User> favouriteUsers = new HashSet<User>();
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortfilm")
 	Set<Role> roles = new HashSet<Role>();
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)

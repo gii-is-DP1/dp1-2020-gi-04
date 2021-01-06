@@ -4,17 +4,13 @@ public enum UserType {
 	Filmmaker("Filmmaker"),
 	Company("Company");
 	
-	private String type;
+	private String name;
 	
-	private UserType(String type) {
-		this.type = type;
+	private UserType(String name) {
+		this.name = name;
 	}
 	
-	public String getType() {
-		return type;
-	}
-	
-	public String toString() {
-		return getType();
+	public String getName() {
+		return name;
 	}
 }
