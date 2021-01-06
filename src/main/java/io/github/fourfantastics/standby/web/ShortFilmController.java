@@ -1,8 +1,10 @@
 package io.github.fourfantastics.standby.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -106,7 +109,7 @@ public class ShortFilmController {
 	}
 
 	@GetMapping("/shortfilm/{shortFilmId}/edit")
-	public String getUploadView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
+	public String getEditView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
 			Map<String, Object> model) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
@@ -118,7 +121,59 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
+		model.put("shortFilmId", shortFilmId);
 		model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(film));
+		return "editShortFilm";
+	}
+
+	@PostMapping(path = "/shortfilm/{shortFilmId}/edit", params = { "removeTag" })
+	public String removeTagFromFilm(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
+			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult result,
+			Map<String, Object> model, HttpServletRequest req) {
+		User loggedUser = userService.getLoggedUser(session).orElse(null);
+		if (loggedUser == null) {
+			return "redirect:/login";
+		}
+
+		ShortFilm film = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
+		if (film == null || !film.getUploader().equals((Filmmaker) loggedUser)) {
+			return "redirect:/";
+		}
+
+		if (shortFilmEditData.getTags() != null) {
+			shortFilmEditData.getTags().remove(req.getParameter("removeTag"));
+		}
+
+		return "editShortFilm";
+	}
+
+	@PostMapping(path = "/shortfilm/{shortFilmId}/edit", params = { "addTag" })
+	public String addTagToFilm(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
+			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult result,
+			Map<String, Object> model, HttpServletRequest req) {
+		User loggedUser = userService.getLoggedUser(session).orElse(null);
+		if (loggedUser == null) {
+			return "redirect:/login";
+		}
+
+		ShortFilm film = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
+		if (film == null || !film.getUploader().equals((Filmmaker) loggedUser)) {
+			return "redirect:/";
+		}
+
+		if (shortFilmEditData.getTags() == null) {
+			shortFilmEditData.setTags(new ArrayList<String>());
+		}
+
+		if (shortFilmEditData.getTags().contains(shortFilmEditData.getNewTagName())) {
+			result.rejectValue("newTagName", "", "Tag is already added!");
+		} else if (shortFilmEditData.getNewTagName().isBlank()) {
+			result.rejectValue("newTagName", "", "Tag cannot be blank!");
+		} else {
+			shortFilmEditData.getTags().add(shortFilmEditData.getNewTagName());
+			shortFilmEditData.setNewTagName("");
+		}
+
 		return "editShortFilm";
 	}
 }
