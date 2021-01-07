@@ -88,7 +88,7 @@ public class FilmmakerController {
 
 		Filmmaker filmmaker = (Filmmaker) user;
 		FilmmakerProfileData filmmakerProfileData = FilmmakerProfileData.fromFilmmaker(filmmaker);
-		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmbyFilmmaker(filmmaker));
+		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmByFilmmaker(filmmaker));
 
 		model.put("filmmakerProfileData", filmmakerProfileData);
 

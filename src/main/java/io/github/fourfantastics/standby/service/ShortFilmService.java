@@ -91,7 +91,7 @@ public class ShortFilmService {
 		return shortFilmRepository.save(shortFilm);
 	}
 	
-	public Set<ShortFilm> getShortFilmbyFilmmaker(Filmmaker filmmaker){
+	public Set<ShortFilm> getShortFilmByFilmmaker(Filmmaker filmmaker){
 		Set<Role> roles = filmmaker.getParticipateAs();
 		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet());
 	}
