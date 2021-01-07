@@ -94,6 +94,7 @@ public class ShortFilmServiceTest {
 
 			verify(fileRepository, times(1)).getFileExtension(mockFile);
 			verify(mockFile, only()).getSize();
+			verify(fileRepository, times(1)).createDirectory(any(Path.class));
 			verify(fileRepository, times(1)).saveFile(eq(mockFile), any(Path.class));
 			verifyNoMoreInteractions(fileRepository);
 			verify(shortFilmRepository, only()).save(any(ShortFilm.class));

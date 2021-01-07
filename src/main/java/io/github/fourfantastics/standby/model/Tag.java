@@ -33,7 +33,7 @@ public class Tag {
 	@NotEmpty
 	@NotNull
 	@Column(nullable = false)
-	String tagname;
+	String name;
 
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "tags")
 	Set<ShortFilm> movies = new HashSet<ShortFilm>();

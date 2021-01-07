@@ -10,13 +10,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.Optional;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,26 +34,11 @@ public class FileRepositoryTest {
 	FileRepository fileRepository;
 
 	@BeforeAll
-	public static void createRoot() {
+	public static void createRoot() throws IOException {
 		if (Files.notExists(root)) {
-			assertDoesNotThrow(() -> {
-				Files.createDirectory(root);
-			});
+			Files.createDirectory(root);
 		}
 	}
-
-	/*
-	 * @BeforeEach public void setup() throws IOException { try {
-	 * assertTrue(Files.exists(Paths.get("testFolder"))); assertDoesNotThrow(() -> {
-	 * File[] files = Paths.get("testFolder").toFile().listFiles();
-	 * 
-	 * for (File file : files) { System.out.println(file.getAbsolutePath());
-	 * System.out.println(file.delete()); }
-	 * assertThat(Paths.get("testFolder").toFile().listFiles().length).isEqualTo(0L)
-	 * ; }); } catch(Exception e) { System.out.println(e); }
-	 * 
-	 * }
-	 */
 
 	@Test
 	public void getFileExtensionTest() {
@@ -134,16 +116,10 @@ public class FileRepositoryTest {
 
 	@AfterAll
 	public static void cleanUp() throws IOException {
-
-		assertTrue(Files.exists(Paths.get("testFolder")));
 		File[] files = root.toFile().listFiles();
-
 		for (File file : files) {
 			file.delete();
 		}
-		files = Paths.get("testFolder").toFile().listFiles();
-
-		assertThat(files.length).isEqualTo(0L);
-
+		root.toFile().delete();
 	}
 }
