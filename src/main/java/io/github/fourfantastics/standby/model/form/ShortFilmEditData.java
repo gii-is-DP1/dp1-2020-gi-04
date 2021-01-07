@@ -1,7 +1,7 @@
 package io.github.fourfantastics.standby.model.form;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.github.fourfantastics.standby.model.RoleType;
@@ -17,9 +17,9 @@ public class ShortFilmEditData {
 
 	String description;
 
-	List<String> tags;
+	List<String> tags = new ArrayList<String>();
 
-	Map<String, RoleType> roles;
+	List<RoleData> roles = new ArrayList<RoleData>();
 	
 	String newTagName;
 	
@@ -31,7 +31,7 @@ public class ShortFilmEditData {
 		ShortFilmEditData shortFilmEditData = new ShortFilmEditData();
 		shortFilmEditData.setTitle(shortFilm.getTitle());
 		shortFilmEditData.setDescription(shortFilm.getDescription());
-		shortFilmEditData.setRoles(shortFilm.getRoles().stream().collect(Collectors.toMap(x -> x.getFilmmaker().getName(), x -> x.getRole())));
+		shortFilmEditData.setRoles(shortFilm.getRoles().stream().map(x -> RoleData.of(x.getFilmmaker().getName(), x.getRole())).collect(Collectors.toList()));
 		shortFilmEditData.setTags(shortFilm.getTags().stream().map(Tag::getName).collect(Collectors.toList()));
 		
 		shortFilmEditData.setNewTagName("");
