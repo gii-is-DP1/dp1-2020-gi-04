@@ -1,9 +1,7 @@
 package io.github.fourfantastics.standby.web;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,11 +21,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Role;
-import io.github.fourfantastics.standby.model.RoleType;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.model.form.RoleData;
 import io.github.fourfantastics.standby.model.form.ShortFilmEditData;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.model.validator.ShortFilmEditDataValidator;
@@ -137,7 +135,6 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
-		model.put("shortFilmId", shortFilmId);
 		model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(shortFilm));
 		return "editShortFilm";
 	}
@@ -154,10 +151,6 @@ public class ShortFilmController {
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
-		}
-
-		if (shortFilmEditData.getTags() == null) {
-			shortFilmEditData.setTags(new ArrayList<String>());
 		}
 
 		shortFilmEditDataValidator.setValidationTargets(false, true, false);
@@ -190,9 +183,7 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
-		if (shortFilmEditData.getTags() != null) {
-			shortFilmEditData.getTags().remove(req.getParameter("removeTag"));
-		}
+		shortFilmEditData.getTags().remove(req.getParameter("removeTag"));
 
 		return "editShortFilm";
 	}
@@ -210,11 +201,7 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-
-		if (shortFilmEditData.getRoles() == null) {
-			shortFilmEditData.setRoles(new HashMap<String, RoleType>());
-		}
-
+		
 		shortFilmEditDataValidator.setValidationTargets(false, false, true);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
 		if (result.hasErrors()) {
@@ -230,7 +217,15 @@ public class ShortFilmController {
 			return "editShortFilm";
 		}
 
-		shortFilmEditData.getRoles().put(shortFilmEditData.getNewRoleFilmmaker(), shortFilmEditData.getNewRoleType());
+		RoleData newPair = RoleData.of(shortFilmEditData.getNewRoleFilmmaker(), shortFilmEditData.getNewRoleType());
+		for (RoleData pair : shortFilmEditData.getRoles()) {
+			if (newPair.equals(pair)) {
+				result.rejectValue("newRoleFilmmaker", "", "This association is already added!");
+				return "editShortFilm";
+			}
+		}
+		
+		shortFilmEditData.getRoles().add(newPair);
 		shortFilmEditData.setNewRoleFilmmaker("");
 
 		return "editShortFilm";
@@ -250,10 +245,16 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
-		if (shortFilmEditData.getRoles() != null) {
-			shortFilmEditData.getRoles().remove(req.getParameter("removeRole"));
+		int index;
+		try {
+			index = Integer.valueOf(req.getParameter("removeRole")).intValue();
+		} catch (Exception e) {
+			result.reject("", "Couldn't remove the role successfully");
+			return "editShortFilm";
 		}
-
+		
+		shortFilmEditData.getRoles().remove(index);
+		
 		return "editShortFilm";
 	}
 
@@ -280,34 +281,30 @@ public class ShortFilmController {
 		shortFilmEditData.copyToShortFilm(shortFilm);
 		
 		shortFilm.getTags().clear();
-		if (shortFilmEditData.getTags() != null) {
-			for (String tagName : shortFilmEditData.getTags()) {
-				Tag newTag = tagService.getTagByName(tagName).orElse(null);
-				if (newTag == null) {
-					newTag = new Tag();
-					newTag.setName(tagName);
-					tagService.saveTag(newTag);
-				}
-				shortFilm.getTags().add(newTag);
+		for (String tagName : shortFilmEditData.getTags()) {
+			Tag newTag = tagService.getTagByName(tagName).orElse(null);
+			if (newTag == null) {
+				newTag = new Tag();
+				newTag.setName(tagName);
+				tagService.saveTag(newTag);
 			}
+			shortFilm.getTags().add(newTag);
 		}
 
 		for (Role role : shortFilm.getRoles()) {
 			roleService.deleteRole(role);
 		}
 		shortFilm.getRoles().clear();
-		if (shortFilmEditData.getRoles() != null) {
-			for (Entry<String, RoleType> entry : shortFilmEditData.getRoles().entrySet()) {
-				User roleUser = userService.getUserByName(entry.getKey()).orElse(null);
-				if (roleUser == null || !roleUser.getType().equals(UserType.Filmmaker)) {
-					continue;
-				}
-				Role newRole = new Role();
-				newRole.setFilmmaker((Filmmaker) roleUser);
-				newRole.setRole(entry.getValue());
-				newRole.setShortfilm(shortFilm);
-				roleService.saveRole(newRole);
+		for (RoleData roleData : shortFilmEditData.getRoles()) {
+			User roleUser = userService.getUserByName(roleData.getFilmmakerName()).orElse(null);
+			if (roleUser == null || !roleUser.getType().equals(UserType.Filmmaker)) {
+				continue;
 			}
+			Role newRole = new Role();
+			newRole.setFilmmaker((Filmmaker) roleUser);
+			newRole.setRole(roleData.getRoleType());
+			newRole.setShortfilm(shortFilm);
+			roleService.saveRole(newRole);
 		}
 
 		shortFilmService.save(shortFilm);
