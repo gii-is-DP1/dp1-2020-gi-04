@@ -52,9 +52,14 @@
 
 		<dependency>
 			<groupId>org.bytedeco</groupId>
-			<artifactId>javacv-platform</artifactId>
+			<artifactId>javacv</artifactId>
 			<version>1.5.4</version>
 		</dependency>
+		<dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg-platform</artifactId>
+            <version>1.5.4</version>
+        </dependency>
 
 		<dependency>
 			<groupId>com.h2database</groupId>
