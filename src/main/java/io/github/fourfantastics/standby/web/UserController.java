@@ -105,13 +105,16 @@ public class UserController {
 			return "redirect:/login";
 		}
 		
-		return String.format("redirect:/profile/%d", user.getId());
+		if (user.getType().equals(UserType.Filmmaker)) {
+			return String.format("redirect:/profile/%d", user.getId());
+		}else {
+			return "redirect:/account";
+		}
 	}
 
 	@GetMapping("/profile/{userID}")
 	public String getProfileView(@PathVariable("userID") Long userID) {
 		if (userID == null) {
-			System.out.println("sosioooooooo q la id es nula mi vidaaa");
 			return "redirect:/";
 		}
 		
@@ -120,10 +123,10 @@ public class UserController {
 			return "redirect:/";
 		}
 
-		if (user.getType() == UserType.Filmmaker) {
+		if (user.getType().equals(UserType.Filmmaker)) {
 			return String.format("redirect:/profile/filmmaker/%d", userID);
 		} else {
-			return String.format("redirect:/profile/company/%d", userID);
+			return "redirect:/account";
 		}
 	}
 }

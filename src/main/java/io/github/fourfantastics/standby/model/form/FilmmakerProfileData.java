@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FilmmakerProfileData {
 
+	Long id;
+	
 	String fullname;
 
 	String photoUrl;
@@ -26,6 +28,7 @@ public class FilmmakerProfileData {
 
 	public static FilmmakerProfileData fromFilmmaker(Filmmaker filmmaker) {
 		FilmmakerProfileData filmmakerProfileData = new FilmmakerProfileData();
+		filmmakerProfileData.setId(filmmaker.getId());
 		filmmakerProfileData.setFullname(filmmaker.getFullname());
 		filmmakerProfileData.setPhotoUrl(filmmaker.getPhotoUrl());
 		filmmakerProfileData.setFilmmakerSubscribers(filmmaker.getFilmmakerSubscribers());
