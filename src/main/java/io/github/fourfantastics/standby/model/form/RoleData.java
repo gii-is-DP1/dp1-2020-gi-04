@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoleData {
-	public String filmmakerName;
+	String filmmakerName;
 	
-	public RoleType roleType;
+	RoleType roleType;
 	
 	public static RoleData of(String filmmakerName, RoleType roleType) {
 		return new RoleData(filmmakerName, roleType);

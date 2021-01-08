@@ -8,8 +8,9 @@
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
                 <form method="POST" data-th-action="@{edit}" data-th-object="${shortFilmEditData}">
-                    <div id="general-error-container" class="alert alert-danger d-none"></div>
-                    <label class="form-text text-muted">Short film information</label> <input data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2')}" />
+                    <div data-th-replace="~{@{fragments/form/errors}}"></div>
+                    <div data-th-replace="~{@{fragments/form/success}}"></div>
+                    <label class="form-text text-muted">Short film information</label> <input data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2', required='true')}" />
                     <textarea data-th-replace="~{@{fragments/form/textarea}(name='description', label='Description', placeholder='A super awesome description')}"></textarea>
                     <label class="form-text text-muted">Tags</label>
                     <div class="mb-3" data-th-switch="*{tags != null and !tags.isEmpty()}">
@@ -35,48 +36,57 @@
                         <table class="table">
                             <thead class="bg-light">
                                 <tr>
-                                    <th scope="col">Filmmaker's username</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col"></th>
+                                    <th scope="col" style="min-width: 200px">Filmmaker's username</th>
+                                    <th scope="col" style="min-width: 200px">Role</th>
+                                    <th scope="col" style="min-width: 200px"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <th-block data-th-switch="*{roles != null and !roles.isEmpty()}">
                                     <th-block data-th-case="true">
                                         <tr data-th-each="role, stat : *{roles}">
-                                            <td class="align-middle">
-                                                <span data-th-text="${role.getFilmmakerName()}"></span>
-                                            </td>
-                                            <td class="align-middle">
-                                                <span data-th-text="${role.getRoleType().getName()}"></span>
-                                            </td>
-                                            <td class="text-right">
-                                                <button type="submit" class="btn btn-danger btn-block" data-th-name="removeRole" data-th-value="${stat.index}">Remove</button>
-                                            </td>
+                                            <th-block data-th-if="*{rolePagination.isIndexVisible(__${stat.index}__)}">
+                                                <td class="align-middle">
+                                                    <span data-th-text="${role.getFilmmakerName()}"></span>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <span data-th-text="${role.getRoleType().getName()}"></span>
+                                                </td>
+                                                <td class="align-middle text-right">
+                                                    <button type="submit" class="btn btn-danger btn-block" data-th-name="removeRole" data-th-value="${stat.index}">Remove</button>
+                                                </td>
+                                            </th-block>
                                             <input type="hidden" data-th-field="*{roles[__${stat.index}__].filmmakerName}" data-th-value="${role.getFilmmakerName()}" />
                                             <input type="hidden" data-th-field="*{roles[__${stat.index}__].roleType}" data-th-value="${role.getRoleType()}" />
                                         </tr>
+                                        <tr class="bg-light">
+                                            <td colspan="3">
+                                                <nav data-th-replace="~{@{fragments/pagination}(name='rolePagination', size='small')}"></nav>
+                                            </td>
+                                        </tr>
                                     </th-block>
                                     <tr data-th-case="false">
-                                        <td>There are no roles yet! add the first one</td>
-                                        <td></td>
-                                        <td></td>
+                                        <td colspan="3">There are no roles yet! add the first one</td>
                                     </tr>
                                 </th-block>
                                 <tr class="bg-light">
-                                    <td><input data-th-replace="~{@{fragments/form/input}(name='newRoleFilmmaker', placeholder='example1234', prepend='@')}" /></td>
+                                    <td>
+                                        <input data-th-replace="~{@{fragments/form/input}(name='newRoleFilmmaker', placeholder='example1234', prepend='@')}" />
+                                    </td>
                                     <td>
                                         <select data-th-replace="~{@{fragments/form/select}(name='newRoleType', values='${T(io.github.fourfantastics.standby.model.RoleType).values()}')}"></select>
                                     </td>
                                     <td class="text-right">
-                                        <button type="submit" class="btn btn-primary btn-block" name="addRole">Set role</button>
+                                        <button type="submit" class="btn btn-primary btn-block" name="addRole">Add role</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <button type="submit" class="btn btn-success btn-block">Apply changes</button>
+                    <br>
+                    <button type="submit" class="btn btn-success btn-block" name="applyChanges">Apply changes</button>
                 </form>
+                <br>
             </div>
             <div class="col-0 col-sm-1"></div>
         </div>

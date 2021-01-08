@@ -21,6 +21,8 @@ public class ShortFilmEditData {
 
 	List<RoleData> roles = new ArrayList<RoleData>();
 	
+	Pagination rolePagination = Pagination.empty();
+	
 	String newTagName;
 	
 	String newRoleFilmmaker;
@@ -32,8 +34,8 @@ public class ShortFilmEditData {
 		shortFilmEditData.setTitle(shortFilm.getTitle());
 		shortFilmEditData.setDescription(shortFilm.getDescription());
 		shortFilmEditData.setRoles(shortFilm.getRoles().stream().map(x -> RoleData.of(x.getFilmmaker().getName(), x.getRole())).collect(Collectors.toList()));
+		shortFilmEditData.getRolePagination().setTotalElements(shortFilmEditData.getRoles().size());
 		shortFilmEditData.setTags(shortFilm.getTags().stream().map(Tag::getName).collect(Collectors.toList()));
-		
 		shortFilmEditData.setNewTagName("");
 		shortFilmEditData.setNewRoleFilmmaker("");
 		shortFilmEditData.setNewRoleType(RoleType.ACTOR);
