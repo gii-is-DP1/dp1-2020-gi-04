@@ -16,6 +16,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,20 +38,29 @@ public class ShortFilm {
 	@NotNull
 	@NotEmpty
 	@Length(max = 128)
+	@Column(nullable = false)
 	String title;
 
 	@NotNull
 	@NotEmpty
+	@Column(nullable = false)
 	String videoUrl;
 
 	@Column(nullable = true)
 	String thumbnailUrl;
 	
 	@NotNull
+	@Column(nullable = false)
 	Long uploadDate;
 
 	@NotNull
+	@Column(nullable = false)
 	String description;
+	
+	@NotNull
+	@Column(nullable = false)
+	@Range(min = 0)
+	Long viewCount;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
 	Set<Rating> ratings = new HashSet<Rating>();
