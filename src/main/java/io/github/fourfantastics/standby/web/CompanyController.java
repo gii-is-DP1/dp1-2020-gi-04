@@ -139,6 +139,7 @@ public class CompanyController {
 
 		model.put("companyData", companyConfigurationData);
 		model.put("photoUrl", user.getPhotoUrl());
+		model.put("success", "Configuration has been saved successfully!");
 		return "manageCompanyAccount";
 	}
 }

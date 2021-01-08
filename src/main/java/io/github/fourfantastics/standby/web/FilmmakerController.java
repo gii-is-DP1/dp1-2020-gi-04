@@ -176,6 +176,7 @@ public class FilmmakerController {
 
 		model.put("filmmakerData", filmmakerConfigurationData);
 		model.put("photoUrl", user.getPhotoUrl());
+		model.put("success", "Configuration has been saved successfully!");
 		return "manageFilmmakerAccount";
 	}
 }
