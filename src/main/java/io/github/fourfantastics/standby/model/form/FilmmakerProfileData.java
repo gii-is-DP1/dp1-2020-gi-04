@@ -14,6 +14,8 @@ public class FilmmakerProfileData {
 
 	Long id;
 	
+	String name;
+	
 	String fullname;
 
 	String photoUrl;
@@ -29,6 +31,7 @@ public class FilmmakerProfileData {
 	public static FilmmakerProfileData fromFilmmaker(Filmmaker filmmaker) {
 		FilmmakerProfileData filmmakerProfileData = new FilmmakerProfileData();
 		filmmakerProfileData.setId(filmmaker.getId());
+		filmmakerProfileData.setName(filmmaker.getName());
 		filmmakerProfileData.setFullname(filmmaker.getFullname());
 		filmmakerProfileData.setPhotoUrl(filmmaker.getPhotoUrl());
 		filmmakerProfileData.setFilmmakerSubscribers(filmmaker.getFilmmakerSubscribers());
