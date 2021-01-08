@@ -37,10 +37,10 @@ public class Filmmaker extends User {
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "filmmakersSubscribedTo")
 	Set<User> filmmakerSubscribers = new HashSet<User>();//My followers
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "filmmaker")
 	Set<PrivacyRequest> receivedRequests = new HashSet<PrivacyRequest>();
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "filmmaker")
 	Set<Role> participateAs = new HashSet<Role>();
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "uploader")

@@ -126,7 +126,7 @@ public class CompanyController {
 
 		Company userCompany = (Company) user;
 		companyConfigurationData.copyToCompany(userCompany);
-		if (!companyConfigurationData.getNewPhoto().isEmpty()) {
+		if (companyConfigurationData.getNewPhoto() != null && !companyConfigurationData.getNewPhoto().isEmpty()) {
 			try {
 				userService.setProfilePicture(userCompany, companyConfigurationData.getNewPhoto());
 			} catch (Exception e) {
@@ -139,6 +139,7 @@ public class CompanyController {
 
 		model.put("companyData", companyConfigurationData);
 		model.put("photoUrl", user.getPhotoUrl());
+		model.put("success", "Configuration has been saved successfully!");
 		return "manageCompanyAccount";
 	}
 }

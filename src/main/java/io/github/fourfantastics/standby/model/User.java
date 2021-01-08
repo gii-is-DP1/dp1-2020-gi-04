@@ -66,7 +66,7 @@ public class User {
 	@ManyToMany(fetch = FetchType.EAGER) // subscribe List<Filmmaker> filmmakers;
 	Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();//Filmmakers a los que estoy subscrito
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER) // receive
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user") // receive
 	Set<Notification> notifications = new HashSet<Notification>();
 
 	@OneToOne(fetch = FetchType.EAGER) // configures NotificationConfiguration
@@ -80,5 +80,4 @@ public class User {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	Set<ShortFilm> favouriteShortFilms = new HashSet<ShortFilm>();
-
 }

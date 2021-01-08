@@ -1,6 +1,7 @@
 package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -87,11 +88,41 @@ public class FilmmakerController {
 
 		Filmmaker filmmaker = (Filmmaker) user;
 		FilmmakerProfileData filmmakerProfileData = FilmmakerProfileData.fromFilmmaker(filmmaker);
-		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmbyFilmmaker(filmmaker));
+		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmByFilmmaker(filmmaker));
 
 		model.put("filmmakerProfileData", filmmakerProfileData);
 
 		return "filmmakerProfile";
+	}
+	
+	@PostMapping("/subcribesTo/{userID}")
+	public String sucribesToFilmmaker(HttpSession session, @PathVariable("userID") Long userID) {
+		User follower = userService.getLoggedUser(session).orElse(null);
+		if (follower == null) {
+			return "redirect:/login";
+		}
+
+		Optional<User> optionalUser = userService.getUserById(userID);
+		if (!optionalUser.isPresent()) {
+			System.out.println("A quien quieres seguir que no existe por favoh");
+			return "redirect:/";
+		}
+		User user = optionalUser.get();
+		if (user.getType() != UserType.Filmmaker) {
+			System.out.println("No puedes seguir a alguien que no sea un filmmmaker");
+			return String.format("redirect:/profile/%d", userID);
+		}
+
+		Filmmaker followed = (Filmmaker) user;
+
+		if (followed.getName().equals(follower.getName())) {
+			System.out.println("No puedes seguirte a ti mismo egocéntrico");
+			return "filmmakerProfile";
+		}
+
+		userService.subcribesTo(follower, followed);
+		return "filmmakerProfile";
+
 	}
 
 	@GetMapping("/account/filmmaker")
@@ -132,7 +163,7 @@ public class FilmmakerController {
 
 		Filmmaker userFilmmaker = (Filmmaker) user;
 		filmmakerConfigurationData.copyToFilmmaker(userFilmmaker);
-		if (!filmmakerConfigurationData.getNewPhoto().isEmpty()) {
+		if (filmmakerConfigurationData.getNewPhoto() != null && !filmmakerConfigurationData.getNewPhoto().isEmpty()) {
 			try {
 				userService.setProfilePicture(userFilmmaker, filmmakerConfigurationData.getNewPhoto());
 			} catch (Exception e) {
@@ -145,6 +176,7 @@ public class FilmmakerController {
 
 		model.put("filmmakerData", filmmakerConfigurationData);
 		model.put("photoUrl", user.getPhotoUrl());
+		model.put("success", "Configuration has been saved successfully!");
 		return "manageFilmmakerAccount";
 	}
 }

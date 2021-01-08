@@ -1,0 +1,21 @@
+<div class="form-group">
+    <label data-th-if="${label}" data-th-text="${label}"></label>
+    <select
+        data-th-field="*{__${name}__}"
+        class="form-control"
+        data-th-classappend="${#fields.hasErrors('__${name}__') ? ' is-invalid': ''}"
+        data-th-autofocus="${autofocus}?: null"
+        data-th-disabled="${disabled}?: null"
+        data-th-form="${form}?: null"
+        data-th-multiple="${multiple}?: null"
+        data-th-placeholder="${placeholder}?: null"
+        data-th-readonly="${readonly}?: null"
+        data-th-required="${required}?: null"
+        data-th-size="${size}?: null"
+        data-th-value="${value}?: null"
+        data-th-width="${width}?: null"
+    >
+        <option data-th-each="value : __${values}__" data-th-value="${value}" data-th-text="${value.getName()}"></option>
+    </select>
+    <div data-th-replace="~{@{fragments/form/fieldError}(${name})}"></div>
+</div>

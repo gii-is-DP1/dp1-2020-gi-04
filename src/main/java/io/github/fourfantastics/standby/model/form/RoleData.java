@@ -1,22 +1,19 @@
 package io.github.fourfantastics.standby.model.form;
 
-import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.model.RoleType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class RoleData {
-
-	String filmmaker;
-
-	RoleType role;
-
-	public static RoleData fromRole(Role roleFilmmarker) {
-		RoleData roleData = new RoleData();
-		roleData.setFilmmaker(roleFilmmarker.getFilmmaker().getName());
-		roleData.setRole(roleFilmmarker.getRole());
-		return roleData;
+	String filmmakerName;
+	
+	RoleType roleType;
+	
+	public static RoleData of(String filmmakerName, RoleType roleType) {
+		return new RoleData(filmmakerName, roleType);
 	}
 }

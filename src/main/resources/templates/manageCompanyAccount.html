@@ -12,6 +12,7 @@
 				enctype="multipart/form-data"
 				data-th-object="${companyConfigurationData}">
 				<div data-th-replace="~{@{fragments/form/errors}}"></div>
+				<div data-th-replace="~{@{fragments/form/success}}"></div>
 				<label class="form-text text-muted">Upload a new profile
 					picture</label>
 				<div class="form-row align-middle mb-0 mb-md-4">
@@ -56,11 +57,6 @@
 				</div>
 			</form>
 			<br>
-			<hr>
-			<div class="form-group">
-				<a data-th-href="@{/account/delete}" type="button"
-					class="btn btn-outline-danger btn-block">Delete my account</a>
-			</div>
 		</div>
 		<div class="col-0 col-sm-1"></div>
 	</div>
