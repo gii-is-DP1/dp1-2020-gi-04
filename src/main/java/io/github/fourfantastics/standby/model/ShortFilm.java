@@ -3,6 +3,7 @@ package io.github.fourfantastics.standby.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -38,9 +39,13 @@ public class ShortFilm {
 	@Length(max = 128)
 	String title;
 
+	@NotNull
 	@NotEmpty
-	String fileUrl;
+	String videoUrl;
 
+	@Column(nullable = true)
+	String thumbnailUrl;
+	
 	@NotNull
 	Long uploadDate;
 

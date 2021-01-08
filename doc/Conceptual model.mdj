@@ -685,7 +685,25 @@
 											"top": 467,
 											"width": 211,
 											"height": 13,
-											"text": "fileUrl",
+											"text": "videoUrl",
+											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAF24qkLRtAmrSA=",
+											"_parent": {
+												"$ref": "AAAAAAF1g+BBmLQ4tNE="
+											},
+											"model": {
+												"$ref": "AAAAAAF24qkLKtAjC6U="
+											},
+											"fillColor": "#ffd8eb",
+											"font": "Arial;13;0",
+											"left": 877,
+											"top": 482,
+											"width": 211,
+											"height": 13,
+											"text": "thumbnailUrl[0..1]",
 											"horizontalAlignment": 0
 										},
 										{
@@ -700,7 +718,7 @@
 											"fillColor": "#ffd8eb",
 											"font": "Arial;13;0",
 											"left": 877,
-											"top": 482,
+											"top": 497,
 											"width": 211,
 											"height": 13,
 											"text": "uploadDate",
@@ -718,7 +736,7 @@
 											"fillColor": "#ffd8eb",
 											"font": "Arial;13;0",
 											"left": 877,
-											"top": 497,
+											"top": 512,
 											"width": 211,
 											"height": 13,
 											"text": "description[0..1]",
@@ -730,7 +748,7 @@
 									"left": 872,
 									"top": 447,
 									"width": 221,
-									"height": 68
+									"height": 83
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -790,7 +808,7 @@
 							"left": 872,
 							"top": 422,
 							"width": 221,
-							"height": 93,
+							"height": 108,
 							"showVisibility": false,
 							"nameCompartment": {
 								"$ref": "AAAAAAF1g+BBmLQzzkk="
@@ -2914,7 +2932,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 938,
-									"top": 528,
+									"top": 535,
 									"width": 78.736328125,
 									"height": 13,
 									"alpha": 2.026247090155004,
@@ -2937,7 +2955,7 @@
 									"visible": null,
 									"font": "Arial;13;0",
 									"left": 957,
-									"top": 551,
+									"top": 558,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 30,
@@ -2958,7 +2976,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 913,
-									"top": 552,
+									"top": 559,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -2979,7 +2997,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 943,
-									"top": 533,
+									"top": 548,
 									"height": 13,
 									"alpha": 0.5235987755982988,
 									"distance": 30,
@@ -3000,7 +3018,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 956,
-									"top": 536,
+									"top": 551,
 									"height": 13,
 									"alpha": 0.7853981633974483,
 									"distance": 40,
@@ -3020,7 +3038,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 912,
-									"top": 529,
+									"top": 544,
 									"width": 6.5,
 									"height": 13,
 									"alpha": -0.5235987755982988,
@@ -3132,7 +3150,7 @@
 							"tail": {
 								"$ref": "AAAAAAF1g+BBl7Qyi8c="
 							},
-							"points": "928:514;928:602",
+							"points": "928:529;928:602",
 							"nameLabel": {
 								"$ref": "AAAAAAF1hAlJscCWVaU="
 							},
@@ -3313,7 +3331,7 @@
 								"$ref": "AAAAAAF1hA/Au/v+7HU="
 							},
 							"lineStyle": 1,
-							"points": "987:582;928:558"
+							"points": "987:586;928:565"
 						},
 						{
 							"_type": "UMLAssociationView",
@@ -7732,8 +7750,16 @@
 							"_parent": {
 								"$ref": "AAAAAAF1g+BBl7QwEVE="
 							},
-							"name": "fileUrl",
-							"type": ""
+							"name": "videoUrl"
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAF24qkLKtAjC6U=",
+							"_parent": {
+								"$ref": "AAAAAAF1g+BBl7QwEVE="
+							},
+							"name": "thumbnailUrl",
+							"multiplicity": "0..1"
 						},
 						{
 							"_type": "UMLAttribute",
@@ -8086,7 +8112,8 @@
 							"_parent": {
 								"$ref": "AAAAAAF1g+BejrSEfUM="
 							},
-							"name": "photoUrl[0..1]"
+							"name": "photoUrl[0..1]",
+							"type": ""
 						}
 					]
 				},

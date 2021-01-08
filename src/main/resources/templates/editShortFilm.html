@@ -10,7 +10,11 @@
                 <form method="POST" data-th-action="@{edit}" data-th-object="${shortFilmEditData}">
                     <div data-th-replace="~{@{fragments/form/errors}}"></div>
                     <div data-th-replace="~{@{fragments/form/success}}"></div>
-                    <label class="form-text text-muted">Short film information</label> <input data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2', required='true')}" />
+                    <label class="form-text text-muted">Short film information</label>
+                    <div class="text-center bg-light mb-3">
+                        <img data-th-replace="~{@{fragments/thumbnail}(src=${thumbnailUrl}, class='img-fluid', style='max-height: 250px')}">
+                    </div>
+                    <input data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2', required='true')}" />
                     <textarea data-th-replace="~{@{fragments/form/textarea}(name='description', label='Description', placeholder='A super awesome description')}"></textarea>
                     <label class="form-text text-muted">Tags</label>
                     <div class="mb-3" data-th-switch="*{tags != null and !tags.isEmpty()}">
