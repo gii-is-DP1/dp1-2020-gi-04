@@ -122,8 +122,9 @@ public class ShortFilmController {
 		return res;
 	}
 
-	@GetMapping("/shortfilm/{shortFilmId}/edit")
+	@RequestMapping("/shortfilm/{shortFilmId}/edit")
 	public String getEditView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
+			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult bindingResult,
 			Map<String, Object> model) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
@@ -135,7 +136,9 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
-		model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(shortFilm));
+		if (shortFilmEditData.getTitle() == null) {
+			model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(shortFilm));
+		}
 		return "editShortFilm";
 	}
 
@@ -201,7 +204,7 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		
+
 		shortFilmEditDataValidator.setValidationTargets(false, false, true);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
 		if (result.hasErrors()) {
@@ -213,7 +216,7 @@ public class ShortFilmController {
 			result.rejectValue("newRoleFilmmaker", "", "Filmmaker's username doesn't exist!");
 			return "editShortFilm";
 		} else if (!roleUser.getType().equals(UserType.Filmmaker)) {
-			result.rejectValue("newRoleFilmmaker",  "", "That user is not a filmmaker!");
+			result.rejectValue("newRoleFilmmaker", "", "That user is not a filmmaker!");
 			return "editShortFilm";
 		}
 
@@ -224,9 +227,9 @@ public class ShortFilmController {
 				return "editShortFilm";
 			}
 		}
-		
+
 		shortFilmEditData.getRoles().add(newPair);
-		shortFilmEditData.setNewRoleFilmmaker("");
+		shortFilmEditData.getRolePagination().setTotalElements(shortFilmEditData.getRoles().size());
 
 		return "editShortFilm";
 	}
@@ -252,13 +255,14 @@ public class ShortFilmController {
 			result.reject("", "Couldn't remove the role successfully");
 			return "editShortFilm";
 		}
-		
+
 		shortFilmEditData.getRoles().remove(index);
-		
+		shortFilmEditData.getRolePagination().setTotalElements(shortFilmEditData.getRoles().size());
+
 		return "editShortFilm";
 	}
 
-	@PostMapping("/shortfilm/{shortFilmId}/edit")
+	@PostMapping(path = "/shortfilm/{shortFilmId}/edit", params = { "applyChanges" })
 	public String applyChangesToFilm(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
 			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult result,
 			Map<String, Object> model) {
@@ -279,9 +283,13 @@ public class ShortFilmController {
 		}
 
 		shortFilmEditData.copyToShortFilm(shortFilm);
-		
+
 		shortFilm.getTags().clear();
 		for (String tagName : shortFilmEditData.getTags()) {
+			if (tagName == null) {
+				continue;
+			}
+			
 			Tag newTag = tagService.getTagByName(tagName).orElse(null);
 			if (newTag == null) {
 				newTag = new Tag();
@@ -296,7 +304,12 @@ public class ShortFilmController {
 		}
 		shortFilm.getRoles().clear();
 		for (RoleData roleData : shortFilmEditData.getRoles()) {
-			User roleUser = userService.getUserByName(roleData.getFilmmakerName()).orElse(null);
+			String filmmakerName = roleData.getFilmmakerName();
+			if (filmmakerName == null) {
+				continue;
+			}
+			
+			User roleUser = userService.getUserByName(filmmakerName).orElse(null);
 			if (roleUser == null || !roleUser.getType().equals(UserType.Filmmaker)) {
 				continue;
 			}
@@ -308,6 +321,7 @@ public class ShortFilmController {
 		}
 
 		shortFilmService.save(shortFilm);
+		model.put("success", "Short film information updated successfully!");
 		return "editShortFilm";
 	}
 }
