@@ -29,14 +29,14 @@ public class PrivacyRequestController {
 	PrivacyRequestService privacyRequestService;
 	
 	@PostMapping("/privacyrequest/{filmmakerID}")
-	public String sendPrivacyRequest(HttpSession session ,@PathVariable("userID") Long userID){
+	public String sendPrivacyRequest(HttpSession session ,@PathVariable("filmmakerID") Long userID){
 		User sender = userService.getLoggedUser(session).orElse(null);
 		if (sender == null) {
 			return "redirect:/login";
 		}
 		if (sender.getType() != UserType.Company) {
 			System.out.println("Only companies are allowed to send PrivacyRequest");
-			return "filmmakerProfile";
+			return String.format("redirect:/profile/%d", userID );
 		}
 		
 		Optional<User> optional = userService.getUserById(userID);
@@ -52,10 +52,10 @@ public class PrivacyRequestController {
 		Company company = (Company) sender;
 		if(!company.getSentRequests().stream().anyMatch(x -> x.getFilmmaker().getName().equals(receiver.getName()))){
 			System.out.println("PrivacyRequest can only be sent to filmmakers once");
-			return "filmmakerProfile";
+			return String.format("redirect:/profile/%d", userID );
 		}
 		Filmmaker filmmaker = (Filmmaker) receiver;
 		privacyRequestService.sendPrivacyRequest(company, filmmaker);
-		return "filmmakerProfile";
+		return String.format("redirect:/profile/%d", userID );
 	}
 }

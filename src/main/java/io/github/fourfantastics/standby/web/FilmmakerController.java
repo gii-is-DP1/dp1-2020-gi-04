@@ -19,6 +19,7 @@ import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.form.FilmmakerProfileData;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
+import io.github.fourfantastics.standby.model.form.ShortFilmEditData;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
@@ -96,7 +97,8 @@ public class FilmmakerController {
 	}
 	
 	@PostMapping("/subcribesTo/{userID}")
-	public String sucribesToFilmmaker(HttpSession session, @PathVariable("userID") Long userID) {
+	public String sucribesToFilmmaker(HttpSession session, @PathVariable("userID") Long userID,
+			@ModelAttribute("filmmakerProfileData") FilmmakerProfileData filmmakerProfileData,BindingResult result) {
 		User follower = userService.getLoggedUser(session).orElse(null);
 		if (follower == null) {
 			return "redirect:/login";
@@ -114,14 +116,18 @@ public class FilmmakerController {
 		}
 
 		Filmmaker followed = (Filmmaker) user;
+		
+		if (result.hasErrors()) {
+			return "String.format(\"redirect:/profile/%d\", userID);";
+		}
 
 		if (followed.getName().equals(follower.getName())) {
 			System.out.println("No puedes seguirte a ti mismo egocéntrico");
-			return "filmmakerProfile";
+			return String.format("redirect:/profile/%d", userID);
 		}
 
 		userService.subcribesTo(follower, followed);
-		return "filmmakerProfile";
+		return String.format("redirect:/profile/%d", userID);
 
 	}
 

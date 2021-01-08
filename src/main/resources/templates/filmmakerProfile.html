@@ -75,61 +75,23 @@
 	<div class="container">
 			<div class="row">
 				<div class="col-12 col-md-6 mb-3 mb-md-0">
+				<form data-th-action="@{/privacyrequest/{filmmakerID} (filmmakerID=${filmmakerProfileData.id})}" method="POST"
+				data-th-object="${filmmakerProfileData}">
 					<button type="submit" class="btn btn-primary btn-block">Request
 						contact info</button>
+				</form>
 				</div>
 				<div class="col-12 col-md-6">
+				<form  data-th-action="@{/subcribesTo/{userID} (userID=${filmmakerProfileData.id})}" method="POST"
+				data-th-object="${filmmakerProfileData}">
 					<button type="submit" class="btn btn-primary btn-block">+
 						Follow</button>
+				</form>
 				</div>
 			</div>
 	</div>
 	<br>
-	<div class="card text-center">
-		<div class="card-header">
-			<div class="container">
-				<div class="row">
-					<div class="col-12 col-md-6 mb-3 mb-md-0">
-						<button type="submit" class="btn btn-secondary btn-block">Shortfilms</button>
-					</div>
-					<div class="col-12 col-md-6">
-						<button type="submit" class="btn btn-secondary btn-block">Other</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class=container data-th-each="shortfilm : *{uploadedShortFilms}">
-				<span data-th-text="${shortfilm.getTitle()}"></span>
-				<span class="left" data-th-text="|${filmmakerProfileData.fullname}|"></span>
-			</div>
-		</div>
-		<br>
-		
-		<div class="table-responsive">
-                        <table class="table">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th scope="col"><button type="submit" class="btn btn-secondary btn-block">Shortfilms</button></th>
-                                    <th scope="col"><button type="submit" class="btn btn-secondary btn-block">Other</button></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <th-block data-th-switch="*{uploadedShortFilms!= null and !uploadedShortFilms.isEmpty()}">
-                                    <th-block data-th-case="true">
-                                        <tr data-th-each="shortfilm : *{uploadedShortFilms}">
-                                            <td class="align-middle">
-                                                <span data-th-text="${shortfilm.getTitle()}"></span>
-                                            </td>
-                                    
-                                        </tr>
-                                    </th-block>
-                                    
-                                </th-block>
-                                
-                            </tbody>
-                            
-                        </table>
-                    </div>
+	
 		
 
 </section>
