@@ -35,7 +35,7 @@
 							data-th-text="${#lists.size(filmmakerProfileData.uploadedShortFilms)}"></span>
 						<div class="row">
 							<div class="col-12 col-md-4 text-center">
-								<h6 data-th-text="|Shortfilms|"></h6>
+								<h6> Shortfilms</h6>
 							</div>
 						</div>
 					</div>
@@ -48,7 +48,7 @@
 							data-th-text="${#lists.size(filmmakerProfileData.filmmakerSubscribers)}"></span>
 						<div class="row">
 							<div class="col-12 col-md-4 text-center">
-								<h6 data-th-text="|Followers|"></h6>
+								<h6>Followers</h6>
 							</div>
 						</div>
 					</div>
@@ -62,7 +62,7 @@
 							data-th-text="${#lists.size(filmmakerProfileData.filmmakersSubscribedTo)}"></span>
 						<div class="row">
 							<div class="col-12 col-md-4 text-center">
-								<h6 data-th-text="|Followed|"></h6>
+								<h6>Followed</h6>
 							</div>
 						</div>
 					</div>
@@ -75,16 +75,21 @@
 	<div class="container">
 			<div class="row">
 				<div class="col-12 col-md-6 mb-3 mb-md-0">
-				<form data-th-action="@{/privacyrequest/{filmmakerID} (filmmakerID=${filmmakerProfileData.id})}" method="POST"
-				data-th-object="${filmmakerProfileData}">
-					<button type="submit" class="btn btn-primary btn-block">Request
+				<form data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/privacyrequest'}" method="POST"
+				data-th-object="${hidePrivacyRequestButton}">
+					<button th:if='${hidePrivacyRequestButton}' type="submit" class="btn btn-primary btn-block">Request
+						contact info</button>
+				</form>
+				<form data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/privacyrequest'}" method="POST"
+				data-th-object="${disablePrivacyRequestButton}">
+					<button th:if='${disablePrivacyRequestButton}' type="submit" class="btn btn-primary btn-block" diabled>Request
 						contact info</button>
 				</form>
 				</div>
 				<div class="col-12 col-md-6">
-				<form  data-th-action="@{/subcribesTo/{userID} (userID=${filmmakerProfileData.id})}" method="POST"
-				data-th-object="${filmmakerProfileData}">
-					<button type="submit" class="btn btn-primary btn-block">+
+				<form  data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/subscription'}" method="POST"
+				data-th-object="${hidefollowButton}">
+					<button th:if='${hidefollowButton}' type="submit" class="btn btn-primary btn-block">+
 						Follow</button>
 				</form>
 				</div>
