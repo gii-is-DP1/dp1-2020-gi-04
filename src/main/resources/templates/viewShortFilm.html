@@ -8,6 +8,7 @@
                 <span>Your browser does not support HTML5 video tag.</span>
             </video>
         </div>
-        <h3 data-th-text="${shortFilm.getTitle()}"></h3>
+        <h4 data-th-text="${shortFilm.getTitle()}"></h4>
+        <label class="text-muted" data-th-text="|Views: ${shortFilm.getViewCount()}|"></label>
     </section>
 </html>

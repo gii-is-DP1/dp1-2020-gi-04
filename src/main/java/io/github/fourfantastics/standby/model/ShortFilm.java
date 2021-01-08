@@ -21,14 +21,12 @@ import org.hibernate.validator.constraints.Range;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
 @ToString(exclude = { "ratings", "comments", "tags", "favouriteUsers", "uploader" })
-@NoArgsConstructor
 @AllArgsConstructor
 public class ShortFilm {
 	@Id
@@ -79,4 +77,9 @@ public class ShortFilm {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	Filmmaker uploader;
+	
+	public ShortFilm() {
+		super();
+		setViewCount(0L);
+	}
 }

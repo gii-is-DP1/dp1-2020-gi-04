@@ -12,7 +12,9 @@
                     <div data-th-replace="~{@{fragments/form/success}}"></div>
                     <label class="form-text text-muted">Short film information</label>
                     <div class="text-center bg-light mb-3">
-                        <img data-th-replace="~{@{fragments/thumbnail}(src=${thumbnailUrl}, class='img-fluid', style='max-height: 250px')}">
+                        <a target="_blank" title="View on Standby" data-th-href="@{'/shortfilm/' + ${shortFilmId}}">
+                            <img data-th-replace="~{@{fragments/thumbnail}(src=${thumbnailUrl}, class='img-fluid', style='max-height: 250px')}">
+                        </a>
                     </div>
                     <input data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2', required='true')}" />
                     <textarea data-th-replace="~{@{fragments/form/textarea}(name='description', label='Description', placeholder='A super awesome description')}"></textarea>
