@@ -123,7 +123,7 @@ public class ShortFilmControllerTest {
 		mockShortFilmUploadData.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
 		final ShortFilm mockShortFilm = mockShortFilmUploadData.toShortFilm();
 		mockShortFilm.setId(123456L);
-		mockShortFilm.setFileUrl(UUID.randomUUID().toString());
+		mockShortFilm.setVideoUrl(UUID.randomUUID().toString());
 		mockShortFilm.setUploadDate(Instant.now().getEpochSecond());
 		mockShortFilm.setUploader(mockFilmmaker);
 		
