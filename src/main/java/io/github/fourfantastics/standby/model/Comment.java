@@ -36,6 +36,7 @@ public class Comment {
 	String comment;
 
 	@NotNull
+	@Column(nullable = false)
 	Long date;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)

@@ -67,6 +67,7 @@ videoUrl: @notnull @notempty
 thumbnailUrl:
 description: @lengthMax 10000
 uploadDate: @notnull
+viewCount: @notnull @min 0
 
 TOTAL: 8
 

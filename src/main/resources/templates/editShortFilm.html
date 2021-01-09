@@ -12,7 +12,9 @@
                     <div data-th-replace="~{@{fragments/form/success}}"></div>
                     <label class="form-text text-muted">Short film information</label>
                     <div class="text-center bg-light mb-3">
-                        <img data-th-replace="~{@{fragments/thumbnail}(src=${thumbnailUrl}, class='img-fluid', style='max-height: 250px')}">
+                        <a target="_blank" title="View on Standby" data-th-href="@{'/shortfilm/' + ${shortFilmId}}">
+                            <img data-th-replace="~{@{fragments/thumbnail}(src=${thumbnailUrl}, class='img-fluid', style='max-height: 250px')}">
+                        </a>
                     </div>
                     <input data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2', required='true')}" />
                     <textarea data-th-replace="~{@{fragments/form/textarea}(name='description', label='Description', placeholder='A super awesome description')}"></textarea>
@@ -20,7 +22,7 @@
                     <div class="mb-3" data-th-switch="*{tags != null and !tags.isEmpty()}">
                         <th-block data-th-case="true">
                             <th-block data-th-each="tag, stat : *{tags}">
-                                <span data-th-replace="~{@{fragments/tag}(text='__${tag}__', closeable='true', closeAction='removeTag', closeParam='__${tag}__')}"></span>
+                                <span data-th-replace="~{@{fragments/tag}(text='#__${tag}__', closeable='true', closeAction='removeTag', closeParam='__${tag}__')}"></span>
                                 <input type="hidden" data-th-field="*{tags[__${stat.index}__]}" data-th-value="${tag}" />
                             </th-block>
                         </th-block>
@@ -29,7 +31,7 @@
                     <label class="form-text text-muted">Add a new tag</label>
                     <div class="form-row mb-3">
                         <div class="col-12 col-md-8">
-                            <input data-th-replace="~{@{fragments/form/input}(name='newTagName', placeholder='Action, drama...')}" />
+                            <input data-th-replace="~{@{fragments/form/input}(name='newTagName', placeholder='Action, drama...', prepend='#')}" />
                         </div>
                         <div class="col-12 col-md-4">
                             <button type="submit" class="btn btn-primary btn-block" name="addTag">Add</button>

@@ -134,7 +134,9 @@ public class ShortFilmController {
 		if (shortFilm == null) {
 			return "redirect:/";
 		}
-
+		
+		shortFilm.setViewCount(shortFilm.getViewCount() + 1L);
+		shortFilmService.save(shortFilm);
 		model.put("shortFilm", shortFilm);
 
 		return "viewShortFilm";
