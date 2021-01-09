@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import io.github.fourfantastics.standby.model.RoleType;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
@@ -13,6 +15,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ShortFilmEditData {
+	String thumbnailUrl;
+	
 	String title;
 
 	String description;
@@ -28,9 +32,12 @@ public class ShortFilmEditData {
 	String newRoleFilmmaker;
 	
 	RoleType newRoleType;
+	
+	MultipartFile newThumbnailFile;
 
 	public static ShortFilmEditData fromShortFilm(ShortFilm shortFilm) {
 		ShortFilmEditData shortFilmEditData = new ShortFilmEditData();
+		shortFilmEditData.setThumbnailUrl(shortFilm.getThumbnailUrl());
 		shortFilmEditData.setTitle(shortFilm.getTitle());
 		shortFilmEditData.setDescription(shortFilm.getDescription());
 		shortFilmEditData.setRoles(shortFilm.getRoles().stream().map(x -> RoleData.of(x.getFilmmaker().getName(), x.getRole())).collect(Collectors.toList()));
@@ -39,7 +46,6 @@ public class ShortFilmEditData {
 		shortFilmEditData.setNewTagName("");
 		shortFilmEditData.setNewRoleFilmmaker("");
 		shortFilmEditData.setNewRoleType(RoleType.ACTOR);
-		
 		return shortFilmEditData;
 	}
 	

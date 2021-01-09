@@ -20,17 +20,5 @@
             <label class="text-muted" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></label>
         </div>
         <hr class="mt-2" />
-        <div class="d-flex" data-th-with="uploader = ${shortFilm.getUploader()}">
-            <div class="flex-grow-0">
-                <a class="bold" data-th-href="|/profile/${uploader.getId()}|">
-                    <img data-th-replace="~{@{fragments/profilePicture}(src=${uploader.getPhotoUrl()}, class='img-fluid', style='max-width: 50px; max-height: 50px')}" />
-                </a>
-            </div>
-            <div class="flex-grow-1 pl-3 d-flex flex-column">
-                <strong><a class="text-dark text-decoration-none" data-th-href="|/profile/${uploader.getId()}|" data-th-text="${uploader.getName()}"></a></strong>
-                <span class="text-secondary" data-th-text="|${#lists.size(uploader.getFilmmakerSubscribers())} subscribers|"></span>
-                <p class="text-break mt-2" data-th-text="${shortFilm.getDescription()}"></p>
-            </div>
-        </div>
     </section>
 </html>
