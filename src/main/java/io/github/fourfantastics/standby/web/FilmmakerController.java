@@ -1,7 +1,9 @@
 package io.github.fourfantastics.standby.web;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -106,11 +108,11 @@ public class FilmmakerController {
 		} else {
 			if (viewer.getType().equals(UserType.Company)) {
 				Company viewerCompany = (Company) viewer;
-				Optional<PrivacyRequest> sentRequest= viewerCompany.getSentRequests().stream()
-						.filter((x -> x.getFilmmaker().getName().equals(filmmaker.getName()))).collect();
-				if (sentRequest.isPresent()) {
+				List<PrivacyRequest> sentRequest= viewerCompany.getSentRequests().stream()
+						.filter((x -> x.getFilmmaker().getName().equals(filmmaker.getName()))).collect(Collectors.toList());
+				if (!sentRequest.isEmpty()) {
 					model.put("disablePrivacyRequestButton", true);
-					if(sentRequest.get().getRequestState() == RequestStateType.ACCEPTED){
+					if(sentRequest.get(0).getRequestState() == RequestStateType.ACCEPTED){
 						model.put("personalInformation", true);
 					}
 				}
