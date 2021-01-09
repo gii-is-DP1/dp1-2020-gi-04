@@ -30,7 +30,7 @@ import io.github.fourfantastics.standby.utils.Utils;
 @Service
 public class UserService {
 	final Path fileRoot = Paths.get("uploads");
-	final Set<String> allowedFileExtensions = Utils.hashSet(".bmp", ".png", ".jpg", ".jpeg", ".webp");
+	final Set<String> allowedImageFileExtensions = Utils.hashSet(".bmp", ".png", ".jpg", ".jpeg", ".webp");
 
 	UserRepository userRepository;
 	NotificationService notificationService;
@@ -134,7 +134,7 @@ public class UserService {
 	public void setProfilePicture(User user, MultipartFile imageFile)
 			throws TooBigException, InvalidExtensionException, RuntimeException {
 		String extension = fileRepository.getFileExtension(imageFile);
-		if (!allowedFileExtensions.contains(extension)) {
+		if (!allowedImageFileExtensions.contains(extension)) {
 			throw new InvalidExtensionException("Invalid extension for the image");
 		}
 

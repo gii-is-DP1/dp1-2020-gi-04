@@ -1,0 +1,13 @@
+<div data-th-fragment="comment(name, text)" class="d-flex" data-th-with="uploader = ${shortFilm.getUploader()}">
+    <div class="flex-grow-0">
+        <a class="bold" data-th-href="|/profile/${uploader.getId()}|">
+            <img data-th-replace="~{@{fragments/profilePicture}(src=${uploader.getPhotoUrl()}, class='img-fluid', style='max-width: 50px; max-height: 50px')}" />
+        </a>
+    </div>
+    <div class="flex-grow-1 pl-3 d-flex flex-column">
+        <a class="text-dark font-weight-bold text-decoration-none" data-th-href="|/profile/${uploader.getId()}|" data-th-text="${uploader.getName()}"></a>
+        <span class="text-secondary" data-th-text="|${#lists.size(uploader.getFilmmakerSubscribers())} subscribers|"></span>
+        <p id="comment-text-0" class="text-break mt-2 collapse shrink-text" style="white-space: pre-line;" data-th-text="${shortFilm.getDescription()}"></p>
+        <a class="text-dark font-weight-bold text-decoration-none btn-shrink collapsed" role="button" data-toggle="collapse" href="#comment-text-0"><span>Show more</span><span>Show less</span></a>
+    </div>
+</div>

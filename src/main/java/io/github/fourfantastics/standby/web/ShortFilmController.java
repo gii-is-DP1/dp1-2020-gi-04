@@ -106,8 +106,9 @@ public class ShortFilmController {
 		try {
 			shortFilm = shortFilmService.upload(shortFilmUploadData, (Filmmaker) loggedUser);
 		} catch (InvalidExtensionException | TooBigException e) {
+			fieldErrors.put("file", e.getMessage());
 			res.put("status", 400);
-			res.put("message", e.getMessage());
+			res.put("message", "");
 			res.put("fieldErrors", fieldErrors);
 			return res;
 		} catch (RuntimeException e) {
@@ -155,7 +156,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		if (shortFilmEditData.getTitle() == null) {
 			model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(shortFilm));
@@ -177,7 +177,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(false, true, false);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
@@ -208,7 +207,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditData.getTags().remove(req.getParameter("removeTag"));
 
@@ -228,7 +226,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(false, false, true);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
@@ -272,7 +269,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		int index;
 		try {
@@ -301,12 +297,21 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(true, false, false);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
 		if (result.hasErrors()) {
 			return "editShortFilm";
+		}
+		
+		if (shortFilmEditData.getNewThumbnailFile() != null && !shortFilmEditData.getNewThumbnailFile().isEmpty()) {
+			try {
+				shortFilmService.uploadThumbnail(shortFilm, shortFilmEditData.getNewThumbnailFile());
+				shortFilmEditData.setThumbnailUrl(shortFilm.getThumbnailUrl());
+			} catch (Exception e) {
+				result.rejectValue("newThumbnailFile", "", e.getMessage());
+				return "editShortFilm";
+			}
 		}
 
 		shortFilmEditData.copyToShortFilm(shortFilm);
@@ -346,7 +351,7 @@ public class ShortFilmController {
 			newRole.setShortfilm(shortFilm);
 			roleService.saveRole(newRole);
 		}
-
+		
 		shortFilmService.save(shortFilm);
 		model.put("success", "Short film information updated successfully!");
 		return "editShortFilm";

@@ -7,15 +7,17 @@
         <div class="row">
             <div class="col-0 col-sm-1"></div>
             <div class="col-12 col-sm-10">
-                <form method="POST" data-th-action="@{edit}" data-th-object="${shortFilmEditData}">
+                <form method="POST" enctype="multipart/form-data" data-th-action="@{edit}" data-th-object="${shortFilmEditData}">
                     <div data-th-replace="~{@{fragments/form/errors}}"></div>
                     <div data-th-replace="~{@{fragments/form/success}}"></div>
                     <label class="form-text text-muted">Short film information</label>
+                    <label>Preview</label>
                     <div class="text-center bg-light mb-3">
                         <a target="_blank" title="View on Standby" data-th-href="@{'/shortfilm/' + ${shortFilmId}}">
-                            <img data-th-replace="~{@{fragments/thumbnail}(src=${thumbnailUrl}, class='img-fluid', style='max-height: 250px')}">
+                            <img data-th-replace="~{@{fragments/thumbnail}(src=*{getThumbnailUrl()}, class='img-fluid', style='max-height: 250px')}" />
                         </a>
                     </div>
+                    <input data-th-replace="~{@{fragments/form/file}(name='newThumbnailFile', label='Upload a new thumbnail', accept='image/*')}" />
                     <input data-th-replace="~{@{fragments/form/input}(name='title', label='Title', placeholder='Godzilla 2', required='true')}" />
                     <textarea data-th-replace="~{@{fragments/form/textarea}(name='description', label='Description', placeholder='A super awesome description')}"></textarea>
                     <label class="form-text text-muted">Tags</label>
@@ -42,9 +44,9 @@
                         <table class="table">
                             <thead class="bg-light">
                                 <tr>
-                                    <th scope="col" style="min-width: 200px">Filmmaker's username</th>
-                                    <th scope="col" style="min-width: 200px">Role</th>
-                                    <th scope="col" style="min-width: 200px"></th>
+                                    <th scope="col" style="min-width: 200px;">Filmmaker's username</th>
+                                    <th scope="col" style="min-width: 200px;">Role</th>
+                                    <th scope="col" style="min-width: 200px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -89,10 +91,10 @@
                             </tbody>
                         </table>
                     </div>
-                    <br>
+                    <br />
                     <button type="submit" class="btn btn-success btn-block" name="applyChanges">Apply changes</button>
                 </form>
-                <br>
+                <br />
             </div>
             <div class="col-0 col-sm-1"></div>
         </div>
