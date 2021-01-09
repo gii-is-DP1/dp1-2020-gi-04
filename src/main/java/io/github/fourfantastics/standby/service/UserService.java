@@ -108,7 +108,7 @@ public class UserService {
 		return new BCryptPasswordEncoder();
 	}
 
-	public void subcribesTo(User follower, Filmmaker followed) {
+	public void subscribesTo(User follower, Filmmaker followed) {
 		follower.getFilmmakersSubscribedTo().add(followed);
 		followed.getFilmmakerSubscribers().add(follower);
 		if (followed.getConfiguration().getBySubscriptions()) {
@@ -123,7 +123,14 @@ public class UserService {
 		userRepository.save(follower);
 		userRepository.save(followed);
 	}
-
+	
+	public void unsubscribesTo(User follower, Filmmaker followed) {
+		follower.getFilmmakersSubscribedTo().remove(followed);
+		followed.getFilmmakerSubscribers().remove(follower);
+		userRepository.save(follower);
+		userRepository.save(followed);
+	}
+	
 	public void setProfilePicture(User user, MultipartFile imageFile)
 			throws TooBigException, InvalidExtensionException, RuntimeException {
 		String extension = fileRepository.getFileExtension(imageFile);

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.PrivacyRequest;
+import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
@@ -104,13 +106,26 @@ public class FilmmakerController {
 		} else {
 			if (viewer.getType().equals(UserType.Company)) {
 				Company viewerCompany = (Company) viewer;
-				if (!viewerCompany.getSentRequests().stream()
-						.anyMatch(x -> x.getFilmmaker().getName().equals(filmmaker.getName()))) {
+				Optional<PrivacyRequest> sentRequest= viewerCompany.getSentRequests().stream()
+						.filter((x -> x.getFilmmaker().getName().equals(filmmaker.getName()))).collect();
+				if (sentRequest.isPresent()) {
 					model.put("disablePrivacyRequestButton", true);
+					if(sentRequest.get().getRequestState() == RequestStateType.ACCEPTED){
+						model.put("personalInformation", true);
+					}
+				}
+				if(filmmaker.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== viewerCompany.getName())) {
+					model.put("unfollowButton", true);
+					model.put("hideFollowButton", true);
 				}
 			} else {
+				Filmmaker viewerFilmmaker = (Filmmaker) viewer;
 				model.put("hidePrivacyRequestButton", true);
-				if (viewer.getName().equals(filmmaker.getName())) {
+				if (viewerFilmmaker.getName().equals(filmmaker.getName())) {
+					model.put("hideFollowButton", true);
+				}
+				if(filmmaker.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== viewerFilmmaker.getName())) {
+					model.put("unfollowButton", true);
 					model.put("hideFollowButton", true);
 				}
 			}
@@ -133,16 +148,45 @@ public class FilmmakerController {
 		}
 
 		Filmmaker followed = (Filmmaker) user;
+		
+		if(followed.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== follower.getName())) {
+			return String.format("redirect:/profile/%d", userID);
+		}
+		if (followed.getName().equals(follower.getName())) {
+			return String.format("redirect:/profile/%d", userID);
+		}
+		
+		userService.subscribesTo(follower, followed);
+		return String.format("redirect:/profile/%d", userID);
 
+	}
+	
+	@PostMapping("/profile/{userID}/unsubscription")
+	public String unsucribesToFilmmaker(HttpSession session, @PathVariable("userID") Long userID) {
+		User follower = userService.getLoggedUser(session).orElse(null);
+		if (follower == null) {
+			return "redirect:/login";
+		}
+
+		User user = userService.getUserById(userID).orElse(null);
+
+		if (user.getType() != UserType.Filmmaker) {
+			return String.format("redirect:/profile/%d", userID);
+		}
+
+		Filmmaker followed = (Filmmaker) user;
+		
+		if(!followed.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== follower.getName())) {
+			return String.format("redirect:/profile/%d", userID);
+		}
 		if (followed.getName().equals(follower.getName())) {
 			return String.format("redirect:/profile/%d", userID);
 		}
 
-		userService.subcribesTo(follower, followed);
+		userService.unsubscribesTo(follower, followed);
 		return String.format("redirect:/profile/%d", userID);
 
 	}
-
 	@PostMapping("/profile/{filmmakerID}/privacyrequest")
 	public String sendPrivacyRequest(HttpSession session, @PathVariable("filmmakerID") Long userID) {
 		User sender = userService.getLoggedUser(session).orElse(null);
@@ -159,7 +203,7 @@ public class FilmmakerController {
 			return String.format("redirect:/profile/%d", userID);
 		}
 		Company company = (Company) sender;
-		if (!company.getSentRequests().stream().anyMatch(x -> x.getFilmmaker().getName().equals(receiver.getName()))) {
+		if (company.getSentRequests().stream().anyMatch(x -> x.getFilmmaker().getName().equals(receiver.getName()))) {
 			return String.format("redirect:/profile/%d", userID);
 		}
 		Filmmaker filmmaker = (Filmmaker) receiver;
