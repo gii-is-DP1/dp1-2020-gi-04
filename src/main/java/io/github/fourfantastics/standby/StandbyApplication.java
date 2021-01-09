@@ -77,6 +77,7 @@ public class StandbyApplication {
 			notification.setEmisionDate(Instant.now().toEpochMilli());
 			notification.setText("Test notification 2");
 			notification.setType(NotificationType.SUBSCRIPTION);
+			notification.setReadDate(Instant.now().toEpochMilli());
 			notification.setUser(filmmaker);
 			
 			notificationService.saveNotification(notification);

@@ -5,14 +5,21 @@
 <section>
 	<form method="POST" data-th-action="@{notifications}"
 		data-th-object="${notificationData}">
-		<ul>
-			<li data-th-each="notification, stat : *{getNotifications()}"
+		<div class="list-group">
+			<div
+				class="list-group-item list-group-item-action flex-column align-items-start"
+				data-th-each="notification, stat : *{getNotifications()}"
 				data-th-if="*{getPagination().isIndexVisible(__${stat.index}__)}">
+				<div class="d-flex w-100 justify-content-between">
+					<h5 class="mb-1" data-th-text="${notification.getType().getName()}"></h5>
+					<small data-th-text="${notification.getFormattedEmissionDate()}"></small>
+				</div>
 				<div
-					data-th-text="|${notification.getText()} ${notification.getType().getName()}|"></div>
-			</li>
-		</ul>
-		<div data-th-replace="~{@{fragments/form/pagination}(name = 'pagination')}">
+					data-th-text="|${notification.getText()} |"></div>
+			</div>
+		</div>
+		<div
+			data-th-replace="~{@{fragments/form/pagination}(name = 'pagination')}">
 		</div>
 	</form>
 </section>

@@ -1,11 +1,14 @@
 package io.github.fourfantastics.standby.service;
 
+import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.Notification;
+import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.NotificationRepository;
 
 @Service
@@ -22,7 +25,21 @@ public class NotificationService {
 		return notificationRepository.findById(id);
 	}
 
-	public void saveNotification(Notification notification) {
-		notificationRepository.save(notification);
+	public Notification saveNotification(Notification notification) {
+		return notificationRepository.save(notification);
+	}
+
+	public Set<Notification> getUnreadNotifications(User user) {
+		return notificationRepository.findByUserAndReadDate(user, null);
+	}
+
+	public void readNotifications(User user) {
+		Set<Notification> notifications = user.getNotifications();
+		for (Notification notification : notifications) {
+			if (notification.getReadDate() == null) {
+				notification.setReadDate(Instant.now().toEpochMilli());
+				saveNotification(notification);
+			}
+		}
 	}
 }

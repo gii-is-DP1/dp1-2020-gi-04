@@ -16,12 +16,13 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
-@NoArgsConstructor
 public class Pagination {
 	Integer totalElements;
 	Integer pageElements;
 	Integer currentPage;
 	Integer maxSidePages;
+
+
 
 	public static Pagination of(Integer totalElements, Integer pageElements, Integer currentPage,
 			Integer maxSidePages) {
@@ -33,15 +34,15 @@ public class Pagination {
 	}
 
 	public static Pagination of(Integer totalElements, Integer pageElements) {
-		return new Pagination(totalElements, pageElements, 3, 1);
+		return new Pagination(totalElements, pageElements, 1, 3);
 	}
 
 	public static Pagination of(Integer totalElements) {
-		return new Pagination(totalElements, 5, 3, 1);
+		return new Pagination(totalElements, 5, 1, 3);
 	}
 
 	public static Pagination empty() {
-		return new Pagination(0, 5, 3, 1);
+		return new Pagination(0, 5, 1, 3);
 	}
 
 	public Integer getCurrentPage() {
