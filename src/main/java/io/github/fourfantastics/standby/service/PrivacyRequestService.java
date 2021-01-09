@@ -1,6 +1,6 @@
 package io.github.fourfantastics.standby.service;
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -48,7 +48,7 @@ public class PrivacyRequestService {
 		PrivacyRequest request = new PrivacyRequest();
 		request.setCompany(company);
 		request.setFilmmaker(receiver);
-		request.setRequestDate(Instant.now().getEpochSecond());
+		request.setRequestDate(new Date().getTime());
 		request.setRequestState(RequestStateType.PENDING);
 		privacyRequestRepository.save(request);
 
@@ -56,7 +56,7 @@ public class PrivacyRequestService {
 		companyService.saveCompany(company);
 
 		Notification newPrivacyRequestNotification = new Notification();
-		newPrivacyRequestNotification.setEmisionDate(Instant.now().getEpochSecond());
+		newPrivacyRequestNotification.setEmisionDate(new Date().getTime());
 		newPrivacyRequestNotification.setText(company.getName() + "wants to know more about you ;)");
 		newPrivacyRequestNotification.setUser(receiver);
 		receiver.getNotifications().add(newPrivacyRequestNotification);
@@ -73,7 +73,7 @@ public class PrivacyRequestService {
 		if (request.getCompany().getConfiguration().getByPrivacyRequests()) {
 			Company sender = request.getCompany();
 			Notification petitionStateNotification = new Notification();
-			petitionStateNotification.setEmisionDate(Instant.now().getEpochSecond());
+			petitionStateNotification.setEmisionDate(new Date().getTime());
 			petitionStateNotification.setText(request.getFilmmaker().getName() + " has accepted your petition");
 			petitionStateNotification.setUser(sender);
 			sender.getNotifications().add(petitionStateNotification);
@@ -88,7 +88,7 @@ public class PrivacyRequestService {
 		if (request.getCompany().getConfiguration().getByPrivacyRequests()) {
 			Company sender = request.getCompany();
 			Notification petitionStateNotification = new Notification();
-			petitionStateNotification.setEmisionDate(Instant.now().getEpochSecond());
+			petitionStateNotification.setEmisionDate(new Date().getTime());
 			petitionStateNotification.setText(request.getFilmmaker().getName() + " has declined your petition");
 			petitionStateNotification.setUser(sender);
 			sender.getNotifications().add(petitionStateNotification);
