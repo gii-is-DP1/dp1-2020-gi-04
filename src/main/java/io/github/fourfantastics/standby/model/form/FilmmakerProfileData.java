@@ -16,6 +16,8 @@ public class FilmmakerProfileData {
 	
 	String name;
 	
+	String email;
+	
 	String photoUrl;
 	
 	String fullname;
@@ -39,6 +41,7 @@ public class FilmmakerProfileData {
 		FilmmakerProfileData filmmakerProfileData = new FilmmakerProfileData();
 		filmmakerProfileData.setId(filmmaker.getId());
 		filmmakerProfileData.setName(filmmaker.getName());
+		filmmakerProfileData.setEmail(filmmaker.getEmail());
 		filmmakerProfileData.setPhotoUrl(filmmaker.getPhotoUrl());
 		filmmakerProfileData.setFullname(filmmaker.getFullname());
 		filmmakerProfileData.setCity(filmmaker.getCity());
