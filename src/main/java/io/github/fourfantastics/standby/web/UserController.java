@@ -97,33 +97,18 @@ public class UserController {
 			return "redirect:/account/company";
 		}
 	}
-	
+
 	@GetMapping("/profile")
 	public String getProfileView(HttpSession session) {
 		User user = userService.getLoggedUser(session).orElse(null);
 		if (user == null) {
 			return "redirect:/login";
 		}
-		
-		return String.format("redirect:/profile/%d", user.getId());
-	}
 
-	@GetMapping("/profile/{userID}")
-	public String getProfileView(@PathVariable("userID") Long userID) {
-		if (userID == null) {
-			System.out.println("sosioooooooo q la id es nula mi vidaaa");
-			return "redirect:/";
-		}
-		
-		User user = userService.getUserById(userID).orElse(null);
-		if (user == null) {
-			return "redirect:/";
-		}
-
-		if (user.getType() == UserType.Filmmaker) {
-			return String.format("redirect:/profile/filmmaker/%d", userID);
+		if (user.getType().equals(UserType.Filmmaker)) {
+			return String.format("redirect:/profile/%d", user.getId());
 		} else {
-			return String.format("redirect:/profile/company/%d", userID);
+			return "redirect:/account";
 		}
 	}
 }

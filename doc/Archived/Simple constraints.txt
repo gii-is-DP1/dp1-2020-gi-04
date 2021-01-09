@@ -63,9 +63,11 @@ TOTAL: 4
 
 Short Film:
 name: @notnull @notempty @lengthMax 128
-fileUrl: @notnull @notempty
+videoUrl: @notnull @notempty
+thumbnailUrl:
 description: @lengthMax 10000
 uploadDate: @notnull
+viewCount: @notnull @min 0
 
 TOTAL: 8
 

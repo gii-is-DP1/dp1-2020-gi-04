@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html
-	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}"
+	data-th-action="@{/profile}" data-th-object="${filmmakerProfileData}">
+
 <title>Filmmaker profile- Standby</title>
 <section>
-	<h3>My profile</h3>
+	<h3 data-th-text="|My profile |"></h3>
 	<hr />
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				<span class="left"> Filmmaker </span>
+				<span class="left" data-th-text="|${filmmakerProfileData.fullname}|">
+				</span>
 			</div>
 			<div class="col">
 				<span class="float-right">
@@ -21,35 +24,80 @@
 	<br>
 	<div class="container">
 		<div class="row">
-			<div class="col-12 col-md-2 text-center mt-md-0 mt-2">
+			<div class="col-12 col-md-3 text-center mt-md-0 mt-2 mb-3 mb-md-0">
 				<img
 					data-th-replace="~{@{fragments/profilePicture}(src=${photoUrl}, class='img-fluid', style='max-height: 100px')}">
 			</div>
-			<div class="col-12 col-md-4"></div>
-			<div class="col-12 col-md-5 float-right">
+			<div class="col-12 col-md-3">
 				<div class="row">
-					<div class="col-12 col-md-3">30 ShortFilms</div>
-					<div class="col-12 col-md-3 ">30000 Followers</div>
-					<div class="col-12 col-md-3 ">5674 Followed</div>
+					<div class="col-12 col-md-4 text-center ">
+						<span class="badge badge-secondary"
+							data-th-text="${#lists.size(filmmakerProfileData.uploadedShortFilms)}"></span>
+						<div class="row">
+							<div class="col-12 col-md-4 text-center">
+								<h6> Shortfilms</h6>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
+			<div class="col-12 col-md-3 ">
+				<div class="row">
+					<div class="col-12 col-md-4 text-center ">
+						<span class="badge badge-secondary"
+							data-th-text="${#lists.size(filmmakerProfileData.filmmakerSubscribers)}"></span>
+						<div class="row">
+							<div class="col-12 col-md-4 text-center">
+								<h6>Followers</h6>
+							</div>
+						</div>
+					</div>
 
+				</div>
+			</div>
+			<div class="col-12 col-md-3 ">
+				<div class="row">
+					<div class="col-12 col-md-4 text-center ">
+						<span class="badge badge-secondary"
+							data-th-text="${#lists.size(filmmakerProfileData.filmmakersSubscribedTo)}"></span>
+						<div class="row">
+							<div class="col-12 col-md-4 text-center">
+								<h6>Followed</h6>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
 		</div>
 	</div>
-
 	<br>
 	<div class="container">
-		<div class="row">
-			<div class="col-12 col-md-3">
-				<button type="submit" class="btn btn-primary btn-block">Request
-					contact info</button>
+			<div class="row">
+				<div class="col-12 col-md-6 mb-3 mb-md-0">
+				<form data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/privacyrequest'}" method="POST"
+				data-th-object="${hidePrivacyRequestButton}">
+					<button th:if='${hidePrivacyRequestButton}' type="submit" class="btn btn-primary btn-block">Request
+						contact info</button>
+				</form>
+				<form data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/privacyrequest'}" method="POST"
+				data-th-object="${disablePrivacyRequestButton}">
+					<button th:if='${disablePrivacyRequestButton}' type="submit" class="btn btn-primary btn-block" diabled>Request
+						contact info</button>
+				</form>
+				</div>
+				<div class="col-12 col-md-6">
+				<form  data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/subscription'}" method="POST"
+				data-th-object="${hidefollowButton}">
+					<button th:if='${hidefollowButton}' type="submit" class="btn btn-primary btn-block">+
+						Follow</button>
+				</form>
+				</div>
 			</div>
-			<div class="col-12 col-md-9">
-				<button type="submit" class="btn btn-primary btn-block">+
-					Follow</button>
-			</div>
-		</div>
 	</div>
+	<br>
+	
+		
 
 </section>
 </html>

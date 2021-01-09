@@ -1,8 +1,12 @@
 package io.github.fourfantastics.standby.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,18 +19,17 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
 @ToString(exclude = { "ratings", "comments", "tags", "favouriteUsers", "uploader" })
-@NoArgsConstructor
 @AllArgsConstructor
 public class ShortFilm {
 	@Id
@@ -36,16 +39,30 @@ public class ShortFilm {
 	@NotNull
 	@NotEmpty
 	@Length(max = 128)
+	@Column(nullable = false)
 	String title;
 
-	@NotEmpty
-	String fileUrl;
-
 	@NotNull
+	@NotEmpty
+	@Column(nullable = false)
+	String videoUrl;
+
+	@Column(nullable = true)
+	String thumbnailUrl;
+	
+	@NotNull
+	@Column(nullable = false)
 	Long uploadDate;
 
 	@NotNull
+	@Length(max = 10000)
+	@Column(nullable = false)
 	String description;
+	
+	@NotNull
+	@Column(nullable = false)
+	@Range(min = 0)
+	Long viewCount;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
 	Set<Rating> ratings = new HashSet<Rating>();
@@ -64,4 +81,14 @@ public class ShortFilm {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	Filmmaker uploader;
+	
+	public String getFormattedUploadDate() {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
+		return dateFormatter.format(new Date(getUploadDate()));
+	}
+	
+	public ShortFilm() {
+		super();
+		setViewCount(0L);
+	}
 }

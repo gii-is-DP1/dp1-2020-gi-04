@@ -2,7 +2,7 @@ package io.github.fourfantastics.standby.service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -62,7 +62,7 @@ public class UserService {
 			throw new NotUniqueException("Username already registered!", Utils.hashSet("name"));
 		}
 		encryptPassword(user);
-		user.setCreationDate(Instant.now().getEpochSecond());
+		user.setCreationDate(new Date().getTime());
 		return userRepository.save(user);
 	}
 
@@ -113,7 +113,7 @@ public class UserService {
 		followed.getFilmmakerSubscribers().add(follower);
 		if (followed.getConfiguration().getBySubscriptions()) {
 			Notification newFollowerNotification = new Notification();
-			newFollowerNotification.setEmisionDate(Instant.now().getEpochSecond());
+			newFollowerNotification.setEmisionDate(new Date().getTime());
 			newFollowerNotification.setText(follower.getName() + " has subscribed to your profile.");
 			newFollowerNotification.setUser(followed);
 			followed.getNotifications().add(newFollowerNotification);

@@ -122,6 +122,26 @@ public class ShortFilmController {
 		return res;
 	}
 
+	@RequestMapping("/shortfilm/{shortFilmId}")
+	public String getShortfilmView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
+			Map<String, Object> model) {
+		User loggedUser = userService.getLoggedUser(session).orElse(null);
+		if (loggedUser == null) {
+			return "redirect:/login";
+		}
+
+		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
+		if (shortFilm == null) {
+			return "redirect:/";
+		}
+		
+		shortFilm.setViewCount(shortFilm.getViewCount() + 1L);
+		shortFilmService.save(shortFilm);
+		model.put("shortFilm", shortFilm);
+
+		return "viewShortFilm";
+	}
+
 	@RequestMapping("/shortfilm/{shortFilmId}/edit")
 	public String getEditView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
 			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult bindingResult,
@@ -135,10 +155,12 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
+		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		if (shortFilmEditData.getTitle() == null) {
 			model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(shortFilm));
 		}
+
 		return "editShortFilm";
 	}
 
@@ -155,6 +177,7 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
+		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(false, true, false);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
@@ -185,6 +208,7 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
+		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditData.getTags().remove(req.getParameter("removeTag"));
 
@@ -204,6 +228,7 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
+		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(false, false, true);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
@@ -247,6 +272,7 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
+		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		int index;
 		try {
@@ -275,6 +301,7 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
+		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(true, false, false);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
@@ -289,7 +316,7 @@ public class ShortFilmController {
 			if (tagName == null) {
 				continue;
 			}
-			
+
 			Tag newTag = tagService.getTagByName(tagName).orElse(null);
 			if (newTag == null) {
 				newTag = new Tag();
@@ -308,7 +335,7 @@ public class ShortFilmController {
 			if (filmmakerName == null) {
 				continue;
 			}
-			
+
 			User roleUser = userService.getUserByName(filmmakerName).orElse(null);
 			if (roleUser == null || !roleUser.getType().equals(UserType.Filmmaker)) {
 				continue;
