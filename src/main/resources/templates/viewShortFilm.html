@@ -2,13 +2,35 @@
 <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
     <title data-th-text="|Watching ${shortFilm.title} - Standby|"></title>
     <section>
-        <div class="bg-light embed-responsive embed-responsive-16by9 mb-3">
+        <div class="bg-light embed-responsive embed-responsive-16by9 mb-2">
             <video controls data-th-poster="@{'/uploads/' + (${shortFilm.getThumbnailUrl()})?: '/static/no-thumbnail.svg'}">
                 <source data-th-src="@{'/uploads/' + ${shortFilm.getVideoUrl()}}" />
                 <span>Your browser does not support HTML5 video tag.</span>
             </video>
         </div>
+        <div class="mb-2">
+            <th-block data-th-each="tag : ${shortFilm.getTags()}">
+                <span data-th-replace="~{@{fragments/tag}(text='#__${tag.getName()}__', type='light')}"></span>
+            </th-block>
+        </div>
         <h4 data-th-text="${shortFilm.getTitle()}"></h4>
-        <label class="text-muted" data-th-text="|Views: ${shortFilm.getViewCount()}|"></label>
+        <div class="d-flex">
+            <label class="text-muted" data-th-text="|${shortFilm.getViewCount()} views|"></label>
+            <label class="text-muted mx-2">-</label>
+            <label class="text-muted" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></label>
+        </div>
+        <hr class="mt-2" />
+        <div class="d-flex" data-th-with="uploader = ${shortFilm.getUploader()}">
+            <div class="flex-grow-0">
+                <a class="bold" data-th-href="|/profile/${uploader.getId()}|">
+                    <img data-th-replace="~{@{fragments/profilePicture}(src=${uploader.getPhotoUrl()}, class='img-fluid', style='max-width: 50px; max-height: 50px')}" />
+                </a>
+            </div>
+            <div class="flex-grow-1 pl-3 d-flex flex-column">
+                <strong><a class="text-dark text-decoration-none" data-th-href="|/profile/${uploader.getId()}|" data-th-text="${uploader.getName()}"></a></strong>
+                <span class="text-secondary" data-th-text="|${#lists.size(uploader.getFilmmakerSubscribers())} subscribers|"></span>
+                <p class="text-break mt-2" data-th-text="${shortFilm.getDescription()}"></p>
+            </div>
+        </div>
     </section>
 </html>

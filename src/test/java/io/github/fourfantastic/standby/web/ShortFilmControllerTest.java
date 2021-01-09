@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -124,7 +124,7 @@ public class ShortFilmControllerTest {
 		final ShortFilm mockShortFilm = mockShortFilmUploadData.toShortFilm();
 		mockShortFilm.setId(123456L);
 		mockShortFilm.setVideoUrl(UUID.randomUUID().toString());
-		mockShortFilm.setUploadDate(Instant.now().getEpochSecond());
+		mockShortFilm.setUploadDate(new Date().getTime());
 		mockShortFilm.setUploader(mockFilmmaker);
 		
 		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));

@@ -1,6 +1,9 @@
 package io.github.fourfantastics.standby.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -52,6 +55,7 @@ public class ShortFilm {
 	Long uploadDate;
 
 	@NotNull
+	@Length(max = 10000)
 	@Column(nullable = false)
 	String description;
 	
@@ -77,6 +81,11 @@ public class ShortFilm {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	Filmmaker uploader;
+	
+	public String getFormattedUploadDate() {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
+		return dateFormatter.format(new Date(getUploadDate()));
+	}
 	
 	public ShortFilm() {
 		super();
