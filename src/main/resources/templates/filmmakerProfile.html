@@ -2,20 +2,19 @@
 <html
 	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}"
 	data-th-action="@{/profile}" data-th-object="${filmmakerProfileData}">
-
 <title>Filmmaker profile- Standby</title>
 <section>
-	<h3 data-th-text="|My profile |"></h3>
+	<h3>User profile</h3>
 	<hr />
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				<span class="left" data-th-text="|${filmmakerProfileData.fullname}|">
-				</span>
+				<span class="left"
+					data-th-text="${filmmakerProfileData.getFullname()}"> </span>
 			</div>
 			<div class="col">
 				<span class="float-right">
-					<button
+					<button 
 						data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
 				</span>
 			</div>
@@ -26,16 +25,16 @@
 		<div class="row">
 			<div class="col-12 col-md-3 text-center mt-md-0 mt-2 mb-3 mb-md-0">
 				<img
-					data-th-replace="~{@{fragments/profilePicture}(src=${photoUrl}, class='img-fluid', style='max-height: 100px')}">
+					data-th-replace="~{@{fragments/profilePicture}(src=${filmmakerProfileData.getPhotoUrl()}, class='img-fluid', style='max-height: 100px')}">
 			</div>
 			<div class="col-12 col-md-3">
 				<div class="row">
 					<div class="col-12 col-md-4 text-center ">
 						<span class="badge badge-secondary"
-							data-th-text="${#lists.size(filmmakerProfileData.uploadedShortFilms)}"></span>
+							data-th-text="${#lists.size(filmmakerProfileData.getUploadedShortFilms())}"></span>
 						<div class="row">
 							<div class="col-12 col-md-4 text-center">
-								<h6> Shortfilms</h6>
+								<h6>Shortfilms</h6>
 							</div>
 						</div>
 					</div>
@@ -45,7 +44,7 @@
 				<div class="row">
 					<div class="col-12 col-md-4 text-center ">
 						<span class="badge badge-secondary"
-							data-th-text="${#lists.size(filmmakerProfileData.filmmakerSubscribers)}"></span>
+							data-th-text="${#lists.size(filmmakerProfileData.getFilmmakerSubscribers())}"></span>
 						<div class="row">
 							<div class="col-12 col-md-4 text-center">
 								<h6>Followers</h6>
@@ -59,7 +58,7 @@
 				<div class="row">
 					<div class="col-12 col-md-4 text-center ">
 						<span class="badge badge-secondary"
-							data-th-text="${#lists.size(filmmakerProfileData.filmmakersSubscribedTo)}"></span>
+							data-th-text="${#lists.size(filmmakerProfileData.getFilmmakersSubscribedTo())}"></span>
 						<div class="row">
 							<div class="col-12 col-md-4 text-center">
 								<h6>Followed</h6>
@@ -73,31 +72,71 @@
 	</div>
 	<br>
 	<div class="container">
-			<div class="row">
-				<div class="col-12 col-md-6 mb-3 mb-md-0">
-				<form data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/privacyrequest'}" method="POST"
-				data-th-object="${hidePrivacyRequestButton}">
-					<button th:if='${hidePrivacyRequestButton}' type="submit" class="btn btn-primary btn-block">Request
-						contact info</button>
+		<div class="row">
+			<div class="col-12 col-md-6 mb-3 mb-md-0">
+				<form
+					data-th-action="@{'/profile/'+ ${filmmakerProfileData.getId()}+'/privacyrequest'}"
+					method="POST" data-th-object="${hidePrivacyRequestButton}">
+					<button th:unless='${hidePrivacyRequestButton}' type="submit"
+						class="btn btn-primary btn-block">Request contact info</button>
 				</form>
-				<form data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/privacyrequest'}" method="POST"
-				data-th-object="${disablePrivacyRequestButton}">
-					<button th:if='${disablePrivacyRequestButton}' type="submit" class="btn btn-primary btn-block" diabled>Request
-						contact info</button>
+				<form
+					data-th-action="@{'/profile/'+ ${filmmakerProfileData.getId()}+'/privacyrequest'}"
+					method="POST" data-th-object="${disablePrivacyRequestButton}">
+					<button th:if='${disablePrivacyRequestButton}' type="submit"
+						class="btn btn-secondary btn-block" disable>Already
+						requested</button>
 				</form>
-				</div>
-				<div class="col-12 col-md-6">
-				<form  data-th-action="@{'/profile/'+ ${filmmakerProfileData.id}+'/subscription'}" method="POST"
-				data-th-object="${hidefollowButton}">
-					<button th:if='${hidefollowButton}' type="submit" class="btn btn-primary btn-block">+
-						Follow</button>
-				</form>
-				</div>
 			</div>
+			<div class="col-12 col-md-6">
+				<form
+					data-th-action="@{'/profile/'+ ${filmmakerProfileData.getId()}+'/subscription'}"
+					method="POST" data-th-object="${hidefollowButton}">
+					<button th:unless='${hideFollowButton}' type="submit"
+						class="btn btn-primary btn-block">+ Follow</button>
+				</form>
+
+				<form
+					data-th-action="@{'/profile/'+ ${filmmakerProfileData.getId()}+'/unsubscription'}"
+					method="POST" data-th-object="${unfollowButton}">
+					<button th:if='${unfollowButton}' type="submit"
+						class="btn btn-primary btn-block">Unfollow</button>
+				</form>
+			</div>
+
+		</div>
 	</div>
 	<br>
-	
-		
-
+	<div
+		data-th-switch="*{uploadedShortFilms != null and !uploadedShortFilms.isEmpty()}">
+		<div data-th-case="true">
+			<div data-th-each="shortFilm : *{uploadedShortFilms}">
+				<div class="card mb-3">
+					<div class="row no-gutters">
+						<div class="col-md-4">
+							<img
+								data-th-replace="~{@{fragments/thumbnail}(src=${shortFilm.getThumbnailUrl()}, class='card-img', alt='...')}">
+						</div>
+						<div class="col-md-8">
+							<div class="card-body">
+								<h5 class="card-title" data-th-text="${shortFilm.getTitle()}"></h5>
+								<p class="card-text"
+									data-th-text="${shortFilm.getDescription()}"></p>
+								<p class="card-text">
+									<small class="text-muted"
+										data-th-text="|Upload date: ${shortFilm.getUploadData()}|"></small>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div data-th-case="false">
+			<div
+				class="d-flex p-2 bd-highlight bg-secondary text-white rounded-lg">There
+				are no shortfilms</div>
+		</div>
+	</div>
 </section>
 </html>
