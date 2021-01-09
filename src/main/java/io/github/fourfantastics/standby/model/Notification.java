@@ -37,6 +37,10 @@ public class Notification {
 	@Column(nullable = true)
 	Long readDate;
 
+	@NotNull
+	@Column(nullable = false)
+	NotificationType type;
+	
 	@ManyToOne(fetch = FetchType.EAGER, optional = false) // receives
 	User user;
 }

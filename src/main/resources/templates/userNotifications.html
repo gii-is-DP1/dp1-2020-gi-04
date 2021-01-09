@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html
+	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+<title>Notifications</title>
+<section>
+	<form method="POST" data-th-action="@{notifications}"
+		data-th-object="${notificationData}">
+		<ul>
+			<li data-th-each="notification, stat : *{getNotifications()}"
+				data-th-if="*{getPagination().isIndexVisible(__${stat.index}__)}">
+				<div
+					data-th-text="|${notification.getText()} ${notification.getType().getName()}|"></div>
+			</li>
+		</ul>
+		<div data-th-replace="~{@{fragments/form/pagination}(name = 'pagination')}">
+		</div>
+	</form>
+</section>
+</html>

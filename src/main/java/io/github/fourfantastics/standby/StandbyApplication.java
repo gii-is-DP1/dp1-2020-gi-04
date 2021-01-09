@@ -1,5 +1,7 @@
 package io.github.fourfantastics.standby;
 
+import java.time.Instant;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -9,8 +11,11 @@ import org.springframework.stereotype.Component;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
+import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
+import io.github.fourfantastics.standby.service.NotificationService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 
@@ -26,13 +31,15 @@ public class StandbyApplication {
 		UserService userService;
 		ShortFilmService shortFilmService;
 		NotificationConfigurationService notificationConfigurationService;
+		NotificationService notificationService;
 
 		@Autowired
 		public CommandLineAppStartupRunner(UserService userService, ShortFilmService shortFilmService,
-				NotificationConfigurationService notificationConfigurationService) {
+				NotificationConfigurationService notificationConfigurationService, NotificationService notificationService) {
 			this.userService = userService;
 			this.shortFilmService = shortFilmService;
 			this.notificationConfigurationService = notificationConfigurationService;
+			this.notificationService = notificationService;
 		}
 
 		@Override
@@ -57,6 +64,30 @@ public class StandbyApplication {
 			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
 			filmmaker.setConfiguration(notificationConfiguration);
 			userService.saveUser(filmmaker);
+			
+			Notification notification = new Notification();
+			notification.setEmisionDate(Instant.now().toEpochMilli());
+			notification.setText("Test notification 1");
+			notification.setType(NotificationType.SUBSCRIPTION);
+			notification.setUser(filmmaker);
+			
+			notificationService.saveNotification(notification);
+			
+			notification = new Notification();
+			notification.setEmisionDate(Instant.now().toEpochMilli());
+			notification.setText("Test notification 2");
+			notification.setType(NotificationType.SUBSCRIPTION);
+			notification.setUser(filmmaker);
+			
+			notificationService.saveNotification(notification);
+			
+			notification = new Notification();
+			notification.setEmisionDate(Instant.now().toEpochMilli());
+			notification.setText("Test notification 3");
+			notification.setType(NotificationType.SUBSCRIPTION);
+			notification.setUser(filmmaker);
+			
+			notificationService.saveNotification(notification);
 
 			Company company = new Company();
 			company.setName("company1");
