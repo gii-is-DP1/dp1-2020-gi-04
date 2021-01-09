@@ -9,14 +9,16 @@
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				<span class="left"
-					data-th-text="${filmmakerProfileData.getFullname()}"> </span>
+				<span class="left" data-th-text="${filmmakerProfileData.getName()}">
+				</span>
 			</div>
 			<div class="col">
-				<span class="float-right">
-					<button 
-						data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
-				</span>
+				<form data-th-object="${accountButton}">
+					<span class="float-right" th:if='${accountButton}'>
+						<button
+							data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
+					</span>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -54,6 +56,7 @@
 
 				</div>
 			</div>
+
 			<div class="col-12 col-md-3 ">
 				<div class="row">
 					<div class="col-12 col-md-4 text-center ">
@@ -68,6 +71,25 @@
 
 				</div>
 			</div>
+		</div>
+	</div>
+	<br>
+	<div class="container ">
+		<div class="col-12 col-md-4">
+			<h6 class="badge badge-light"
+				data-th-text="|Full name: ${filmmakerProfileData.getFullname()}|"></h6>
+		</div>
+		<div class="col-12 col-md-3 ">
+			<h6 class="badge badge-light"
+				data-th-text="|City: ${filmmakerProfileData.getCity()}|"></h6>
+		</div>
+		<div class="col-12 col-md-3">
+			<h6 class="badge badge-light"
+				data-th-text="|Country: ${filmmakerProfileData.getCountry()}|"></h6>
+		</div>
+		<div class="col-12 col-md-2">
+			<h6 class="badge badge-light"
+				data-th-text="|Phone: ${filmmakerProfileData.getPhone()}|"></h6>
 		</div>
 	</div>
 	<br>
@@ -138,5 +160,6 @@
 				are no shortfilms</div>
 		</div>
 	</div>
+	<br>
 </section>
 </html>
