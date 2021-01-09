@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import org.bytedeco.javacv.FrameGrabber.Exception;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
@@ -37,7 +36,6 @@ import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exception.TooBigException;
-import io.github.fourfantastics.standby.utils.VideoUtils;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
@@ -52,13 +50,10 @@ public class ShortFilmServiceTest {
 
 	@Mock
 	FilmmakerService filmmakerService;
-
-	@Mock
-	VideoUtils videoUtils;
 	
 	@BeforeEach
 	public void setup() throws InvalidExtensionException, RuntimeException {
-		shortFilmService = new ShortFilmService(shortFilmRepository, fileRepository, videoUtils);
+		shortFilmService = new ShortFilmService(shortFilmRepository, fileRepository);
 
 		final Filmmaker filmmaker1 = new Filmmaker();
 		filmmaker1.setId(1L);
@@ -85,7 +80,6 @@ public class ShortFilmServiceTest {
 		when(mockVideo.getSize()).thenReturn(size);
 		when(fileRepository.getFileExtension(mockVideo)).thenReturn(extension);
 		when(fileRepository.saveFile(eq(mockVideo), any(Path.class))).thenReturn(true);
-		when(videoUtils.getThumbnailFromVideo(mockVideo)).thenReturn(mockThumbnail);
 		when(fileRepository.saveFile(eq(mockThumbnail), any(Path.class))).thenReturn(true);
 
 		ShortFilmUploadData uploadData = new ShortFilmUploadData();
@@ -106,7 +100,6 @@ public class ShortFilmServiceTest {
 			verify(fileRepository, times(1)).getFileExtension(mockVideo);
 			verify(fileRepository, times(1)).createDirectory(any(Path.class));
 			verify(fileRepository, times(1)).saveFile(eq(mockVideo), any(Path.class));
-			verify(videoUtils, only()).getThumbnailFromVideo(mockVideo);
 			verify(fileRepository, times(1)).saveFile(eq(mockThumbnail), any(Path.class));
 			verifyNoMoreInteractions(fileRepository);
 			verify(shortFilmRepository, only()).save(any(ShortFilm.class));
@@ -183,7 +176,6 @@ public class ShortFilmServiceTest {
 		when(mockVideo.getSize()).thenReturn(size);
 		when(fileRepository.getFileExtension(mockVideo)).thenReturn(extension);
 		when(fileRepository.saveFile(eq(mockVideo), any(Path.class))).thenReturn(true);
-		when(videoUtils.getThumbnailFromVideo(mockVideo)).thenReturn(null);
 		when(fileRepository.saveFile(eq(mockThumbnail), any(Path.class))).thenReturn(true);
 
 		ShortFilmUploadData uploadData = new ShortFilmUploadData();
@@ -205,7 +197,6 @@ public class ShortFilmServiceTest {
 			verify(fileRepository, times(1)).createDirectory(any(Path.class));
 			verify(fileRepository, times(1)).saveFile(eq(mockVideo), any(Path.class));
 			verifyNoMoreInteractions(fileRepository);
-			verify(videoUtils, only()).getThumbnailFromVideo(mockVideo);
 			verify(shortFilmRepository, only()).save(any(ShortFilm.class));
 		});
 	}

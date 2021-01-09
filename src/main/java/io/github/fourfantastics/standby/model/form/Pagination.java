@@ -16,30 +16,32 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
+@NoArgsConstructor
 public class Pagination {
-	Integer currentPage;
-	Integer pageElements;
-	Integer maxSidePages;
 	Integer totalElements;
+	Integer pageElements;
+	Integer currentPage;
+	Integer maxSidePages;
 
-	public static Pagination of(Integer currentPage, Integer pageElements, Integer maxSidePages, Integer totalElements) {
-		return new Pagination(currentPage, pageElements, maxSidePages, totalElements);
+	public static Pagination of(Integer totalElements, Integer pageElements, Integer currentPage,
+			Integer maxSidePages) {
+		return new Pagination(totalElements, pageElements, currentPage, maxSidePages);
 	}
-	
-	public static Pagination of(Integer pageElements, Integer maxSidePages, Integer totalElements) {
-		return new Pagination(1, pageElements, maxSidePages, totalElements);
+
+	public static Pagination of(Integer totalElements, Integer pageElements, Integer currentPage) {
+		return new Pagination(totalElements, pageElements, currentPage, 3);
 	}
-	
-	public static Pagination of(Integer maxSidePages, Integer totalElements) {
-		return Pagination.of(5, maxSidePages, totalElements);
+
+	public static Pagination of(Integer totalElements, Integer pageElements) {
+		return new Pagination(totalElements, pageElements, 3, 1);
 	}
-	
+
 	public static Pagination of(Integer totalElements) {
-		return Pagination.of(2, totalElements);
+		return new Pagination(totalElements, 5, 3, 1);
 	}
-	
+
 	public static Pagination empty() {
-		return Pagination.of(0);
+		return new Pagination(0, 5, 3, 1);
 	}
 
 	public Integer getCurrentPage() {
@@ -53,19 +55,17 @@ public class Pagination {
 	public Integer getMaxSidePages() {
 		return Utils.ensureMin(maxSidePages, 0);
 	}
-	
+
 	public Integer getTotalElements() {
 		return Utils.ensureMin(totalElements, 0);
 	}
 
 	public Integer getTotalPages() {
-		Integer totalElements = getTotalElements();
-		Integer pageElements = getPageElements();
-		return (totalElements > 0)
-				? totalElements / pageElements + ((totalElements % pageElements == 0) ? 0 : 1)
-				: 1;
+		int totalElements = getTotalElements();
+		int pageElements = getPageElements();
+		return (totalElements > 0) ? totalElements / pageElements + ((totalElements % pageElements == 0) ? 0 : 1) : 1;
 	}
-	
+
 	public Boolean isPreviousDisabled() {
 		return getCurrentPage().compareTo(1) == 0;
 	}
@@ -73,32 +73,32 @@ public class Pagination {
 	public Boolean isNextDisabled() {
 		return getCurrentPage().compareTo(getTotalPages()) == 0;
 	}
-	
+
 	public List<Integer> getPages() {
-		Integer currentPage = getCurrentPage();
-		Integer maxSidePages = getMaxSidePages();
-		Integer totalPages = getTotalPages();
+		int currentPage = getCurrentPage();
+		int maxSidePages = getMaxSidePages();
+		int totalPages = getTotalPages();
 		List<Integer> pages = new ArrayList<Integer>();
-		
-		for (Integer page = currentPage - 1; page >= currentPage - maxSidePages && page >= 1; page--) {
+
+		for (int page = currentPage - 1; page >= currentPage - maxSidePages && page >= 1; page--) {
 			pages.add(page);
 		}
-		
+
 		pages.add(currentPage);
-		
-		for (Integer page = currentPage + 1; page <= currentPage + maxSidePages && page <= totalPages; page++) {
+
+		for (int page = currentPage + 1; page <= currentPage + maxSidePages && page <= totalPages; page++) {
 			pages.add(page);
 		}
-		
+
 		return pages;
 	}
-	
+
 	public Boolean isIndexVisible(Integer index) {
-		Integer currentPage = getCurrentPage();
-		Integer pageElements = getPageElements();
-		return index >= (currentPage - 1) * pageElements && index < currentPage * pageElements; 
+		int currentPage = getCurrentPage();
+		int pageElements = getPageElements();
+		return index >= (currentPage - 1) * pageElements && index < currentPage * pageElements;
 	}
-	
+
 	public Boolean isCountVisible(Integer count) {
 		return isIndexVisible(count - 1);
 	}

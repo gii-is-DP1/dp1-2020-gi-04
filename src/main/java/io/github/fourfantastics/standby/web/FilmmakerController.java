@@ -1,8 +1,8 @@
 package io.github.fourfantastics.standby.web;
 
 import java.util.List;
+
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
@@ -24,7 +24,6 @@ import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.form.FilmmakerProfileData;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
-import io.github.fourfantastics.standby.model.form.ShortFilmEditData;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
@@ -112,8 +111,10 @@ public class FilmmakerController {
 						.filter((x -> x.getFilmmaker().getName().equals(filmmaker.getName()))).collect(Collectors.toList());
 				if (!sentRequest.isEmpty()) {
 					model.put("disablePrivacyRequestButton", true);
+					model.put("hidePrivacyRequestButton", true);
 					if(sentRequest.get(0).getRequestState() == RequestStateType.ACCEPTED){
 						model.put("personalInformation", true);
+						model.put("disablePrivacyRequestButton", false);
 					}
 				}
 				if(filmmaker.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== viewerCompany.getName())) {
@@ -124,6 +125,7 @@ public class FilmmakerController {
 				Filmmaker viewerFilmmaker = (Filmmaker) viewer;
 				model.put("hidePrivacyRequestButton", true);
 				if (viewerFilmmaker.getName().equals(filmmaker.getName())) {
+					model.put("accountButton", true);
 					model.put("hideFollowButton", true);
 				}
 				if(filmmaker.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== viewerFilmmaker.getName())) {

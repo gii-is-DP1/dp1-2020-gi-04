@@ -16,9 +16,16 @@ public class FilmmakerProfileData {
 	
 	String name;
 	
-	String fullname;
-
 	String photoUrl;
+	
+	String fullname;
+	
+	String city;
+	
+	String country;
+	
+	String phone;
+
 
 	Set<User> filmmakerSubscribers;// My followers
 
@@ -32,8 +39,11 @@ public class FilmmakerProfileData {
 		FilmmakerProfileData filmmakerProfileData = new FilmmakerProfileData();
 		filmmakerProfileData.setId(filmmaker.getId());
 		filmmakerProfileData.setName(filmmaker.getName());
-		filmmakerProfileData.setFullname(filmmaker.getFullname());
 		filmmakerProfileData.setPhotoUrl(filmmaker.getPhotoUrl());
+		filmmakerProfileData.setFullname(filmmaker.getFullname());
+		filmmakerProfileData.setCity(filmmaker.getCity());
+		filmmakerProfileData.setCountry(filmmaker.getCountry());
+		filmmakerProfileData.setPhone(filmmaker.getPhone());
 		filmmakerProfileData.setFilmmakerSubscribers(filmmaker.getFilmmakerSubscribers());
 		filmmakerProfileData.setFilmmakersSubscribedTo(filmmaker.getFilmmakersSubscribedTo());
 		filmmakerProfileData.setUploadedShortFilms(filmmaker.getUploadedShortFilms());

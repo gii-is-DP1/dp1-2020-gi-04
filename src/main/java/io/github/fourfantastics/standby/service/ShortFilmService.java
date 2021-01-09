@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -25,23 +23,20 @@ import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exception.TooBigException;
 import io.github.fourfantastics.standby.utils.Utils;
-import io.github.fourfantastics.standby.utils.VideoUtils;
 
 @Service
 public class ShortFilmService {
 	final Path fileRoot = Paths.get("uploads");
-	final Set<String> allowedFileExtensions = Utils.hashSet(".mp4", ".avi", ".wmv", ".webm");
+	final Set<String> allowedVideoFileExtensions = Utils.hashSet(".mp4", ".webm");
+	final Set<String> allowedImageFileExtensions = Utils.hashSet(".bmp", ".png", ".jpg", ".jpeg", ".webp");
 
 	ShortFilmRepository shortFilmRepository;
 	FileRepository fileRepository;
-	VideoUtils videoUtils;
 
 	@Autowired
-	public ShortFilmService(ShortFilmRepository shortFilmRepository, FileRepository fileRepository,
-			VideoUtils videoUtils) {
+	public ShortFilmService(ShortFilmRepository shortFilmRepository, FileRepository fileRepository) {
 		this.shortFilmRepository = shortFilmRepository;
 		this.fileRepository = fileRepository;
-		this.videoUtils = videoUtils;
 	}
 
 	public Optional<ShortFilm> getShortFilmById(Long id) {
@@ -74,7 +69,7 @@ public class ShortFilmService {
 		MultipartFile videoFile = shortFilmUploadData.getFile();
 
 		String extension = fileRepository.getFileExtension(videoFile);
-		if (!allowedFileExtensions.contains(extension)) {
+		if (!allowedVideoFileExtensions.contains(extension)) {
 			throw new InvalidExtensionException("Invalid extension for the file");
 		}
 
@@ -85,35 +80,41 @@ public class ShortFilmService {
 
 		String shortFilmUuid = UUID.randomUUID().toString();
 		String videoPath = String.format("%s%s", shortFilmUuid, extension);
-		String thumbnailPath = String.format("%s%s", shortFilmUuid, ".png");
 
 		fileRepository.createDirectory(fileRoot);
 		if (!fileRepository.saveFile(videoFile, fileRoot.resolve(videoPath))) {
 			throw new RuntimeException("Couldn't upload file");
 		}
 
-		ByteArrayOutputStream thumbnailImage = videoUtils.getThumbnailFromVideo(videoFile);
-		if (thumbnailImage == null) {
-			System.out.println("Image null");
-			thumbnailPath = null;
-		} else {
-			if (!fileRepository.saveFile(thumbnailImage, fileRoot.resolve(thumbnailPath))) {
-				System.out.println("Not saved");
-				thumbnailPath = null;
-			}
-			try {
-				thumbnailImage.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		ShortFilm shortFilm = shortFilmUploadData.toShortFilm();
+		shortFilm.setVideoUrl(videoPath.toString());
+		shortFilm.setThumbnailUrl(null);
+		shortFilm.setUploader(uploader);
+		shortFilm.setUploadDate(new Date().getTime());
+		return shortFilmRepository.save(shortFilm);
+	}
+
+	public void uploadThumbnail(ShortFilm shortFilm, MultipartFile thumbnailFile)
+			throws TooBigException, InvalidExtensionException, RuntimeException {
+		String extension = fileRepository.getFileExtension(thumbnailFile);
+		if (!allowedImageFileExtensions.contains(extension)) {
+			throw new InvalidExtensionException("Invalid extension for the thumbnail");
 		}
 
-		ShortFilm shortFilm = shortFilmUploadData.toShortFilm();
-		shortFilm.setVideoUrl(videoPath);
+		long gigabyte = 1000L * 1000L * 5L; /* 5MB */
+		if (thumbnailFile.getSize() > gigabyte) {
+			throw new TooBigException("Uploaded thumbnail is too big");
+		}
+
+		String shortFilmUuid = UUID.randomUUID().toString();
+		String thumbnailPath = String.format("%s%s", shortFilmUuid, extension);
+
+		fileRepository.createDirectory(fileRoot);
+		if (!fileRepository.saveFile(thumbnailFile, fileRoot.resolve(thumbnailPath))) {
+			throw new RuntimeException("Couldn't upload thumbnail");
+		}
+		
 		shortFilm.setThumbnailUrl(thumbnailPath);
-		shortFilm.setUploadDate(new Date().getTime());
-		shortFilm.setUploader(uploader);
-		return shortFilmRepository.save(shortFilm);
 	}
 
 	public Set<ShortFilm> getShortFilmByFilmmaker(Filmmaker filmmaker) {
