@@ -1,6 +1,5 @@
 package io.github.fourfantastics.standby.web;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +23,6 @@ import io.github.fourfantastics.standby.service.UserService;
 
 @Controller
 public class NotificationController {
-
 	@Autowired
 	UserService userService;
 
@@ -75,5 +73,4 @@ public class NotificationController {
 
 		return "userNotifications";
 	}
-
 }

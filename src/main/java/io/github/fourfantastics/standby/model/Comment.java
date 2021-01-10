@@ -33,7 +33,7 @@ public class Comment {
 	@NotEmpty
 	@Length(max = 1000)
 	@Column(nullable = false)
-	String comment;
+	String text;
 
 	@NotNull
 	@Column(nullable = false)
