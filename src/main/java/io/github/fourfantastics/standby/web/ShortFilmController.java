@@ -183,40 +183,6 @@ public class ShortFilmController {
 		return "viewShortFilm";
 	}
 
-	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "postComment" })
-	public String postComment(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
-			Map<String, Object> model, RedirectAttributes redirections) {
-		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
-		if (shortFilm == null) {
-			return "redirect:/";
-		}
-
-		User loggedUser = userService.getLoggedUser(session).orElse(null);
-		if (loggedUser == null) {
-			return "redirect:/login";
-		}
-
-		redirections.addFlashAttribute(shortFilmViewData);
-		shortFilmViewDataValidator.validate(shortFilmViewData, result);
-		if (result.hasErrors()) {
-			redirections.addFlashAttribute("errors", result);
-			return String.format("redirect:/shortfilm/%d", shortFilmId);
-		}
-
-		Comment newComment = new Comment();
-		newComment.setText(shortFilmViewData.getNewCommentText());
-		newComment.setShortFilm(shortFilm);
-		newComment.setUser(loggedUser);
-		newComment.setDate(new Date().getTime());
-		commentService.saveComment(newComment);
-
-		shortFilm.getComments().add(newComment);
-		shortFilmViewData.setNewCommentText("");
-
-		return String.format("redirect:/shortfilm/%d", shortFilmId);
-	}
-
 	@RequestMapping("/shortfilm/{shortFilmId}/edit")
 	public String getEditView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
 			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult bindingResult,
