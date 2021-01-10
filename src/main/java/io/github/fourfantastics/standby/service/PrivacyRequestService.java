@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Notification;
+import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
 import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
@@ -59,6 +60,7 @@ public class PrivacyRequestService {
 		newPrivacyRequestNotification.setEmissionDate(new Date().getTime());
 		newPrivacyRequestNotification.setText(company.getName() + "wants to know more about you ;)");
 		newPrivacyRequestNotification.setUser(receiver);
+		newPrivacyRequestNotification.setType(NotificationType.PRIVACY_REQUEST);
 		receiver.getNotifications().add(newPrivacyRequestNotification);
 		notificationService.saveNotification(newPrivacyRequestNotification);
 
@@ -76,6 +78,7 @@ public class PrivacyRequestService {
 			petitionStateNotification.setEmissionDate(new Date().getTime());
 			petitionStateNotification.setText(request.getFilmmaker().getName() + " has accepted your petition");
 			petitionStateNotification.setUser(sender);
+			petitionStateNotification.setType(NotificationType.PRIVACY_REQUEST);
 			sender.getNotifications().add(petitionStateNotification);
 
 			notificationService.saveNotification(petitionStateNotification);
@@ -91,6 +94,7 @@ public class PrivacyRequestService {
 			petitionStateNotification.setEmissionDate(new Date().getTime());
 			petitionStateNotification.setText(request.getFilmmaker().getName() + " has declined your petition");
 			petitionStateNotification.setUser(sender);
+			petitionStateNotification.setType(NotificationType.PRIVACY_REQUEST);
 			sender.getNotifications().add(petitionStateNotification);
 
 			notificationService.saveNotification(petitionStateNotification);

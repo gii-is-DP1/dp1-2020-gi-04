@@ -35,6 +35,10 @@ public class NotificationService {
 	public Integer getUnreadNotifications(User user) {
 		return notificationRepository.countByUserAndReadDate(user, null);
 	}
+	
+	public void deleteNotification(Notification notification) {
+		notificationRepository.delete(notification);
+	}
 
 	public Page<Notification> getPaginatedNotifications(User user, Pageable pageable) {
 		return notificationRepository.findByUser(user, pageable);
