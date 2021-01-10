@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
+import io.github.fourfantastics.standby.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -59,6 +60,6 @@ public class Comment {
 	
 	public Boolean isCollapsable() {
 		String text = getText();
-		return text.length() > collapsableMinLength || text.lines().count() > collapsableMinLines;
+		return text.length() > collapsableMinLength || Utils.lineCount(text) > collapsableMinLines;
 	}
 }
