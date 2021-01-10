@@ -46,6 +46,7 @@ public class ShortFilmEditDataValidator implements Validator {
 		
 		if (this.validateNewRole) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "newRoleFilmmaker", "", "Filmmaker's username cannot be blank!");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "newRoleType", "", "Role type cannot be blank!");
 		}
 	}
 }
