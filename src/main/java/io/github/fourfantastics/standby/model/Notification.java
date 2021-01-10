@@ -1,9 +1,5 @@
 package io.github.fourfantastics.standby.model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,15 +43,4 @@ public class Notification {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false) // receives
 	User user;
-
-	public String getFormattedEmissionDate() {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
-		return dateFormatter.format(new Date(getEmissionDate()));
-	}
-
-	public String getFormattedReadDate() {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
-		return dateFormatter.format(new Date(getReadDate()));
-	}
-
 }

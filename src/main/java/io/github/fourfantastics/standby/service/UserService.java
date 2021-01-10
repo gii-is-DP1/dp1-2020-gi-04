@@ -101,10 +101,12 @@ public class UserService {
 
 	public void logIn(HttpSession session, User user) {
 		session.setAttribute("userId", user.getId());
+		session.setAttribute("userType", user.getType());
 	}
 
 	public void logOut(HttpSession session) {
 		session.removeAttribute("userId");
+		session.removeAttribute("userType");
 	}
 
 	public PasswordEncoder getEncoder() {

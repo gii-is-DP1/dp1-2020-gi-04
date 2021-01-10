@@ -1,8 +1,6 @@
 package io.github.fourfantastics.standby.model;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +14,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
+import io.github.fourfantastics.standby.utils.RelativeTimeFormatter;
+import io.github.fourfantastics.standby.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -52,13 +52,12 @@ public class Comment {
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	ShortFilm shortFilm;
 	
-	public String getFormattedDate() {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
-		return dateFormatter.format(new Date(getDate()));
+	public String getFormattedRelativeTime() {
+		return RelativeTimeFormatter.toRelative(new Date().getTime() - getDate(), 1);
 	}
 	
 	public Boolean isCollapsable() {
 		String text = getText();
-		return text.length() > collapsableMinLength || text.lines().count() > collapsableMinLines;
+		return text.length() > collapsableMinLength || Utils.lineCount(text) > collapsableMinLines;
 	}
 }
