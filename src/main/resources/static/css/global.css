@@ -1,15 +1,51 @@
 #main-container {
-    padding-top: 77px;
-    min-height: 100vh;
+     padding-top: 77px;
+     min-height: 100vh;
+}
+ .border-input {
+     border-color: #ced4da;
+}
+ .badge .close {
+     margin-left: .25rem;
+     color: inherit;
+     font-size: 100%;
+     text-shadow: 0 1px 0 rgba(#000, .5);
 }
 
-.border-input {
-    border-color: #ced4da;
+ .text-collapse {
+     max-height: 6em;
+     overflow: hidden;
+     position: relative;
+     display: block;
+     line-height: 1.5em;
 }
 
-.badge .close {
-    margin-left: .25rem;
-    color: inherit;
-    font-size: 100%;
-    text-shadow: 0 1px 0 rgba(#000, .5);
+.text-collapse.collapse:not(.show) {
+	display: block;
+}
+
+.text-collapse.collapse.show {
+	max-height: none;
+}
+
+.text-collapse.collapsing {
+	-webkit-transition: none;
+    transition: none;
+    display: none;
+}
+
+.btn-collapse-text.collapsed > span:first-child {
+	display: block;
+}
+
+.btn-collapse-text.collapsed > span:last-child {
+    display: none;
+}
+
+.btn-collapse-text > span:first-child {
+    display: none;
+}
+
+.btn-collapse-text > span:last-child {
+	display: block;
 }

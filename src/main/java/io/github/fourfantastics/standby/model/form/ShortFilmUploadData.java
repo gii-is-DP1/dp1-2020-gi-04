@@ -1,6 +1,5 @@
 package io.github.fourfantastics.standby.model.form;
 
-
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.model.ShortFilm;
@@ -20,9 +19,7 @@ public class ShortFilmUploadData {
 		ShortFilmUploadData shortFilmUploadData = new ShortFilmUploadData();
 		shortFilmUploadData.setTitle("Title");
 		shortFilmUploadData.setDescription("Description");
-		//shortFilmUploadData.setFile(file);
 		return shortFilmUploadData;
-		
 	}
 	
 	public ShortFilm toShortFilm() {

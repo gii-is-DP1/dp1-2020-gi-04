@@ -21,7 +21,7 @@ public class ShortFilmEditDataValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return String.class.isAssignableFrom(clazz);
+		return ShortFilmEditData.class.isAssignableFrom(clazz);
 	}
 
 	@Override
@@ -46,6 +46,7 @@ public class ShortFilmEditDataValidator implements Validator {
 		
 		if (this.validateNewRole) {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "newRoleFilmmaker", "", "Filmmaker's username cannot be blank!");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "newRoleType", "", "Role type cannot be blank!");
 		}
 	}
 }

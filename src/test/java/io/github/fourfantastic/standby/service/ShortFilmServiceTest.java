@@ -13,12 +13,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import org.bytedeco.javacv.FrameGrabber.Exception;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
@@ -37,7 +35,6 @@ import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exception.TooBigException;
-import io.github.fourfantastics.standby.utils.VideoUtils;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
@@ -52,13 +49,10 @@ public class ShortFilmServiceTest {
 
 	@Mock
 	FilmmakerService filmmakerService;
-
-	@Mock
-	VideoUtils videoUtils;
 	
 	@BeforeEach
 	public void setup() throws InvalidExtensionException, RuntimeException {
-		shortFilmService = new ShortFilmService(shortFilmRepository, fileRepository, videoUtils);
+		shortFilmService = new ShortFilmService(shortFilmRepository, fileRepository);
 
 		final Filmmaker filmmaker1 = new Filmmaker();
 		filmmaker1.setId(1L);
@@ -80,13 +74,10 @@ public class ShortFilmServiceTest {
 		final String extension = ".mp4";
 		final long size = 1000L;
 		final MultipartFile mockVideo = mock(MultipartFile.class);
-		final ByteArrayOutputStream mockThumbnail = mock(ByteArrayOutputStream.class);
 		
 		when(mockVideo.getSize()).thenReturn(size);
 		when(fileRepository.getFileExtension(mockVideo)).thenReturn(extension);
 		when(fileRepository.saveFile(eq(mockVideo), any(Path.class))).thenReturn(true);
-		when(videoUtils.getThumbnailFromVideo(mockVideo)).thenReturn(mockThumbnail);
-		when(fileRepository.saveFile(eq(mockThumbnail), any(Path.class))).thenReturn(true);
 
 		ShortFilmUploadData uploadData = new ShortFilmUploadData();
 		uploadData.setTitle("Title");
@@ -100,14 +91,12 @@ public class ShortFilmServiceTest {
 			assertThat(shortFilm.getTitle()).isEqualTo(uploadData.getTitle());
 			assertThat(shortFilm.getDescription()).isEqualTo(uploadData.getDescription());
 			assertThat(shortFilm.getVideoUrl()).isNotEmpty();
-			assertThat(shortFilm.getThumbnailUrl()).isNotEmpty();
+			assertThat(shortFilm.getThumbnailUrl()).isNull();
 			assertNotNull(shortFilm.getUploadDate());
 
 			verify(fileRepository, times(1)).getFileExtension(mockVideo);
 			verify(fileRepository, times(1)).createDirectory(any(Path.class));
 			verify(fileRepository, times(1)).saveFile(eq(mockVideo), any(Path.class));
-			verify(videoUtils, only()).getThumbnailFromVideo(mockVideo);
-			verify(fileRepository, times(1)).saveFile(eq(mockThumbnail), any(Path.class));
 			verifyNoMoreInteractions(fileRepository);
 			verify(shortFilmRepository, only()).save(any(ShortFilm.class));
 		});
@@ -174,39 +163,73 @@ public class ShortFilmServiceTest {
 	}
 	
 	@Test
-	void uploadNoThumbnailTest() throws Exception, IOException {
-		final String extension = ".mp4";
-		final long size = 1000L;
-		final MultipartFile mockVideo = mock(MultipartFile.class);
-		final ByteArrayOutputStream mockThumbnail = mock(ByteArrayOutputStream.class);
+	void uploadThumbnailTest() throws Exception, IOException {
+		final ShortFilm mockShortFilm = new ShortFilm();
+		final String extension = ".png";
+		final long size = 50000L;
+		final MultipartFile mockImage = mock(MultipartFile.class);
 		
-		when(mockVideo.getSize()).thenReturn(size);
-		when(fileRepository.getFileExtension(mockVideo)).thenReturn(extension);
-		when(fileRepository.saveFile(eq(mockVideo), any(Path.class))).thenReturn(true);
-		when(videoUtils.getThumbnailFromVideo(mockVideo)).thenReturn(null);
-		when(fileRepository.saveFile(eq(mockThumbnail), any(Path.class))).thenReturn(true);
-
-		ShortFilmUploadData uploadData = new ShortFilmUploadData();
-		uploadData.setTitle("Title");
-		uploadData.setDescription("Description");
-		uploadData.setFile(mockVideo);
+		when(mockImage.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockImage)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockImage), any(Path.class))).thenReturn(true);
 
 		assertDoesNotThrow(() -> {
-			ShortFilm shortFilm = shortFilmService.upload(uploadData,
-					filmmakerService.getFilmmmakerByName("filmmaker1").get());
+			shortFilmService.uploadThumbnail(mockShortFilm, mockImage);
 
-			assertThat(shortFilm.getTitle()).isEqualTo(uploadData.getTitle());
-			assertThat(shortFilm.getDescription()).isEqualTo(uploadData.getDescription());
-			assertThat(shortFilm.getVideoUrl()).isNotEmpty();
-			assertThat(shortFilm.getThumbnailUrl()).isNull();
-			assertNotNull(shortFilm.getUploadDate());
-
-			verify(fileRepository, times(1)).getFileExtension(mockVideo);
+			assertThat(mockShortFilm.getThumbnailUrl()).isNotBlank();
+			
+			verify(fileRepository, times(1)).getFileExtension(mockImage);
 			verify(fileRepository, times(1)).createDirectory(any(Path.class));
-			verify(fileRepository, times(1)).saveFile(eq(mockVideo), any(Path.class));
+			verify(fileRepository, times(1)).saveFile(eq(mockImage), any(Path.class));
 			verifyNoMoreInteractions(fileRepository);
-			verify(videoUtils, only()).getThumbnailFromVideo(mockVideo);
-			verify(shortFilmRepository, only()).save(any(ShortFilm.class));
+		});
+	}
+	
+	@Test
+	void uploadThumbnailInvalidExtensionTest() throws Exception {
+		final ShortFilm mockShortFilm = new ShortFilm();
+		final String extension = ".txt";
+		final long size = 50000L;
+		final MultipartFile mockImage = mock(MultipartFile.class);
+		
+		when(mockImage.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockImage)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockImage), any(Path.class))).thenReturn(true);
+
+		assertThrows(InvalidExtensionException.class, () -> {
+			shortFilmService.uploadThumbnail(mockShortFilm, mockImage);
+		});
+	}
+	
+	@Test
+	void uploadThumbnailTooBigTest() throws Exception {
+		final ShortFilm mockShortFilm = new ShortFilm();
+		final String extension = ".jpg";
+		final long size = 7000000L;
+		final MultipartFile mockImage = mock(MultipartFile.class);
+		
+		when(mockImage.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockImage)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockImage), any(Path.class))).thenReturn(true);
+		
+		assertThrows(TooBigException.class, () -> {
+			shortFilmService.uploadThumbnail(mockShortFilm, mockImage);
+		});
+	}
+	
+	@Test
+	void uploadThumbnailRuntimeExceptionTest() throws Exception {
+		final ShortFilm mockShortFilm = new ShortFilm();
+		final String extension = ".jpg";
+		final long size = 7000L;
+		final MultipartFile mockImage = mock(MultipartFile.class);
+		
+		when(mockImage.getSize()).thenReturn(size);
+		when(fileRepository.getFileExtension(mockImage)).thenReturn(extension);
+		when(fileRepository.saveFile(eq(mockImage), any(Path.class))).thenReturn(false);
+
+		assertThrows(RuntimeException.class, () -> {
+			shortFilmService.uploadThumbnail(mockShortFilm, mockImage);
 		});
 	}
 }

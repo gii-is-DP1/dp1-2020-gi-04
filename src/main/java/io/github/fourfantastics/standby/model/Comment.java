@@ -1,5 +1,9 @@
 package io.github.fourfantastics.standby.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,6 +29,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
+	static Integer collapsableMinLength = 250;
+	static Integer collapsableMinLines = 5;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
@@ -33,7 +40,7 @@ public class Comment {
 	@NotEmpty
 	@Length(max = 1000)
 	@Column(nullable = false)
-	String comment;
+	String text;
 
 	@NotNull
 	@Column(nullable = false)
@@ -44,4 +51,14 @@ public class Comment {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	ShortFilm shortFilm;
+	
+	public String getFormattedDate() {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
+		return dateFormatter.format(new Date(getDate()));
+	}
+	
+	public Boolean isCollapsable() {
+		String text = getText();
+		return text.length() > collapsableMinLength || text.lines().count() > collapsableMinLines;
+	}
 }
