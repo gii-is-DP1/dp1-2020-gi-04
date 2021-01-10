@@ -1,19 +1,17 @@
 package io.github.fourfantastics.standby.model.form;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.utils.RelativeTimeFormatter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 public class NotificationWrapper {
-
 	Long id;
 
 	String text;
@@ -39,13 +37,7 @@ public class NotificationWrapper {
 		return new NotificationWrapper(notification);
 	}
 
-	public String getFormattedEmissionDate() {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
-		return dateFormatter.format(new Date(getEmissionDate()));
-	}
-
-	public String getFormattedReadDate() {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
-		return dateFormatter.format(new Date(getReadDate()));
+	public String getFormattedRelativeEmissionTime() {
+		return RelativeTimeFormatter.toRelative(new Date().getTime() - getEmissionDate(), 1);
 	}
 }

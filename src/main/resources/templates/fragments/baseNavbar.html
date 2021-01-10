@@ -1,48 +1,45 @@
-<nav
-	class="navbar navbar-light navbar-expand-md navbar-light bg-light border-bottom fixed-top"
-	data-th-fragment="navbar">
-	<a data-th-href="@{/}" class="navbar-brand">Standby</a>
-	<button class="navbar-toggler" type="button" data-toggle="collapse"
-		data-target="#navbar-content">
-		<span class="navbar-toggler-icon"></span>
-	</button>
+<nav class="navbar navbar-light navbar-expand-md navbar-light bg-light border-bottom fixed-top" data-th-fragment="navbar">
+    <a data-th-href="@{/}" class="navbar-brand">Standby</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-	<div class="navbar-collapse collapse" id="navbar-content">
-		<ul class="nav navbar-nav mt-4 mt-md-0 mx-auto row"
-			style="height: 40px">
-			<form>
-				<div class="form-row">
-					<div class="input-group col col-12 col-md-auto">
-						<input type="text" size="40" class="form-control"
-							placeholder="Search short films, filmmakers..." />
-						<div class="input-group-append">
-							<button
-								data-th-replace="~{@{fragments/button} :: imgBtn(classes='btn-light border-input', src=@{/static/search-icon.svg})}"></button>
-						</div>
-					</div>
-				</div>
-			</form>
-		</ul>
+    <div class="navbar-collapse collapse" id="navbar-content">
+        <ul class="nav navbar-nav mt-4 mt-md-0 mx-auto row" style="height: 40px;">
+            <form>
+                <div class="form-row">
+                    <div class="input-group col col-12 col-md-auto">
+                        <input type="text" size="40" class="form-control" placeholder="Search short films, filmmakers..." />
+                        <div class="input-group-append">
+                            <button data-th-replace="~{@{fragments/button} :: imgBtn(classes='btn-light border-input', src=@{/static/search-icon.svg})}"></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </ul>
+        <th-block data-th-if="${#session.getAttribute('userId')} != null">
+            <ul class="nav mt-4 mt-md-0 justify-content-between" style="height: 40px;">
+                <th-block data-th-if="${#session.getAttribute('userType').getName()} == 'Filmmaker'">
+                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/upload-icon.svg}, href=@{/upload})}"></button>
+                </th-block>
+                <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/notification-icon.svg}, href=@{/notifications}, badgeId = 'notificationBadge')}"></button>
+                <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/user-icon.svg}, href=@{/profile})}"></button>
 
-		<ul class="nav mt-4 mt-md-0 justify-content-between"
-			style="height: 40px">
-			<button
-				data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/upload-icon.svg}, href=@{/upload})}"></button>
-			<button
-				data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/notification-icon.svg}, href=@{/notifications}, badgeId = 'notificationBadge')}"></button>
-			<button
-				data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/user-icon.svg}, href=@{/profile})}"></button>
-		</ul>
-		<script>
-        fetch('/userNotifications').then(x => x.json()).then(res => {
-        	if(res.status == 200) {
-        		const badgeId = "#notificationBadge";
-        		if(res.count) {
-            		$(badgeId).text(res.count);
-
-        		}
-        	}
-        }).catch(console.error);
+                <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/logout-icon.svg}, href=@{/logout})}"></button>
+            </ul>
+        </th-block>
+        <script>
+            fetch("/userNotifications")
+                .then((x) => x.json())
+                .then((res) => {
+                    if (res.status == 200) {
+                        const badgeId = "#notificationBadge";
+                        if (res.count) {
+                            $(badgeId).text(res.count);
+                        }
+                    }
+                })
+                .catch(console.error);
         </script>
-	</div>
+    </div>
 </nav>
