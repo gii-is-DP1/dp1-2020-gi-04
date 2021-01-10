@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Notification;
+import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
@@ -116,6 +117,7 @@ public class UserService {
 			newFollowerNotification.setEmisionDate(new Date().getTime());
 			newFollowerNotification.setText(follower.getName() + " has subscribed to your profile.");
 			newFollowerNotification.setUser(followed);
+			newFollowerNotification.setType(NotificationType.SUBSCRIPTION);
 			followed.getNotifications().add(newFollowerNotification);
 
 			notificationService.saveNotification(newFollowerNotification);
