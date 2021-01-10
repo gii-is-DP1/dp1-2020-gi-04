@@ -13,7 +13,6 @@ import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.RatingRepository;
-import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
 @Service
 public class RatingService {
@@ -67,7 +66,11 @@ public class RatingService {
 		return ratingRepository.save(rating);
 	}
 
-	public Rating getRatingByUserAndShortFilm( User user,ShortFilm shortFilm) {
+	public Rating getRatingByUserAndShortFilm(User user, ShortFilm shortFilm) {
 		return ratingRepository.findByUserAndShortFilm(user, shortFilm).orElse(null);
+	}
+
+	public void removeRating(User user, ShortFilm shortFilm) {
+		ratingRepository.deleteByUserAndShortFilm(user, shortFilm);
 	}
 }

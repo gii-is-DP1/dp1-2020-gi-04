@@ -170,8 +170,8 @@ public class ShortFilmController {
 			shortFilmViewData.setWatcherName(loggedUser.getName());
 			shortFilmViewData.setWatcherPhotoUrl(loggedUser.getPhotoUrl());
 		}
-
-		shortFilmViewData.setMeanRating(ratingService.getAverageRating(shortFilm));
+		Double meanRating = ratingService.getAverageRating(shortFilm);
+		shortFilmViewData.setMeanRating(meanRating == null ? 0.0 : meanRating);
 		shortFilmViewData.setTotalRatings(ratingService.getRatingCount(shortFilm));
 		shortFilmViewData.setUserRating(ratingService.getRatingByUserAndShortFilm(loggedUser, shortFilm));
 
@@ -181,35 +181,6 @@ public class ShortFilmController {
 		}
 
 		return "viewShortFilm";
-	}
-
-	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "rate" })
-	public String rateShortFilm(HttpSession session, HttpServletRequest req,
-			@PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
-			Map<String, Object> model, RedirectAttributes redirections) {
-		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
-		if (shortFilm == null) {
-			return "redirect:/";
-		}
-
-		User loggedUser = userService.getLoggedUser(session).orElse(null);
-		if (loggedUser == null) {
-			return "redirect:/login";
-		}
-
-		redirections.addFlashAttribute(shortFilmViewData);
-
-		if (result.hasErrors()) {
-			redirections.addFlashAttribute("errors", result);
-			return String.format("redirect:/shortfilm/%d", shortFilmId);
-		}
-
-		Integer rate = Integer.parseInt(req.getParameter("rate"));
-
-		ratingService.rateShortFilm(shortFilm, loggedUser, rate);
-
-		return String.format("redirect:/shortfilm/%d", shortFilmId);
 	}
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "postComment" })
