@@ -3,9 +3,11 @@ package io.github.fourfantastics.standby.service;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -129,10 +131,17 @@ public class UserService {
 	public void unsubscribesTo(User follower, Filmmaker followed) {
 		follower.getFilmmakersSubscribedTo().remove(followed);
 		followed.getFilmmakerSubscribers().remove(follower);
+		List<Notification> notification = followed.getNotifications().stream().filter(x -> x.getText().equals(follower.getName() + " has subscribed to your profile."))
+											.collect(Collectors.toList());
+		if(!notification.isEmpty()){
+			System.out.println("paso por aqui");
+			followed.getNotifications().remove(notification.get(0));
+			notificationService.deleteNotification(notification.get(0));
+		}
 		userRepository.save(follower);
 		userRepository.save(followed);
 	}
-	
+
 	public void setProfilePicture(User user, MultipartFile imageFile)
 			throws TooBigException, InvalidExtensionException, RuntimeException {
 		String extension = fileRepository.getFileExtension(imageFile);

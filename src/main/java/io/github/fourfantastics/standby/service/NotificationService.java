@@ -32,7 +32,11 @@ public class NotificationService {
 	public Set<Notification> getUnreadNotifications(User user) {
 		return notificationRepository.findByUserAndReadDate(user, null);
 	}
-
+	
+	public void deleteNotification(Notification notification) {
+		notificationRepository.delete(notification);
+	}
+	
 	public void readNotifications(User user) {
 		Set<Notification> notifications = user.getNotifications();
 		for (Notification notification : notifications) {
