@@ -1,28 +1,27 @@
 <!DOCTYPE html>
-<html
-	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
-<title>Notifications</title>
-<section>
-	<form method="POST" data-th-action="@{notifications}"
-		data-th-object="${notificationData}">
-		<div class="list-group mb-3">
-			<div
-				class="list-group-item list-group-item-action flex-column align-items-start"
-				data-th-each="notification : *{getNotifications()}">
-				<div class="d-flex w-100 justify-content-between">
-					<h5 class="mb-1">
-						<span data-th-text="${notification.getType().getName()}"></span> <span
-							class="badge badge-pill badge-primary"
-							data-th-if="${notification.getReadDate()} == null">New</span>
-					</h5>
-					<small data-th-text="${notification.getFormattedEmissionDate()}"></small>
-				</div>
-				<div data-th-text="|${notification.getText()} |"></div>
-			</div>
-		</div>
-		<div
-			data-th-replace="~{@{fragments/form/pagination}(name = 'pagination')}">
-		</div>
-	</form>
-</section>
+<html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+    <title>Notifications - Standby</title>
+    <section>
+        <h3>Notifications</h3>
+        <hr />
+        <form method="POST" data-th-action="@{notifications}" data-th-object="${notificationData}">
+            <th-block data-th-with="notifications = *{getNotifications()}" data-th-switch="${!notifications.isEmpty()}">
+                <th-block data-th-case="true">
+                    <div class="list-group mb-3">
+                        <div class="list-group-item list-group-item-action flex-column align-items-start" data-th-each="notification : ${notifications}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1"><span data-th-text="${notification.getType().getName()}"></span> <span class="badge badge-pill badge-primary" data-th-if="${notification.getReadDate()} == null">New</span></h5>
+                                <small data-th-text="${notification.getFormattedRelativeEmissionTime()}"></small>
+                            </div>
+                            <div data-th-text="|${notification.getText()} |"></div>
+                        </div>
+                    </div>
+                    <div data-th-replace="~{@{fragments/form/pagination}(name = 'pagination')}"></div>
+                </th-block>
+                <th-block data-th-case="false">
+                    <div class="alert alert-dark">You don't have any notification yet!</div>
+                </th-block>
+            </th-block>
+        </form>
+    </section>
 </html>
