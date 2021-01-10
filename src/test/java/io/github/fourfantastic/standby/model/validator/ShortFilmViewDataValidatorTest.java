@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +34,7 @@ public class ShortFilmViewDataValidatorTest {
 		final ShortFilmViewData mockData = new ShortFilmViewData();
 		mockData.setNewCommentText("Example new comment text");
 		
-		BindException errors = new BindException(mockData, "ShortFilmEditData");
+		BindException errors = new BindException(mockData, "ShortFilmViewData");
 		validator.validate(mockData, errors);
 		
 		assertFalse(errors.hasErrors());
@@ -44,8 +47,25 @@ public class ShortFilmViewDataValidatorTest {
 		final ShortFilmViewData mockData = new ShortFilmViewData();
 		mockData.setNewCommentText("           ");
 		
-		BindException errors = new BindException(mockData, "ShortFilmEditData");
+		BindException errors = new BindException(mockData, "ShortFilmViewData");
 		validator.validate(mockData, errors);
+		
+		assertTrue(errors.hasErrors());
+		assertFalse(errors.hasGlobalErrors());
+		assertTrue(errors.hasFieldErrors());
+		
+		assertThat(errors.getFieldErrorCount("newCommentText")).isEqualTo(1);
+	}
+	
+	@Test
+	public void validateTooLongDataTest() {
+		final ShortFilmViewData mockData = new ShortFilmViewData();
+		mockData.setNewCommentText(Stream.generate(() -> "a").limit(1001).collect(Collectors.joining()));
+		
+		BindException errors = new BindException(mockData, "ShortFilmViewData");
+		validator.validate(mockData, errors);
+		
+		System.out.println(errors);
 		
 		assertTrue(errors.hasErrors());
 		assertFalse(errors.hasGlobalErrors());

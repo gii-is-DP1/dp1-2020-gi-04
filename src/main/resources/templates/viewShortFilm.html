@@ -42,26 +42,31 @@
                             <th-block data-th-case="true">
                                 <textarea data-th-replace="~{@{fragments/form/textarea}(name='newCommentText', placeholder='Add a comment...')}"></textarea>
                                 <div class="d-flex">
-                                    <button type="submit" class="btn btn-primary ml-auto" name="postComment" value="1">Comment</button>
+                                    <button type="submit" class="btn btn-primary ml-auto" name="postComment">Comment</button>
                                 </div>
                             </th-block>
                             <span data-th-case="false" class="text-dark font-weight-bold">You need to be registered in order to comment. Already registered? <a href="/login">Log in</a></span>
                         </th-block>
                     </div>
                 </div>
-            </form>
-            <th-block data-th-each="comment : ${shortFilmViewData.getComments()}">
-                <div
-                    data-th-replace="~{@{fragments/comment}(
+                <th-block data-th-unless="${shortFilmViewData.getComments().isEmpty()}">
+                        <th-block data-th-each="comment : ${shortFilmViewData.getComments()}">
+                            <div
+                                data-th-replace="~{@{fragments/comment}(
                                             class='mb-4',
                                             commentId=${comment.getId()},
                                             userName=${comment.getUser().getName()},
                                             text=${comment.getText()},
                                             photoUrl=${comment.getUser().getPhotoUrl()}, 
-                                            profileId=(${comment.getUser().getType().getName()} == 'Filmmaker' ? ${comment.getUser().getId()} : null)
+                                            profileId=(${comment.getUser().getType().getName()} == 'Filmmaker' ? ${comment.getUser().getId()} : null),
+                                            date=${comment.getFormattedDate()},
+                                            collapsable=(${comment.isCollapsable()} ? true : null)
                                         )}"
-                ></div>
-            </th-block>
+                            ></div>
+                        </th-block>
+                        <nav data-th-replace="~{@{fragments/form/pagination}('commentPagination')}"></nav>
+                    </th-block>
+            </form>
             <br />
             <br />
             <br />

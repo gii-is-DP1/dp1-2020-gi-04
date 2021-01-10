@@ -21,7 +21,7 @@ public class ShortFilmEditDataValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return String.class.isAssignableFrom(clazz);
+		return ShortFilmEditData.class.isAssignableFrom(clazz);
 	}
 
 	@Override

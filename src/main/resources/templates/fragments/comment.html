@@ -1,6 +1,4 @@
-<div data-th-fragment="comment(commentId, userName, text)" class="d-flex"
-data-th-classappend="${class}?: null"
-data-th-style="${style}?: null">
+<div data-th-fragment="comment(commentId, userName, text)" class="d-flex" data-th-classappend="${class}?: null" data-th-style="${style}?: null">
     <div class="flex-grow-0">
         <th-block data-th-switch="${profileId} != null">
             <a data-th-case="true" data-th-href="|/profile/${profileId}|">
@@ -13,13 +11,16 @@ data-th-style="${style}?: null">
     </div>
     <div class="flex-grow-1 pl-3 d-flex flex-column">
         <th-block data-th-switch="${profileId} != null">
-            <a data-th-case="true" class="text-dark font-weight-bold text-decoration-none" data-th-href="${profileId} ? '/profile/' + ${profileId} : null" data-th-text="${userName}"></a>
+            <div>
+                <a data-th-case="true" class="text-dark font-weight-bold text-decoration-none" data-th-href="${profileId} ? '/profile/' + ${profileId} : null" data-th-text="${userName}"></a>
+            </div>
             <span data-th-case="false" class="text-dark font-weight-bold" data-th-text="${userName}"></span>
+            <label class="text-muted" data-th-text="${date}"></label>
         </th-block>
         <span data-th-if="${subscriberCount} != null" class="text-secondary" data-th-text="|${subscriberCount} subscribers|"></span>
         <th-block data-th-if="${text} != ''">
-            <p data-th-id="|comment-text-${commentId}|" class="text-break mt-2 collapse shrink-text" style="white-space: pre-line;" data-th-text="${text}"></p>
-            <a class="text-dark font-weight-bold text-decoration-none btn-shrink collapsed" role="button" data-toggle="collapse" data-th-href="|#comment-text-${commentId}|"><span>Show more</span><span>Show less</span></a>
+            <p data-th-id="|comment-text-${commentId}|" class="text-break mt-2 collapse text-collapse" style="white-space: pre-line;" data-th-text="${text}"></p>
+            <a data-th-if="${collapsable} != null" class="text-dark font-weight-bold text-decoration-none btn-collapse-text collapsed" role="button" data-toggle="collapse" data-th-href="|#comment-text-${commentId}|"><span>Show more</span><span>Show less</span></a>
         </th-block>
     </div>
 </div>

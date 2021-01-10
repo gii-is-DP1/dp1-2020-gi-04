@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.github.fourfantastics.standby.model.Comment;
 import io.github.fourfantastics.standby.model.Filmmaker;
@@ -150,8 +151,9 @@ public class ShortFilmController {
 
 		shortFilmViewData.setShortFilm(shortFilm);
 		if (shortFilmViewData.getCommentPagination() == null) {
-			shortFilmViewData.setCommentPagination(Pagination.of(commentService.getCommentCountByShortFilm(shortFilm)));
+			shortFilmViewData.setCommentPagination(Pagination.empty());
 		}
+		shortFilmViewData.getCommentPagination().setTotalElements(commentService.getCommentCountByShortFilm(shortFilm));
 		shortFilmViewData.setComments(commentService
 				.getCommentsByShortFilm(shortFilm,
 						shortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()))
@@ -159,32 +161,23 @@ public class ShortFilmController {
 
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 
-		if (loggedUser == null) {
-			shortFilmViewData.setWatcherId(null);
-			shortFilmViewData.setWatcherName(null);
-			shortFilmViewData.setWatcherPhotoUrl(null);
-		} else {
+		if (loggedUser != null) {
 			shortFilmViewData.setWatcherId(loggedUser.getId());
 			shortFilmViewData.setWatcherName(loggedUser.getName());
 			shortFilmViewData.setWatcherPhotoUrl(loggedUser.getPhotoUrl());
 		}
 
-		if (shortFilmViewData.getNewCommentText() == null) {
-			shortFilmViewData.setNewCommentText("");
-		}
-
 		model.put("shortFilmViewData", shortFilmViewData);
-		if (model.containsKey("result")) {
-			result = (BindingResult) model.get("result");
+		if (model.containsKey("errors")) {
+			result.addAllErrors((BindingResult) model.get("errors"));
 		}
-
 		return "viewShortFilm";
 	}
 
-	@PostMapping(path = "/shortfilm/{shortFilmId}/comment", params = { "postComment=1" })
+	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "postComment" })
 	public String postComment(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
 			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
-			Map<String, Object> model, HttpServletRequest req) {
+			Map<String, Object> model, RedirectAttributes redirections) {
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
 		if (shortFilm == null) {
 			return "redirect:/";
@@ -195,13 +188,12 @@ public class ShortFilmController {
 			return "redirect:/login";
 		}
 
+		redirections.addFlashAttribute(shortFilmViewData);
 		shortFilmViewDataValidator.validate(shortFilmViewData, result);
 		if (result.hasErrors()) {
-			model.put("result", result);
-			return String.format("forward:/shortfilm/%d?postComment=0", shortFilmId);
+			redirections.addFlashAttribute("errors", result);
+			return String.format("redirect:/shortfilm/%d", shortFilmId);
 		}
-		
-		System.out.println("WAC");
 
 		Comment newComment = new Comment();
 		newComment.setText(shortFilmViewData.getNewCommentText());
@@ -209,12 +201,11 @@ public class ShortFilmController {
 		newComment.setUser(loggedUser);
 		newComment.setDate(new Date().getTime());
 		commentService.saveComment(newComment);
-
+		
 		shortFilm.getComments().add(newComment);
-
 		shortFilmViewData.setNewCommentText("");
 
-		return String.format("forward:/shortfilm/%d?postComment=0", shortFilmId);
+		return String.format("redirect:/shortfilm/%d", shortFilmId);
 	}
 
 	@RequestMapping("/shortfilm/{shortFilmId}/edit")
