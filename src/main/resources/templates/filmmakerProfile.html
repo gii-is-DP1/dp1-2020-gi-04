@@ -9,7 +9,8 @@
 	<div class="container">
 		<div class="row">
 			<div class="col">
-			<span data-th-text="${filmmakerProfileData.getName()}"></div>
+				<span data-th-text="${filmmakerProfileData.getName()}">
+			</div>
 			<div class="col">
 				<form data-th-object="${accountButton}">
 					<span class="float-right" th:if='${accountButton}'>
@@ -176,6 +177,8 @@
 												data-th-text="${shortFilm.getDescription()}"></p>
 											<p class="card-text"
 												data-th-text="|${shortFilm.getViewCount()} views|"></p>
+											<p class="card-text"
+												data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></p>
 										</div>
 									</div>
 								</div>
@@ -215,6 +218,8 @@
 												data-th-text="${shortFilm.getDescription()}"></p>
 											<p class="card-text"
 												data-th-text="|${shortFilm.getViewCount()} views|"></p>
+											<p class="card-text"
+												data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></p>
 										</div>
 									</div>
 								</div>
