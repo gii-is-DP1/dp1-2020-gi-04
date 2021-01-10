@@ -49,3 +49,50 @@
 .btn-collapse-text > span:last-child {
 	display: block;
 }
+
+.star {
+	background-color: transparent;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+	background-size: 12.5px 25px;
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 12.5px;
+	height: 25px;
+}
+
+.star:nth-child(odd) {
+	background-image: url(/static/empty-left-star.png);
+}
+
+.star:nth-child(even) {
+	background-image: url(/static/empty-right-star.png);
+}
+
+.star.fill:nth-child(odd) {
+	background-image: url(/static/full-left-star.png);
+}
+
+.star.fill:nth-child(even) {
+    background-image: url(/static/full-right-star.png);
+}
+
+.star-container:hover .star:nth-child(odd) {
+	background-image: url(/static/full-left-star.png);
+}
+
+.star-container:hover .star:nth-child(even) {
+    background-image: url(/static/full-right-star.png);
+}
+
+.star-container .star:hover ~ .star:nth-child(odd) {
+    background-image: url(/static/empty-left-star.png);
+}
+
+.star-container .star:hover ~ .star:nth-child(even) {
+    background-image: url(/static/empty-right-star.png);
+}

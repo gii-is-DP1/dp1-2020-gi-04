@@ -38,6 +38,7 @@ import io.github.fourfantastics.standby.model.validator.ShortFilmEditDataValidat
 import io.github.fourfantastics.standby.model.validator.ShortFilmUploadDataValidator;
 import io.github.fourfantastics.standby.model.validator.ShortFilmViewDataValidator;
 import io.github.fourfantastics.standby.service.CommentService;
+import io.github.fourfantastics.standby.service.RatingService;
 import io.github.fourfantastics.standby.service.RoleService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.TagService;
@@ -58,6 +59,9 @@ public class ShortFilmController {
 
 	@Autowired
 	RoleService roleService;
+
+	@Autowired
+	RatingService ratingService;
 
 	@Autowired
 	CommentService commentService;
@@ -166,46 +170,17 @@ public class ShortFilmController {
 			shortFilmViewData.setWatcherName(loggedUser.getName());
 			shortFilmViewData.setWatcherPhotoUrl(loggedUser.getPhotoUrl());
 		}
+		Double meanRating = ratingService.getAverageRating(shortFilm);
+		shortFilmViewData.setMeanRating(meanRating == null ? 0.0 : meanRating);
+		shortFilmViewData.setTotalRatings(ratingService.getRatingCount(shortFilm));
+		shortFilmViewData.setUserRating(ratingService.getRatingByUserAndShortFilm(loggedUser, shortFilm));
 
 		model.put("shortFilmViewData", shortFilmViewData);
 		if (model.containsKey("errors")) {
 			result.addAllErrors((BindingResult) model.get("errors"));
 		}
+
 		return "viewShortFilm";
-	}
-
-	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "postComment" })
-	public String postComment(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
-			Map<String, Object> model, RedirectAttributes redirections) {
-		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
-		if (shortFilm == null) {
-			return "redirect:/";
-		}
-
-		User loggedUser = userService.getLoggedUser(session).orElse(null);
-		if (loggedUser == null) {
-			return "redirect:/login";
-		}
-
-		redirections.addFlashAttribute(shortFilmViewData);
-		shortFilmViewDataValidator.validate(shortFilmViewData, result);
-		if (result.hasErrors()) {
-			redirections.addFlashAttribute("errors", result);
-			return String.format("redirect:/shortfilm/%d", shortFilmId);
-		}
-
-		Comment newComment = new Comment();
-		newComment.setText(shortFilmViewData.getNewCommentText());
-		newComment.setShortFilm(shortFilm);
-		newComment.setUser(loggedUser);
-		newComment.setDate(new Date().getTime());
-		commentService.saveComment(newComment);
-		
-		shortFilm.getComments().add(newComment);
-		shortFilmViewData.setNewCommentText("");
-
-		return String.format("redirect:/shortfilm/%d", shortFilmId);
 	}
 
 	@RequestMapping("/shortfilm/{shortFilmId}/edit")
@@ -421,4 +396,5 @@ public class ShortFilmController {
 		model.put("success", "Short film information updated successfully!");
 		return "editShortFilm";
 	}
+
 }

@@ -12,10 +12,38 @@
             <div class="mb-2">
                 <th-block data-th-each="tag : ${shortFilm.getTags()}"> <span data-th-replace="~{@{fragments/tag}(text='#__${tag.getName()}__', type='light')}"></span> </th-block>
             </div>
-            <h4 data-th-text="${shortFilm.getTitle()}"></h4>
-            <div class="d-flex">
-                <label class="text-muted" data-th-text="|${shortFilm.getViewCount()} views|"></label> <label class="text-muted mx-2">-</label>
-                <label class="text-muted" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></label>
+            <div id="film-info">
+                <h4 data-th-text="${shortFilm.getTitle()}"></h4>
+                <div class="d-flex">
+                    <label class="text-muted" data-th-text="|${shortFilm.getViewCount()} views|"></label>
+                    <label class="text-muted mx-2">-</label>
+                    <label class="text-muted" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></label>
+                </div>
+            </div>
+            <div id="film-rating" class="d-flex mt-2">
+                <div class="d-flex flex-column align-items-center">
+                    <img data-th-src="@{/static/full-star.png}" class="mr-1" width="25" height="25" />
+                    <label data-th-text="|${shortFilmViewData.getFormattedRating()} / ${shortFilmViewData.getFormattedMaxRating()}|" class="text-muted"></label>
+                </div>
+                <form method="POST" data-th-action="@{${shortFilm.getId()}}" data-th-object="${shortFilmViewData}">
+                    <div class="d-flex flex-column align-items-center ml-4">
+                        <div class="star-container d-flex">
+                            <button
+                                data-th-each="index : ${#numbers.sequence(1,10)}"
+                                name="rate"
+                                data-th-value="${index}"
+                                type="submit"
+                                class="star"
+                                data-th-with="grade = ${shortFilmViewData.getUserRating().getGrade()}"
+                                data-th-classappend="(${grade} != null and ${grade} >= ${index}) ? 'fill' : null"
+                            ></button>
+                        </div>
+                        <th-block data-th-switch="${shortFilmViewData.getUserRating().getGrade()} != null">
+                            <label data-th-case="true" data-th-text="|Your rating: ${shortFilmViewData.getUserRating().getGrade()} / ${shortFilmViewData.getFormattedMaxRating()}|" class="text-muted"></label>
+                            <label data-th-case="false">You haven't rated it yet</label>
+                        </th-block>
+                    </div>
+                </form>
             </div>
             <hr class="mt-2" />
             <th-block data-th-with="uploader = ${shortFilm.getUploader()}">
@@ -46,7 +74,7 @@
                                 </div>
                             </div>
                         </th-block>
-                        <span data-th-case="false">You need to be registered in order to comment. Already registered? <a href="/login">Log in</a></span>
+                        <span data-th-case="false">You need to be registered in order to comment. Already registered? <a href="/login">Log in</a> </span>
                     </th-block>
                 </div>
                 <th-block data-th-unless="${shortFilmViewData.getComments().isEmpty()}">
