@@ -238,7 +238,7 @@ public class ShortFilmControllerTest {
 					.param("title", mockShortFilmUploadData.getTitle())
 					.param("description", mockShortFilmUploadData.getDescription()))
 			.andExpect(status().isOk())
-			.andExpect(content().json(String.format("{'message': '%s', 'status': 400, 'fieldErrors': {}}", exceptionMessage)));
+			.andExpect(content().json(String.format("{'message': '', 'status': 400, 'fieldErrors': {'file': '%s'}}", exceptionMessage)));
 		});
 		
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));
@@ -265,7 +265,7 @@ public class ShortFilmControllerTest {
 					.param("title", mockShortFilmUploadData.getTitle())
 					.param("description", mockShortFilmUploadData.getDescription()))
 			.andExpect(status().isOk())
-			.andExpect(content().json(String.format("{'message': '%s', 'status': 400, 'fieldErrors': {}}", exceptionMessage)));
+			.andExpect(content().json(String.format("{'message': '', 'status': 400, 'fieldErrors': {'file': '%s'}}", exceptionMessage)));
 		});
 		
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));

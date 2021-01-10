@@ -1,5 +1,6 @@
 package io.github.fourfantastics.standby.web;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,17 +21,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import io.github.fourfantastics.standby.model.Comment;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.model.form.Pagination;
 import io.github.fourfantastics.standby.model.form.RoleData;
 import io.github.fourfantastics.standby.model.form.ShortFilmEditData;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
+import io.github.fourfantastics.standby.model.form.ShortFilmViewData;
 import io.github.fourfantastics.standby.model.validator.ShortFilmEditDataValidator;
 import io.github.fourfantastics.standby.model.validator.ShortFilmUploadDataValidator;
+import io.github.fourfantastics.standby.model.validator.ShortFilmViewDataValidator;
+import io.github.fourfantastics.standby.service.CommentService;
 import io.github.fourfantastics.standby.service.RoleService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.TagService;
@@ -52,10 +59,16 @@ public class ShortFilmController {
 	RoleService roleService;
 
 	@Autowired
+	CommentService commentService;
+
+	@Autowired
 	ShortFilmUploadDataValidator shortFilmUploadDataValidator;
 
 	@Autowired
 	ShortFilmEditDataValidator shortFilmEditDataValidator;
+
+	@Autowired
+	ShortFilmViewDataValidator shortFilmViewDataValidator;
 
 	@GetMapping("/upload")
 	public String getUploadView(HttpSession session, Map<String, Object> model) {
@@ -106,8 +119,9 @@ public class ShortFilmController {
 		try {
 			shortFilm = shortFilmService.upload(shortFilmUploadData, (Filmmaker) loggedUser);
 		} catch (InvalidExtensionException | TooBigException e) {
+			fieldErrors.put("file", e.getMessage());
 			res.put("status", 400);
-			res.put("message", e.getMessage());
+			res.put("message", "");
 			res.put("fieldErrors", fieldErrors);
 			return res;
 		} catch (RuntimeException e) {
@@ -124,22 +138,83 @@ public class ShortFilmController {
 
 	@RequestMapping("/shortfilm/{shortFilmId}")
 	public String getShortfilmView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
+			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
 			Map<String, Object> model) {
+		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
+		if (shortFilm == null) {
+			return "redirect:/";
+		}
+
+		shortFilm.setViewCount(shortFilm.getViewCount() + 1L);
+		shortFilmService.save(shortFilm);
+
+		shortFilmViewData.setShortFilm(shortFilm);
+		if (shortFilmViewData.getCommentPagination() == null) {
+			shortFilmViewData.setCommentPagination(Pagination.of(commentService.getCommentCountByShortFilm(shortFilm)));
+		}
+		shortFilmViewData.setComments(commentService
+				.getCommentsByShortFilm(shortFilm,
+						shortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()))
+				.getContent());
+
+		User loggedUser = userService.getLoggedUser(session).orElse(null);
+
+		if (loggedUser == null) {
+			shortFilmViewData.setWatcherId(null);
+			shortFilmViewData.setWatcherName(null);
+			shortFilmViewData.setWatcherPhotoUrl(null);
+		} else {
+			shortFilmViewData.setWatcherId(loggedUser.getId());
+			shortFilmViewData.setWatcherName(loggedUser.getName());
+			shortFilmViewData.setWatcherPhotoUrl(loggedUser.getPhotoUrl());
+		}
+
+		if (shortFilmViewData.getNewCommentText() == null) {
+			shortFilmViewData.setNewCommentText("");
+		}
+
+		model.put("shortFilmViewData", shortFilmViewData);
+		if (model.containsKey("result")) {
+			result = (BindingResult) model.get("result");
+		}
+
+		return "viewShortFilm";
+	}
+
+	@PostMapping(path = "/shortfilm/{shortFilmId}/comment", params = { "postComment=1" })
+	public String postComment(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
+			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
+			Map<String, Object> model, HttpServletRequest req) {
+		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
+		if (shortFilm == null) {
+			return "redirect:/";
+		}
+
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
 		}
 
-		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
-		if (shortFilm == null) {
-			return "redirect:/";
+		shortFilmViewDataValidator.validate(shortFilmViewData, result);
+		if (result.hasErrors()) {
+			model.put("result", result);
+			return String.format("forward:/shortfilm/%d?postComment=0", shortFilmId);
 		}
 		
-		shortFilm.setViewCount(shortFilm.getViewCount() + 1L);
-		shortFilmService.save(shortFilm);
-		model.put("shortFilm", shortFilm);
+		System.out.println("WAC");
 
-		return "viewShortFilm";
+		Comment newComment = new Comment();
+		newComment.setText(shortFilmViewData.getNewCommentText());
+		newComment.setShortFilm(shortFilm);
+		newComment.setUser(loggedUser);
+		newComment.setDate(new Date().getTime());
+		commentService.saveComment(newComment);
+
+		shortFilm.getComments().add(newComment);
+
+		shortFilmViewData.setNewCommentText("");
+
+		return String.format("forward:/shortfilm/%d?postComment=0", shortFilmId);
 	}
 
 	@RequestMapping("/shortfilm/{shortFilmId}/edit")
@@ -155,7 +230,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		if (shortFilmEditData.getTitle() == null) {
 			model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(shortFilm));
@@ -177,7 +251,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(false, true, false);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
@@ -208,7 +281,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditData.getTags().remove(req.getParameter("removeTag"));
 
@@ -228,7 +300,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(false, false, true);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
@@ -272,7 +343,6 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		int index;
 		try {
@@ -301,12 +371,21 @@ public class ShortFilmController {
 		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
 			return "redirect:/";
 		}
-		model.put("thumbnailUrl", shortFilm.getThumbnailUrl());
 
 		shortFilmEditDataValidator.setValidationTargets(true, false, false);
 		shortFilmEditDataValidator.validate(shortFilmEditData, result);
 		if (result.hasErrors()) {
 			return "editShortFilm";
+		}
+
+		if (shortFilmEditData.getNewThumbnailFile() != null && !shortFilmEditData.getNewThumbnailFile().isEmpty()) {
+			try {
+				shortFilmService.uploadThumbnail(shortFilm, shortFilmEditData.getNewThumbnailFile());
+				shortFilmEditData.setThumbnailUrl(shortFilm.getThumbnailUrl());
+			} catch (Exception e) {
+				result.rejectValue("newThumbnailFile", "", e.getMessage());
+				return "editShortFilm";
+			}
 		}
 
 		shortFilmEditData.copyToShortFilm(shortFilm);
