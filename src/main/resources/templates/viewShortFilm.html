@@ -1,72 +1,86 @@
 <!DOCTYPE html>
-<th-block
-	data-th-with="shortFilm = ${shortFilmViewData.getShortFilm()}, comments = ${shortFilmViewData.getComments()}">
-<html
-	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
-<title data-th-text="|Watching ${shortFilm.getTitle()} - Standby|"></title>
-<section>
-	<div class="bg-light embed-responsive embed-responsive-16by9 mb-2">
-		<video controls
-			data-th-poster="@{'/uploads/' + (${shortFilm.getThumbnailUrl()})?: '/static/no-thumbnail.svg'}">
-			<source data-th-src="@{'/uploads/' + ${shortFilm.getVideoUrl()}}" />
-			<span>Your browser does not support HTML5 video tag.</span>
-		</video>
-	</div>
-	<div class="mb-2">
-		<th-block data-th-each="tag : ${shortFilm.getTags()}"> <span
-			data-th-replace="~{@{fragments/tag}(text='#__${tag.getName()}__', type='light')}"></span>
-		</th-block>
-	</div>
-	<h4 data-th-text="${shortFilm.getTitle()}"></h4>
-	<div class="d-flex">
-		<label class="text-muted"
-			data-th-text="|${shortFilm.getViewCount()} views|"></label> <label
-			class="text-muted mx-2">-</label> <label class="text-muted"
-			data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></label>
-	</div>
-	<hr class="mt-2" />
-	<th-block data-th-with="uploader = ${shortFilm.getUploader()}">
-	<div
-		data-th-replace="~{@{fragments/comment}(
+<th-block data-th-with="shortFilm = ${shortFilmViewData.getShortFilm()}, comments = ${shortFilmViewData.getComments()}">
+    <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+        <title data-th-text="|Watching ${shortFilm.getTitle()} - Standby|"></title>
+        <section>
+            <div class="bg-light embed-responsive embed-responsive-16by9 mb-2">
+                <video controls data-th-poster="@{'/uploads/' + (${shortFilm.getThumbnailUrl()})?: '/static/no-thumbnail.svg'}">
+                    <source data-th-src="@{'/uploads/' + ${shortFilm.getVideoUrl()}}" />
+                    <span>Your browser does not support HTML5 video tag.</span>
+                </video>
+            </div>
+            <div class="mb-2">
+                <th-block data-th-each="tag : ${shortFilm.getTags()}"> <span data-th-replace="~{@{fragments/tag}(text='#__${tag.getName()}__', type='light')}"></span> </th-block>
+            </div>
+            <div id="film-info">
+                <h4 data-th-text="${shortFilm.getTitle()}"></h4>
+                <div class="d-flex">
+                    <label class="text-muted" data-th-text="|${shortFilm.getViewCount()} views|"></label>
+                    <label class="text-muted mx-2">-</label>
+                    <label class="text-muted" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></label>
+                </div>
+            </div>
+            <div id="film-rating" class="d-flex mt-2">
+                <div class="d-flex flex-column align-items-center">
+                    <img data-th-src="@{/static/full-star.png}" class="mr-1" width="25" height="25" />
+                    <label data-th-text="|${shortFilmViewData.getFormattedRating()} / ${shortFilmViewData.getFormattedMaxRating()}|" class="text-muted"></label>
+                </div>
+                <form method="POST" data-th-action="@{${shortFilm.getId()}}" data-th-object="${shortFilmViewData}">
+                    <div class="d-flex flex-column align-items-center ml-4">
+                        <div class="star-container d-flex">
+                            <button
+                                data-th-each="index : ${#numbers.sequence(1,10)}"
+                                name="rate"
+                                data-th-value="${index}"
+                                type="submit"
+                                class="star"
+                                data-th-with="grade = ${shortFilmViewData.getUserRating().getGrade()}"
+                                data-th-classappend="(${grade} != null and ${grade} >= ${index}) ? 'fill' : null"
+                            ></button>
+                        </div>
+                        <th-block data-th-switch="${shortFilmViewData.getUserRating().getGrade()} != null">
+                            <label data-th-case="true" data-th-text="|Your rating: ${shortFilmViewData.getUserRating().getGrade()} / ${shortFilmViewData.getFormattedMaxRating()}|" class="text-muted"></label>
+                            <label data-th-case="false">You haven't rated it yet</label>
+                        </th-block>
+                    </div>
+                </form>
+            </div>
+            <hr class="mt-2" />
+            <th-block data-th-with="uploader = ${shortFilm.getUploader()}">
+                <div
+                    data-th-replace="~{@{fragments/comment}(
                                             commentId=op,
                                             userName=${uploader.getName()},
                                             text=${shortFilm.getDescription()},
                                             photoUrl=${uploader.getPhotoUrl()}, 
                                             profileId=${uploader.getId()},
                                             subscriberCount=${#lists.size(uploader.getFilmmakerSubscribers())}
-                                        )}"></div>
-	</th-block>
-	<hr class="mt-3" />
-	<form method="POST" data-th-action="@{${shortFilm.getId()}}"
-		data-th-object="${shortFilmViewData}">
-		<span
-			data-th-text="|${#lists.size(shortFilm.getComments())} comments|"></span>
-		<div class="d-flex"
-			data-th-classappend="${shortFilmViewData.getWatcherId()} != null ? 'my-4' : 'mt-2 mb-5'">
-			<th-block
-				data-th-switch="${shortFilmViewData.getWatcherId()} != null">
-			<th-block data-th-case="true">
-			<div class="flex-grow-0">
-				<img
-					data-th-replace="~{@{fragments/profilePicture}(src=${shortFilmViewData.getWatcherPhotoUrl()}, class='img-fluid', style='max-width: 50px; max-height: 50px')}" />
-			</div>
-			<div class="flex-grow-1 pl-3 d-flex flex-column">
-				<textarea
-					data-th-replace="~{@{fragments/form/textarea}(name='newCommentText', placeholder='Add a comment...')}"></textarea>
-				<div class="d-flex">
-					<button type="submit" class="btn btn-primary ml-auto"
-						name="postComment">Comment</button>
-				</div>
-			</div>
-			</th-block> <span data-th-case="false">You need to be registered in order
-				to comment. Already registered? <a href="/login">Log in</a>
-			</span> </th-block>
-		</div>
-		<th-block
-			data-th-unless="${shortFilmViewData.getComments().isEmpty()}">
-		<th-block data-th-each="comment : ${shortFilmViewData.getComments()}">
-		<div
-			data-th-replace="~{@{fragments/comment}(
+                                        )}"
+                ></div>
+            </th-block>
+            <hr class="mt-3" />
+            <form method="POST" data-th-action="@{${shortFilm.getId()}}" data-th-object="${shortFilmViewData}">
+                <span data-th-text="|${#lists.size(shortFilm.getComments())} comments|"></span>
+                <div class="d-flex" data-th-classappend="${shortFilmViewData.getWatcherId()} != null ? 'my-4' : 'mt-2 mb-5'">
+                    <th-block data-th-switch="${shortFilmViewData.getWatcherId()} != null">
+                        <th-block data-th-case="true">
+                            <div class="flex-grow-0">
+                                <img data-th-replace="~{@{fragments/profilePicture}(src=${shortFilmViewData.getWatcherPhotoUrl()}, class='img-fluid', style='max-width: 50px; max-height: 50px')}" />
+                            </div>
+                            <div class="flex-grow-1 pl-3 d-flex flex-column">
+                                <textarea data-th-replace="~{@{fragments/form/textarea}(name='newCommentText', placeholder='Add a comment...')}"></textarea>
+                                <div class="d-flex">
+                                    <button type="submit" class="btn btn-primary ml-auto" name="postComment">Comment</button>
+                                </div>
+                            </div>
+                        </th-block>
+                        <span data-th-case="false">You need to be registered in order to comment. Already registered? <a href="/login">Log in</a> </span>
+                    </th-block>
+                </div>
+                <th-block data-th-unless="${shortFilmViewData.getComments().isEmpty()}">
+                    <th-block data-th-each="comment : ${shortFilmViewData.getComments()}">
+                        <div
+                            data-th-replace="~{@{fragments/comment}(
                                             class='mb-4',
                                             commentId=${comment.getId()},
                                             userName=${comment.getUser().getName()},
@@ -76,13 +90,15 @@
                                             date=${comment.getFormattedRelativeTime()},
                                             collapsable=(${comment.isCollapsable()} ? true : null),
                                             isUploader=(${comment.getUser().getId()} == ${shortFilm.getUploader().getId()})
-                                        )}"></div>
-		</th-block>
-		<nav
-			data-th-replace="~{@{fragments/form/pagination}('commentPagination')}"></nav>
-		</th-block>
-	</form>
-	<br /> <br /> <br />
-</section>
-</html>
+                                        )}"
+                        ></div>
+                    </th-block>
+                    <nav data-th-replace="~{@{fragments/form/pagination}('commentPagination')}"></nav>
+                </th-block>
+            </form>
+            <br />
+            <br />
+            <br />
+        </section>
+    </html>
 </th-block>
