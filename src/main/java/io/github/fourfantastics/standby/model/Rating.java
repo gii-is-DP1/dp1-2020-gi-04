@@ -30,7 +30,7 @@ public class Rating {
 
 	@NotNull
 	@Column(nullable = false)
-	@Range(min = 0, max = 10)
+	@Range(min = 1, max = 10)
 	Integer grade;
 
 	@NotNull
