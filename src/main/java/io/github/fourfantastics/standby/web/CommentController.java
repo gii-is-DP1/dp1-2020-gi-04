@@ -22,6 +22,8 @@ import io.github.fourfantastics.standby.model.validator.ShortFilmViewDataValidat
 import io.github.fourfantastics.standby.service.CommentService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
+import io.github.fourfantastics.standby.service.exception.NotFoundException;
+import io.github.fourfantastics.standby.service.exception.UnauthorizedException;
 
 @Controller
 public class CommentController {
@@ -95,7 +97,13 @@ public class CommentController {
 			return String.format("redirect:/shortfilm/%d", shortFilmId);
 		}
 
-		commentService.removeComment(commentId);
+		try {
+			commentService.removeUserComment(commentId, loggedUser);
+		} catch (NotFoundException e) {
+			result.reject("", e.getMessage());
+		} catch (UnauthorizedException e) {
+			result.reject("", e.getMessage());
+		}
 
 		return String.format("redirect:/shortfilm/%d", shortFilmId);
 
