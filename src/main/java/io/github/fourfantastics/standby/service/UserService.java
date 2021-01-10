@@ -113,7 +113,7 @@ public class UserService {
 		followed.getFilmmakerSubscribers().add(follower);
 		if (followed.getConfiguration().getBySubscriptions()) {
 			Notification newFollowerNotification = new Notification();
-			newFollowerNotification.setEmisionDate(new Date().getTime());
+			newFollowerNotification.setEmissionDate(new Date().getTime());
 			newFollowerNotification.setText(follower.getName() + " has subscribed to your profile.");
 			newFollowerNotification.setUser(followed);
 			followed.getNotifications().add(newFollowerNotification);

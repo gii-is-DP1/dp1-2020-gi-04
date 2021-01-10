@@ -5,17 +5,19 @@
 <section>
 	<form method="POST" data-th-action="@{notifications}"
 		data-th-object="${notificationData}">
-		<div class="list-group">
+		<div class="list-group mb-3">
 			<div
 				class="list-group-item list-group-item-action flex-column align-items-start"
-				data-th-each="notification, stat : *{getNotifications()}"
-				data-th-if="*{getPagination().isIndexVisible(__${stat.index}__)}">
+				data-th-each="notification : *{getNotifications()}">
 				<div class="d-flex w-100 justify-content-between">
-					<h5 class="mb-1" data-th-text="${notification.getType().getName()}"></h5>
+					<h5 class="mb-1">
+						<span data-th-text="${notification.getType().getName()}"></span> <span
+							class="badge badge-pill badge-primary"
+							data-th-if="${notification.getReadDate()} == null">New</span>
+					</h5>
 					<small data-th-text="${notification.getFormattedEmissionDate()}"></small>
 				</div>
-				<div
-					data-th-text="|${notification.getText()} |"></div>
+				<div data-th-text="|${notification.getText()} |"></div>
 			</div>
 		</div>
 		<div
