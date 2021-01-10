@@ -66,7 +66,7 @@ public class StandbyApplication {
 			userService.saveUser(filmmaker);
 			
 			Notification notification = new Notification();
-			notification.setEmisionDate(Instant.now().toEpochMilli());
+			notification.setEmissionDate(Instant.now().toEpochMilli());
 			notification.setText("Test notification 1");
 			notification.setType(NotificationType.SUBSCRIPTION);
 			notification.setUser(filmmaker);
@@ -74,16 +74,15 @@ public class StandbyApplication {
 			notificationService.saveNotification(notification);
 			
 			notification = new Notification();
-			notification.setEmisionDate(Instant.now().toEpochMilli());
+			notification.setEmissionDate(Instant.now().toEpochMilli());
 			notification.setText("Test notification 2");
 			notification.setType(NotificationType.SUBSCRIPTION);
-			notification.setReadDate(Instant.now().toEpochMilli());
 			notification.setUser(filmmaker);
 			
 			notificationService.saveNotification(notification);
 			
 			notification = new Notification();
-			notification.setEmisionDate(Instant.now().toEpochMilli());
+			notification.setEmissionDate(Instant.now().toEpochMilli());
 			notification.setText("Test notification 3");
 			notification.setType(NotificationType.SUBSCRIPTION);
 			notification.setUser(filmmaker);

@@ -36,7 +36,7 @@ public class Notification {
 
 	@NotNull
 	@Column(nullable = false)
-	Long emisionDate;
+	Long emissionDate;
 
 	@Column(nullable = true)
 	Long readDate;
@@ -44,17 +44,18 @@ public class Notification {
 	@NotNull
 	@Column(nullable = false)
 	NotificationType type;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER, optional = false) // receives
 	User user;
-	
+
 	public String getFormattedEmissionDate() {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
-		return dateFormatter.format(new Date(getEmisionDate()));
+		return dateFormatter.format(new Date(getEmissionDate()));
 	}
-	
+
 	public String getFormattedReadDate() {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
 		return dateFormatter.format(new Date(getReadDate()));
 	}
+
 }

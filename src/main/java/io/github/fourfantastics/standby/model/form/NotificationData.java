@@ -1,5 +1,6 @@
 package io.github.fourfantastics.standby.model.form;
 
+import java.util.List;
 import java.util.Set;
 
 import io.github.fourfantastics.standby.model.Notification;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NotificationData {
 
-	Set<Notification> notifications;
+	List<NotificationWrapper> notifications;
 	
 	Pagination pagination;
 	
