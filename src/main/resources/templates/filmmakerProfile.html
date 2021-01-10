@@ -8,7 +8,8 @@
 	<hr />
 	<div class="container">
 		<div class="row">
-			<div class="col"></div>
+			<div class="col">
+			<span data-th-text="${filmmakerProfileData.getName()}"></div>
 			<div class="col">
 				<form data-th-object="${accountButton}">
 					<span class="float-right" th:if='${accountButton}'>
@@ -164,6 +165,12 @@
 									</div>
 									<div class="col-md-8">
 										<div class="card-body">
+											<form data-th-object="${accountButton}">
+												<span class="float-right" th:if='${accountButton}'>
+													<button
+														data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/'+ ${shortFilm.getId()}+'/edit'})}"></button>
+												</span>
+											</form>
 											<h5 class="card-title" data-th-text="${shortFilm.getTitle()}"></h5>
 											<p class="card-text"
 												data-th-text="${shortFilm.getDescription()}"></p>
@@ -206,7 +213,7 @@
 											<h5 class="card-title" data-th-text="${shortFilm.getTitle()}"></h5>
 											<p class="card-text"
 												data-th-text="${shortFilm.getDescription()}"></p>
-												<p class="card-text"
+											<p class="card-text"
 												data-th-text="|${shortFilm.getViewCount()} views|"></p>
 										</div>
 									</div>
