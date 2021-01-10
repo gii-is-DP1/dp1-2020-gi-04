@@ -3,6 +3,9 @@ package io.github.fourfantastics.standby.model.form;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 import io.github.fourfantastics.standby.utils.Utils;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,8 +24,6 @@ public class Pagination {
 	Integer pageElements;
 	Integer currentPage;
 	Integer maxSidePages;
-
-
 
 	public static Pagination of(Integer totalElements, Integer pageElements, Integer currentPage,
 			Integer maxSidePages) {
@@ -84,9 +85,7 @@ public class Pagination {
 		for (int page = currentPage - 1; page >= currentPage - maxSidePages && page >= 1; page--) {
 			pages.add(page);
 		}
-
 		pages.add(currentPage);
-
 		for (int page = currentPage + 1; page <= currentPage + maxSidePages && page <= totalPages; page++) {
 			pages.add(page);
 		}
@@ -102,5 +101,13 @@ public class Pagination {
 
 	public Boolean isCountVisible(Integer count) {
 		return isIndexVisible(count - 1);
+	}
+
+	public PageRequest getPageRequest() {
+		return PageRequest.of(getCurrentPage() - 1, getPageElements());
+	}
+
+	public PageRequest getPageRequest(Sort sort) {
+		return PageRequest.of(getCurrentPage() - 1, getPageElements(), sort);
 	}
 }
