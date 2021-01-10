@@ -1,6 +1,6 @@
 package io.github.fourfantastics.standby.model.form;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -80,10 +80,10 @@ public class Pagination {
 		int currentPage = getCurrentPage();
 		int maxSidePages = getMaxSidePages();
 		int totalPages = getTotalPages();
-		List<Integer> pages = new ArrayList<Integer>();
+		List<Integer> pages = new LinkedList<Integer>();
 
 		for (int page = currentPage - 1; page >= currentPage - maxSidePages && page >= 1; page--) {
-			pages.add(page);
+			pages.add(0, page);
 		}
 		pages.add(currentPage);
 		for (int page = currentPage + 1; page <= currentPage + maxSidePages && page <= totalPages; page++) {
