@@ -8,10 +8,7 @@
 	<hr />
 	<div class="container">
 		<div class="row">
-			<div class="col">
-				<span class="left" data-th-text="${filmmakerProfileData.getName()}">
-				</span>
-			</div>
+			<div class="col"></div>
 			<div class="col">
 				<form data-th-object="${accountButton}">
 					<span class="float-right" th:if='${accountButton}'>
@@ -76,7 +73,7 @@
 	</div>
 	<div class="container">
 		<div class="row">
-		<div class="col-12 col-md-3 "></div>
+			<div class="col-12 col-md-3 "></div>
 			<div class="col-12 col-md-3 ">
 				<div class="">
 					<h6 class="font-weight-bold"
@@ -134,35 +131,97 @@
 		</div>
 	</div>
 	<br>
-	<div
-		data-th-switch="*{uploadedShortFilms != null and !uploadedShortFilms.isEmpty()}">
-		<div data-th-case="true">
-			<div data-th-each="shortFilm : *{uploadedShortFilms}">
-				<div class="card mb-3">
-					<div class="row no-gutters">
-						<div class="col-md-4">
-							<img
-								data-th-replace="~{@{fragments/thumbnail}(src=${shortFilm.getThumbnailUrl()}, class='card-img', alt='...')}">
-						</div>
-						<div class="col-md-8">
-							<div class="card-body">
-								<h5 class="card-title" data-th-text="${shortFilm.getTitle()}"></h5>
-								<p class="card-text"
-									data-th-text="${shortFilm.getDescription()}"></p>
-								<p class="card-text">
-									<small class="text-muted"
-										data-th-text="|Upload date: ${shortFilm.getUploadData()}|"></small>
-								</p>
+
+	<nav>
+		<div class="nav nav-tabs" id="nav-tab" role="tablist">
+			<a class="nav-link active" id="nav-uploadShortfilms-tab"
+				data-toggle="tab" href="#nav-uploadShortfilms" role="tab"
+				aria-controls="nav-uploadShortfilms" aria-selected="true">
+				Upload shortfilms </a> <a class="nav-link"
+				id="nav-attachedShortFilms-tab" data-toggle="tab"
+				href="#nav-attachedShortFilms" role="tab"
+				aria-controls="nav-attachedShortFilms" aria-selected="false">Attached
+				shortfilms</a>
+		</div>
+	</nav>
+	<div class="tab-content" id="nav-tabContent">
+		<div class="tab-pane fade show active" id="nav-uploadShortfilms"
+			role="tabpanel" aria-labelledby="nav-uploadShortfilms-tab">
+			<form method="POST"
+				data-th-action="@{'/profile/'+ ${filmmakerProfileData.getId()}}"
+				data-th-object="${filmmakerProfileData}">
+				<div
+					data-th-switch="*{uploadedShortFilms != null and !uploadedShortFilms.isEmpty()}">
+					<div data-th-case="true">
+						<div data-th-each="shortFilm : *{uploadedShortFilms}">
+							<div class="card mb-3">
+								<div class="row no-gutters">
+									<div class="col-md-4">
+										<a data-th-href="@{'/shortfilm/'+ ${shortFilm.getId()}}">
+											<img
+											data-th-replace="~{@{fragments/thumbnail}(src=${shortFilm.getThumbnailUrl()}, class='card-img', alt='...')}">
+										</a>
+									</div>
+									<div class="col-md-8">
+										<div class="card-body">
+											<h5 class="card-title" data-th-text="${shortFilm.getTitle()}"></h5>
+											<p class="card-text"
+												data-th-text="${shortFilm.getDescription()}"></p>
+											<p class="card-text"
+												data-th-text="|${shortFilm.getViewCount()} views|"></p>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
+					<div data-th-case="false">
+						<br>
+						<div
+							class="d-flex p-2 bd-highlight bg-secondary text-white rounded-lg">There
+							are no shortfilms</div>
+					</div>
 				</div>
-			</div>
+			</form>
 		</div>
-		<div data-th-case="false">
-			<div
-				class="d-flex p-2 bd-highlight bg-secondary text-white rounded-lg">There
-				are no shortfilms</div>
+		<div class="tab-pane fade" id="nav-attachedShortFilms" role="tabpanel"
+			aria-labelledby="nav-attachedShortFilms-tab">
+			<form method="POST"
+				data-th-action="@{'/profile/'+ ${filmmakerProfileData.getId()}}"
+				data-th-object="${filmmakerProfileData}">
+				<div
+					data-th-switch="*{attachedShortFilms != null and !attachedShortFilms.isEmpty()}">
+					<div data-th-case="true">
+						<div data-th-each="shortFilm : *{attachedShortFilms}">
+							<div class="card mb-3">
+								<div class="row no-gutters">
+									<div class="col-md-4">
+										<a data-th-href="@{'/shortfilm/'+ ${shortFilm.getId()}}">
+											<img
+											data-th-replace="~{@{fragments/thumbnail}(src=${shortFilm.getThumbnailUrl()}, class='card-img', alt='...')}">
+										</a>
+									</div>
+									<div class="col-md-8">
+										<div class="card-body">
+											<h5 class="card-title" data-th-text="${shortFilm.getTitle()}"></h5>
+											<p class="card-text"
+												data-th-text="${shortFilm.getDescription()}"></p>
+												<p class="card-text"
+												data-th-text="|${shortFilm.getViewCount()} views|"></p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div data-th-case="false">
+						<br>
+						<div
+							class="d-flex p-2 bd-highlight bg-secondary text-white rounded-lg">There
+							are no shortfilms</div>
+					</div>
+				</div>
+			</form>
 		</div>
 	</div>
 	<br>
