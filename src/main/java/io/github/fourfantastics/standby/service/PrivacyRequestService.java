@@ -58,7 +58,7 @@ public class PrivacyRequestService {
 
 		Notification newPrivacyRequestNotification = new Notification();
 		newPrivacyRequestNotification.setEmissionDate(new Date().getTime());
-		newPrivacyRequestNotification.setText(company.getName() + "wants to know more about you ;)");
+		newPrivacyRequestNotification.setText(String.format("%s wants to know more about you ;)", company.getName()));
 		newPrivacyRequestNotification.setUser(receiver);
 		newPrivacyRequestNotification.setType(NotificationType.PRIVACY_REQUEST);
 		receiver.getNotifications().add(newPrivacyRequestNotification);
@@ -76,7 +76,8 @@ public class PrivacyRequestService {
 			Company sender = request.getCompany();
 			Notification petitionStateNotification = new Notification();
 			petitionStateNotification.setEmissionDate(new Date().getTime());
-			petitionStateNotification.setText(request.getFilmmaker().getName() + " has accepted your petition");
+			petitionStateNotification
+					.setText(String.format("%s has accepted your petition", request.getFilmmaker().getName()));
 			petitionStateNotification.setUser(sender);
 			petitionStateNotification.setType(NotificationType.PRIVACY_REQUEST);
 			sender.getNotifications().add(petitionStateNotification);
@@ -92,7 +93,8 @@ public class PrivacyRequestService {
 			Company sender = request.getCompany();
 			Notification petitionStateNotification = new Notification();
 			petitionStateNotification.setEmissionDate(new Date().getTime());
-			petitionStateNotification.setText(request.getFilmmaker().getName() + " has declined your petition");
+			petitionStateNotification
+					.setText(String.format("%s has declined your petition", request.getFilmmaker().getName()));
 			petitionStateNotification.setUser(sender);
 			petitionStateNotification.setType(NotificationType.PRIVACY_REQUEST);
 			sender.getNotifications().add(petitionStateNotification);

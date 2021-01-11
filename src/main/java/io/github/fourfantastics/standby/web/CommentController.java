@@ -1,9 +1,5 @@
 package io.github.fourfantastics.standby.web;
 
-import java.util.Date;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +8,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import io.github.fourfantastics.standby.model.Comment;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.ShortFilmViewData;
@@ -27,7 +23,9 @@ import io.github.fourfantastics.standby.service.exception.UnauthorizedException;
 
 @Controller
 public class CommentController {
-
+	@Autowired
+	CommentService commentService;
+	
 	@Autowired
 	UserService userService;
 
@@ -35,15 +33,12 @@ public class CommentController {
 	ShortFilmService shortFilmService;
 
 	@Autowired
-	CommentService commentService;
-
-	@Autowired
 	ShortFilmViewDataValidator shortFilmViewDataValidator;
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "postComment" })
-	public String postComment(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
-			Map<String, Object> model, RedirectAttributes redirections) {
+	public String postComment(HttpSession session, @PathVariable Long shortFilmId,
+			@ModelAttribute ShortFilmViewData shortFilmViewData, BindingResult result,
+			RedirectAttributes redirections) {
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
 		if (shortFilm == null) {
 			return "redirect:/";
@@ -61,24 +56,16 @@ public class CommentController {
 			return String.format("redirect:/shortfilm/%d", shortFilmId);
 		}
 
-		Comment newComment = new Comment();
-		newComment.setText(shortFilmViewData.getNewCommentText());
-		newComment.setShortFilm(shortFilm);
-		newComment.setUser(loggedUser);
-		newComment.setDate(new Date().getTime());
-		commentService.saveComment(newComment);
-
-		shortFilm.getComments().add(newComment);
+		commentService.commentShortFilm(shortFilmViewData.getNewCommentText(), shortFilm, loggedUser);
 		shortFilmViewData.setNewCommentText("");
 
 		return String.format("redirect:/shortfilm/%d", shortFilmId);
 	}
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "deleteComment" })
-	public String removeComment(HttpSession session, HttpServletRequest req,
-			@PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
-			Map<String, Object> model, RedirectAttributes redirections) {
+	public String removeComment(HttpSession session, @RequestParam Long deleteComment, @PathVariable Long shortFilmId,
+			@ModelAttribute ShortFilmViewData shortFilmViewData, BindingResult result,
+			RedirectAttributes redirections) {
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
 		if (shortFilm == null) {
 			return "redirect:/";
@@ -91,12 +78,7 @@ public class CommentController {
 
 		redirections.addFlashAttribute(shortFilmViewData);
 
-		Long commentId = Long.parseLong(req.getParameter("deleteComment"));
-		if (result.hasErrors()) {
-			redirections.addFlashAttribute("errors", result);
-			return String.format("redirect:/shortfilm/%d", shortFilmId);
-		}
-
+		Long commentId = deleteComment;
 		try {
 			commentService.removeUserComment(commentId, loggedUser);
 		} catch (NotFoundException e) {
@@ -106,6 +88,5 @@ public class CommentController {
 		}
 
 		return String.format("redirect:/shortfilm/%d", shortFilmId);
-
 	}
 }

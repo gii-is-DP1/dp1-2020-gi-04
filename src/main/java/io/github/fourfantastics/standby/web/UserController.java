@@ -2,7 +2,6 @@ package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
 
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ public class UserController {
 	CompanyConfigurationDataValidator companyConfigurationDataValidator;
 
 	@GetMapping("/login")
-	public String getLogin(HttpSession session, Map<String, Object> model) {
+	public String getLogin(HttpSession session, @ModelAttribute Credentials credentials, Map<String, Object> model) {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
@@ -52,8 +51,8 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public String doLogin(HttpSession session, @ModelAttribute("credentials") Credentials credentials,
-			BindingResult result, Map<String, Object> model) {
+	public String doLogin(HttpSession session, @ModelAttribute Credentials credentials,
+			BindingResult result) {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
@@ -85,7 +84,7 @@ public class UserController {
 	}
 
 	@GetMapping("/account")
-	public String getManageAccount(HttpSession session, Map<String, Object> model) {
+	public String getManageAccount(HttpSession session) {
 		User user = userService.getLoggedUser(session).orElse(null);
 		if (user == null) {
 			return "redirect:/login";

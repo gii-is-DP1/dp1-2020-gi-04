@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.github.fourfantastics.standby.model.Notification;
@@ -27,12 +27,12 @@ import io.github.fourfantastics.standby.service.UserService;
 @Controller
 public class NotificationController {
 	@Autowired
+	NotificationService notificationService;
+	
+	@Autowired
 	UserService userService;
 
-	@Autowired
-	NotificationService notificationService;
-
-	@RequestMapping(value = "userNotifications", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	@GetMapping(value = "userNotifications", produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Object getUserNotifications(HttpSession session) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		User user = userService.getLoggedUser(session).orElse(null);
@@ -47,7 +47,6 @@ public class NotificationController {
 
 		res.put("count", notificationsCount);
 		res.put("status", 200);
-
 		return res;
 	}
 
@@ -70,8 +69,8 @@ public class NotificationController {
 				.getContent();
 		notificationData
 				.setNotifications(notifications.stream().map(NotificationWrapper::of).collect(Collectors.toList()));
-		model.put("notificationData", notificationData);
 
+		model.put("notificationData", notificationData);
 		notificationService.readNotifications(notifications);
 		return "userNotifications";
 	}
