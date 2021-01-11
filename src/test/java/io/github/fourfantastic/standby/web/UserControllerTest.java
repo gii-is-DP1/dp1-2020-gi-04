@@ -197,4 +197,40 @@ public class UserControllerTest {
 
 		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 	}
+	@Test
+	void getProfileViewCompany() {
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new Company()));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/profile")).andExpect(status().isFound())
+					.andExpect(redirectedUrl("/account"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
+	@Test
+	void getProfileViewFilmmaker() {
+		Filmmaker filmmaker = new Filmmaker();
+		filmmaker.setId(1L);
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(filmmaker));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/profile")).andExpect(status().isFound())
+					.andExpect(redirectedUrl("/profile/1"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
+	
+	@Test
+	void getProfileViewIsNotLogged() {
+		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/profile")).andExpect(status().isFound())
+					.andExpect(redirectedUrl("/login"));
+		});
+		
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+	}
 }
