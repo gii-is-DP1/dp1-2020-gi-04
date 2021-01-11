@@ -20,7 +20,7 @@ public class ShortFilmViewDataValidator implements Validator{
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "newCommentText", "", "Comment text cannot be empty!");
 		
-		if (shortFilmViewData.getNewCommentText() != null && shortFilmViewData.getNewCommentText().length() > 1000) {
+		if (errors.getFieldErrorCount("newCommentText") == 0 && shortFilmViewData.getNewCommentText().length() > 1000) {
 			errors.rejectValue("newCommentText", "", "Comment cannot be longer than 1000 characteres!");
 		}
 	}
