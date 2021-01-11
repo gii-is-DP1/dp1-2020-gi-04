@@ -48,7 +48,6 @@ public class User {
 
 	@NotNull
 	@Column(unique = true, nullable = false)
-	@Length(min = 5)
 	@Email
 	String email;
 

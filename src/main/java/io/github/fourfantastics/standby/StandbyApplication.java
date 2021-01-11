@@ -14,7 +14,6 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.NotificationType;
-import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.NotificationService;
@@ -105,8 +104,7 @@ public class StandbyApplication {
 
 			shortFilmService.save(shortFilm);
 
-		
-		ratingService.rateShortFilm(shortFilm, filmmaker, 3);
+			ratingService.rateShortFilm(shortFilm, filmmaker, 3);
 
 			Company company = new Company();
 			company.setName("company1");

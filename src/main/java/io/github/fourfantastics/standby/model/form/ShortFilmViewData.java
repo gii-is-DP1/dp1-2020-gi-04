@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.model.form;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,21 +24,9 @@ public class ShortFilmViewData {
 	String watcherName;
 	String watcherPhotoUrl;
 
-	Pagination commentPagination;
+	Pagination commentPagination = Pagination.empty();
 
 	String newCommentText;
 	
 	Rating userRating;
-
-	public String getFormattedRating() {
-		DecimalFormat df = new DecimalFormat("#.#");
-		df.setRoundingMode(RoundingMode.HALF_EVEN);
-		return df.format(meanRating);
-	}
-	
-	public String getFormattedMaxRating() {
-		DecimalFormat df = new DecimalFormat("#.#");
-		df.setRoundingMode(RoundingMode.HALF_EVEN);
-		return df.format(maxRating);
-	}
 }

@@ -49,7 +49,6 @@ public class RatingService {
 	}
 
 	public Rating rateShortFilm(ShortFilm shortFilm, User user, Integer rate) {
-
 		Rating alreadyRated = ratingRepository.findByUserAndShortFilm(user, shortFilm).orElse(null);
 		if (alreadyRated != null) {
 			alreadyRated.setGrade(rate);
