@@ -1,10 +1,8 @@
 package io.github.fourfantastics.standby.web;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +16,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import io.github.fourfantastics.standby.model.Comment;
 import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.model.ShortFilm;
-import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
-import io.github.fourfantastics.standby.model.form.Pagination;
 import io.github.fourfantastics.standby.model.form.RoleData;
 import io.github.fourfantastics.standby.model.form.ShortFilmEditData;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
@@ -49,10 +42,10 @@ import io.github.fourfantastics.standby.service.exception.TooBigException;
 @Controller
 public class ShortFilmController {
 	@Autowired
-	UserService userService;
-
-	@Autowired
 	ShortFilmService shortFilmService;
+	
+	@Autowired
+	UserService userService;
 
 	@Autowired
 	TagService tagService;
@@ -76,7 +69,7 @@ public class ShortFilmController {
 	ShortFilmViewDataValidator shortFilmViewDataValidator;
 
 	@GetMapping("/upload")
-	public String getUploadView(HttpSession session, Map<String, Object> model) {
+	public String getUploadView(HttpSession session, @ModelAttribute ShortFilmUploadData shortFilmUploadData, Map<String, Object> model) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
@@ -89,10 +82,9 @@ public class ShortFilmController {
 		return "uploadShortFilm";
 	}
 
-	@RequestMapping(value = "upload", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	@PostMapping(value = "upload", produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Object uploadShortFilm(HttpSession session,
-			@ModelAttribute("shortFilmUploadData") ShortFilmUploadData shortFilmUploadData, BindingResult result,
-			Map<String, Object> model) {
+			@ModelAttribute ShortFilmUploadData shortFilmUploadData, BindingResult result) {
 		Map<String, Object> res = new HashMap<String, Object>();
 
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
@@ -142,9 +134,8 @@ public class ShortFilmController {
 	}
 
 	@RequestMapping("/shortfilm/{shortFilmId}")
-	public String getShortfilmView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmViewData") ShortFilmViewData shortFilmViewData, BindingResult result,
-			Map<String, Object> model) {
+	public String getShortfilmView(HttpSession session, @PathVariable Long shortFilmId,
+			@ModelAttribute ShortFilmViewData shortFilmViewData, BindingResult result, Map<String, Object> model) {
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
 		if (shortFilm == null) {
 			return "redirect:/";
@@ -154,9 +145,6 @@ public class ShortFilmController {
 		shortFilmService.save(shortFilm);
 
 		shortFilmViewData.setShortFilm(shortFilm);
-		if (shortFilmViewData.getCommentPagination() == null) {
-			shortFilmViewData.setCommentPagination(Pagination.empty());
-		}
 		shortFilmViewData.getCommentPagination().setTotalElements(commentService.getCommentCountByShortFilm(shortFilm));
 		shortFilmViewData.setComments(commentService
 				.getCommentsByShortFilm(shortFilm,
@@ -164,12 +152,12 @@ public class ShortFilmController {
 				.getContent());
 
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
-
 		if (loggedUser != null) {
 			shortFilmViewData.setWatcherId(loggedUser.getId());
 			shortFilmViewData.setWatcherName(loggedUser.getName());
 			shortFilmViewData.setWatcherPhotoUrl(loggedUser.getPhotoUrl());
 		}
+
 		Double meanRating = ratingService.getAverageRating(shortFilm);
 		shortFilmViewData.setMeanRating(meanRating == null ? 0.0 : meanRating);
 		shortFilmViewData.setTotalRatings(ratingService.getRatingCount(shortFilm));
@@ -184,9 +172,8 @@ public class ShortFilmController {
 	}
 
 	@RequestMapping("/shortfilm/{shortFilmId}/edit")
-	public String getEditView(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult bindingResult,
-			Map<String, Object> model) {
+	public String getEditView(HttpSession session, @PathVariable Long shortFilmId,
+			@ModelAttribute ShortFilmEditData shortFilmEditData, BindingResult bindingResult, Map<String, Object> model) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
@@ -199,15 +186,15 @@ public class ShortFilmController {
 
 		if (shortFilmEditData.getTitle() == null) {
 			model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(shortFilm));
+			shortFilmEditData = ShortFilmEditData.fromShortFilm(shortFilm);
 		}
 
 		return "editShortFilm";
 	}
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}/edit", params = { "addTag" })
-	public String addTagToFilm(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult result,
-			Map<String, Object> model, HttpServletRequest req) {
+	public String addTagToFilm(HttpSession session, @PathVariable Long shortFilmId,
+			@ModelAttribute ShortFilmEditData shortFilmEditData, BindingResult result) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
@@ -235,9 +222,8 @@ public class ShortFilmController {
 	}
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}/edit", params = { "removeTag" })
-	public String removeTagFromFilm(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult result,
-			Map<String, Object> model, HttpServletRequest req) {
+	public String removeTagFromFilm(HttpSession session, @RequestParam String removeTag,
+			@PathVariable Long shortFilmId, @ModelAttribute ShortFilmEditData shortFilmEditData, BindingResult result) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
@@ -248,15 +234,14 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
-		shortFilmEditData.getTags().remove(req.getParameter("removeTag"));
+		shortFilmEditData.getTags().remove(removeTag);
 
 		return "editShortFilm";
 	}
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}/edit", params = { "addRole" })
-	public String addRoleToFilm(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult result,
-			Map<String, Object> model, HttpServletRequest req) {
+	public String addRoleToFilm(HttpSession session, @PathVariable Long shortFilmId,
+			@ModelAttribute ShortFilmEditData shortFilmEditData, BindingResult result) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
@@ -297,9 +282,8 @@ public class ShortFilmController {
 	}
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}/edit", params = { "removeRole" })
-	public String removeRoleFromFilm(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult result,
-			Map<String, Object> model, HttpServletRequest req) {
+	public String removeRoleFromFilm(HttpSession session, @RequestParam Integer removeRole,
+			@PathVariable Long shortFilmId, @ModelAttribute ShortFilmEditData shortFilmEditData, BindingResult result) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
@@ -310,24 +294,15 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
-		int index;
-		try {
-			index = Integer.valueOf(req.getParameter("removeRole")).intValue();
-		} catch (Exception e) {
-			result.reject("", "Couldn't remove the role successfully");
-			return "editShortFilm";
-		}
-
-		shortFilmEditData.getRoles().remove(index);
+		shortFilmEditData.getRoles().remove(removeRole.intValue());
 		shortFilmEditData.getRolePagination().setTotalElements(shortFilmEditData.getRoles().size());
 
 		return "editShortFilm";
 	}
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}/edit", params = { "applyChanges" })
-	public String applyChangesToFilm(HttpSession session, @PathVariable("shortFilmId") Long shortFilmId,
-			@ModelAttribute("shortFilmEditData") ShortFilmEditData shortFilmEditData, BindingResult result,
-			Map<String, Object> model) {
+	public String applyChangesToFilm(HttpSession session, @PathVariable Long shortFilmId,
+			@ModelAttribute ShortFilmEditData shortFilmEditData, BindingResult result, Map<String, Object> model) {
 		User loggedUser = userService.getLoggedUser(session).orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
@@ -354,45 +329,10 @@ public class ShortFilmController {
 			}
 		}
 
-		shortFilmEditData.copyToShortFilm(shortFilm);
-
-		shortFilm.getTags().clear();
-		for (String tagName : shortFilmEditData.getTags()) {
-			if (tagName == null) {
-				continue;
-			}
-
-			Tag newTag = tagService.getTagByName(tagName).orElse(null);
-			if (newTag == null) {
-				newTag = new Tag();
-				newTag.setName(tagName);
-				tagService.saveTag(newTag);
-			}
-			shortFilm.getTags().add(newTag);
-		}
-
-		for (Role role : shortFilm.getRoles()) {
-			roleService.deleteRole(role);
-		}
-		shortFilm.getRoles().clear();
-		for (RoleData roleData : shortFilmEditData.getRoles()) {
-			String filmmakerName = roleData.getFilmmakerName();
-			if (filmmakerName == null) {
-				continue;
-			}
-
-			User roleUser = userService.getUserByName(filmmakerName).orElse(null);
-			if (roleUser == null || !roleUser.getType().equals(UserType.Filmmaker)) {
-				continue;
-			}
-			Role newRole = new Role();
-			newRole.setFilmmaker((Filmmaker) roleUser);
-			newRole.setRole(roleData.getRoleType());
-			newRole.setShortfilm(shortFilm);
-			roleService.saveRole(newRole);
-		}
-
-		shortFilmService.save(shortFilm);
+		shortFilmService.updateShortFilmMetadata(shortFilm, shortFilmEditData.getTitle(), shortFilmEditData.getDescription());
+		tagService.tagShortFilm(shortFilmEditData.getTags(), shortFilm);
+		roleService.setRolesOfShortFilm(shortFilmEditData.getRoles(), shortFilm);
+		
 		model.put("success", "Short film information updated successfully!");
 		return "editShortFilm";
 	}

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
@@ -23,5 +24,6 @@ public interface RatingRepository extends CrudRepository<Rating, Long> {
 	@Query("SELECT avg(rating.grade) from Rating rating JOIN rating.shortFilm shortFilm WHERE shortFilm.id = :shortFilmId")
 	public Double averageShortFilmRating(@Param("shortFilmId") Long shortFilmId);
 
+	@Transactional
 	public void deleteByUserAndShortFilm(User user, ShortFilm shortFilm);
 }

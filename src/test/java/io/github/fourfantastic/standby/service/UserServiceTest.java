@@ -202,6 +202,7 @@ public class UserServiceTest {
 		verify(userRepository, only()).findById(id);
 		verifyNoMoreInteractions(userRepository);
 		verify(session, times(1)).removeAttribute("userId");
+		verify(session, times(1)).removeAttribute("userType");
 		verifyNoMoreInteractions(session);
 	}
 }

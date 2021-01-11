@@ -35,6 +35,6 @@ public class Tag {
 	@Column(nullable = false)
 	String name;
 
-	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "tags")
+	@ManyToMany(fetch = FetchType.EAGER)
 	Set<ShortFilm> movies = new HashSet<ShortFilm>();
 }

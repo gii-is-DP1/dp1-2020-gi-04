@@ -2,7 +2,6 @@ package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -37,10 +36,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.model.RoleType;
 import io.github.fourfantastics.standby.model.ShortFilm;
-import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.model.form.RoleData;
 import io.github.fourfantastics.standby.model.form.ShortFilmEditData;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
@@ -683,16 +680,12 @@ public class ShortFilmControllerTest {
 			.andExpect(view().name("editShortFilm"));
 		});
 		
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser(any(HttpSession.class));
 		verify(shortFilmService, times(1)).getShortFilmById(mockShortFilm.getId());
-		verify(tagService, times(mockShortFilmEditData.getTags().size())).getTagByName(anyString());
-		verify(tagService, times(mockShortFilmEditData.getTags().size())).saveTag(any(Tag.class));
-		verifyNoMoreInteractions(tagService);
-		verify(userService, times(mockShortFilmEditData.getRoles().size())).getUserByName(anyString());
-		verifyNoMoreInteractions(userService);
-		verify(roleService, times(mockShortFilmEditData.getRoles().size())).saveRole(any(Role.class));
-		verifyNoMoreInteractions(roleService);
-		verify(shortFilmService, times(1)).save(mockShortFilm);
+
+		verify(tagService, only()).tagShortFilm(mockShortFilmEditData.getTags(), mockShortFilm);
+		verify(roleService, only()).setRolesOfShortFilm(mockShortFilmEditData.getRoles(), mockShortFilm);
+		verify(shortFilmService, times(1)).updateShortFilmMetadata(mockShortFilm, mockShortFilmEditData.getTitle(), mockShortFilmEditData.getDescription());
 		verifyNoMoreInteractions(shortFilmService);
 	}
 	

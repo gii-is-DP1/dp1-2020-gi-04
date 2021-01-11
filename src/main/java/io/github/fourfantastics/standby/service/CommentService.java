@@ -1,5 +1,6 @@
 package io.github.fourfantastics.standby.service;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,16 @@ public class CommentService {
 	public void removeComment(Long commentId) {
 		commentRepository.deleteById(commentId);
 	}
+	
+	public Comment commentShortFilm(String text, ShortFilm shortFilm, User sender) {
+		Comment comment = new Comment();
+		comment.setText(text);
+		comment.setShortFilm(shortFilm);
+		comment.setUser(sender);
+		comment.setDate(new Date().getTime());
+		saveComment(comment);
+		return comment;
+	}
 
 	public void removeUserComment(Long commentId, User user) throws NotFoundException, UnauthorizedException {
 		Comment comment = commentRepository.findById(commentId).orElse(null);
@@ -53,6 +64,7 @@ public class CommentService {
 		if (!comment.getUser().equals(user)) {
 			throw new UnauthorizedException("Not authorized to delete comment!");
 		}
+		
 		commentRepository.delete(comment);
 	}
 }
