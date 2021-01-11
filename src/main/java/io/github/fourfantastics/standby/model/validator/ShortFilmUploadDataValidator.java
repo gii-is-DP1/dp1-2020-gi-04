@@ -24,11 +24,11 @@ public class ShortFilmUploadDataValidator implements Validator {
 			errors.rejectValue("file", "", "You must choose a file to upload!");
 		}
 		
-		if (shortFilmUploadData.getTitle() != null && shortFilmUploadData.getTitle().length() > 128) {
+		if (errors.getFieldErrorCount("description") == 0 && shortFilmUploadData.getTitle().length() > 128) {
 			errors.rejectValue("title", "", "Title cannot be longer than 128 characters");
 		}
 		
-		if (shortFilmUploadData.getTitle() != null && shortFilmUploadData.getDescription().length() > 10000) {
+		if (shortFilmUploadData.getDescription() != null && shortFilmUploadData.getDescription().length() > 10000) {
 			errors.rejectValue("description", "", "Description cannot be longer than 10000 characters");
 		}
 	}

@@ -97,7 +97,7 @@ public class FilmmakerRegisterDataValidatorTest {
 		assertThat(errors.getFieldErrorCount("name")).isEqualTo(1);
 		assertThat(errors.getFieldErrorCount("email")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("password")).isEqualTo(1);
-		assertThat(errors.getFieldErrorCount("confirmPassword")).isEqualTo(1); /* Due to password != confirm password */
+		assertThat(errors.getFieldErrorCount("confirmPassword")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("businessPhone")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("companyName")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("officeAddress")).isEqualTo(0);

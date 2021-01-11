@@ -97,10 +97,12 @@ public class CompanyRegisterDataValidatorTest {
 		assertFalse(errors.hasGlobalErrors());
 		assertTrue(errors.hasFieldErrors());
 		
+		System.out.println(errors);
+		
 		assertThat(errors.getFieldErrorCount("name")).isEqualTo(1);
 		assertThat(errors.getFieldErrorCount("email")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("password")).isEqualTo(0);
-		assertThat(errors.getFieldErrorCount("confirmPassword")).isEqualTo(2); /* Due to password != confirmPassword */
+		assertThat(errors.getFieldErrorCount("confirmPassword")).isEqualTo(1);
 		assertThat(errors.getFieldErrorCount("businessPhone")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("companyName")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("officeAddress")).isEqualTo(1);
