@@ -14,8 +14,10 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.NotificationType;
+import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.NotificationService;
+import io.github.fourfantastics.standby.service.RatingService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 
@@ -32,14 +34,17 @@ public class StandbyApplication {
 		ShortFilmService shortFilmService;
 		NotificationConfigurationService notificationConfigurationService;
 		NotificationService notificationService;
+		RatingService ratingService;
 
 		@Autowired
 		public CommandLineAppStartupRunner(UserService userService, ShortFilmService shortFilmService,
-				NotificationConfigurationService notificationConfigurationService, NotificationService notificationService) {
+				NotificationConfigurationService notificationConfigurationService,
+				NotificationService notificationService, RatingService ratingService) {
 			this.userService = userService;
 			this.shortFilmService = shortFilmService;
 			this.notificationConfigurationService = notificationConfigurationService;
 			this.notificationService = notificationService;
+			this.ratingService = ratingService;
 		}
 
 		@Override
@@ -64,30 +69,42 @@ public class StandbyApplication {
 			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
 			filmmaker.setConfiguration(notificationConfiguration);
 			userService.saveUser(filmmaker);
-			
+
 			Notification notification = new Notification();
 			notification.setEmissionDate(Instant.now().toEpochMilli());
 			notification.setText("Test notification 1");
 			notification.setType(NotificationType.SUBSCRIPTION);
 			notification.setUser(filmmaker);
-			
+
 			notificationService.saveNotification(notification);
-			
+
 			notification = new Notification();
 			notification.setEmissionDate(Instant.now().toEpochMilli());
 			notification.setText("Test notification 2");
 			notification.setType(NotificationType.SUBSCRIPTION);
 			notification.setUser(filmmaker);
-			
+
 			notificationService.saveNotification(notification);
-			
+
 			notification = new Notification();
 			notification.setEmissionDate(Instant.now().toEpochMilli());
 			notification.setText("Test notification 3");
 			notification.setType(NotificationType.SUBSCRIPTION);
 			notification.setUser(filmmaker);
-			
+
 			notificationService.saveNotification(notification);
+
+			ShortFilm shortFilm = new ShortFilm();
+			shortFilm.setTitle("Test film");
+			shortFilm.setVideoUrl("asd.mp4");
+			shortFilm.setUploadDate(1L);
+			shortFilm.setDescription("");
+			shortFilm.setViewCount(0L);
+			shortFilm.setUploader(filmmaker);
+
+			shortFilmService.save(shortFilm);
+
+			ratingService.rateShortFilm(shortFilm, filmmaker, 3);
 
 			Company company = new Company();
 			company.setName("company1");
@@ -99,6 +116,8 @@ public class StandbyApplication {
 			company.setOfficeAddress("Calle Manzana 4");
 			company.setTaxIDNumber("123-45-1234567");
 			userService.register(company);
+
+			ratingService.rateShortFilm(shortFilm, company, 3);
 
 			notificationConfiguration = new NotificationConfiguration();
 			notificationConfiguration.setByComments(false);

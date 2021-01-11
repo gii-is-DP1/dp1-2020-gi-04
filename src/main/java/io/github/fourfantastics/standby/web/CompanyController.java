@@ -27,10 +27,10 @@ import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 @Controller
 public class CompanyController {
 	@Autowired
-	UserService userService;
-
-	@Autowired
 	CompanyService companyService;
+	
+	@Autowired
+	UserService userService;
 
 	@Autowired
 	CompanyRegisterDataValidator companyRegisterDataValidator;
@@ -43,14 +43,14 @@ public class CompanyController {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
+		
 		model.put("companyRegisterData", new CompanyRegisterData());
 		return "registerCompany";
 	}
 
 	@PostMapping("/register/company")
-	public String doRegisterCompany(HttpSession session,
-			@ModelAttribute("companyRegisterData") CompanyRegisterData companyRegisterData, BindingResult result,
-			Map<String, Object> model) {
+	public String doRegisterCompany(HttpSession session, @ModelAttribute CompanyRegisterData companyRegisterData,
+			BindingResult result) {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
@@ -70,9 +70,9 @@ public class CompanyController {
 		return "redirect:/";
 	}
 
-	@GetMapping("/profile/company/{companyID}")
-	public String getProfileView(@PathVariable("companyID") Long companyID, Map<String, Object> model) {
-		User user = userService.getUserById(companyID).orElse(null);
+	@GetMapping("/profile/company/{companyId}")
+	public String getProfileView(@PathVariable Long companyId, Map<String, Object> model) {
+		User user = userService.getUserById(companyId).orElse(null);
 		if (user == null) {
 			return "redirect:/";
 		}

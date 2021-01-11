@@ -70,7 +70,7 @@ public class ShortFilm {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
 	Set<Comment> comments = new HashSet<Comment>();
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "movies")
 	Set<Tag> tags = new HashSet<Tag>();
 
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "favouriteShortFilms")

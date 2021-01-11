@@ -1,9 +1,6 @@
 package io.github.fourfantastics.standby.web;
 
-import java.util.List;
-
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
-import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
@@ -35,10 +31,10 @@ import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 @Controller
 public class FilmmakerController {
 	@Autowired
-	UserService userService;
+	FilmmakerService filmmakerService;
 
 	@Autowired
-	FilmmakerService filmmakerService;
+	UserService userService;
 
 	@Autowired
 	PrivacyRequestService privacyRequestService;
@@ -53,18 +49,19 @@ public class FilmmakerController {
 	FilmmakerConfigurationDataValidator filmmakerConfigurationDataValidator;
 
 	@GetMapping("/register/filmmaker")
-	public String getRegisterView(HttpSession session, Map<String, Object> model) {
+	public String getRegisterView(HttpSession session, @ModelAttribute FilmmakerRegisterData filmmakerRegisterData,
+			Map<String, Object> model) {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
 		model.put("filmmakerRegisterData", new FilmmakerRegisterData());
+
 		return "registerFilmmaker";
 	}
 
 	@PostMapping("/register/filmmaker")
-	public String registerFilmmaker(HttpSession session,
-			@ModelAttribute("filmmakerRegisterData") FilmmakerRegisterData filmmakerRegisterData, BindingResult result,
-			Map<String, Object> model) {
+	public String registerFilmmaker(HttpSession session, @ModelAttribute FilmmakerRegisterData filmmakerRegisterData,
+			BindingResult result) {
 		if (userService.getLoggedUser(session).isPresent()) {
 			return "redirect:/";
 		}
@@ -84,15 +81,11 @@ public class FilmmakerController {
 		return "redirect:/";
 	}
 
-	@GetMapping("/profile/{filmmmakerID}")
-	public String getProfileView(HttpSession session, @PathVariable("filmmmakerID") Long filmmmakerID,
-			Map<String, Object> model) {
-		User user = userService.getUserById(filmmmakerID).orElse(null);
-		if (user == null) {
+	@GetMapping("/profile/{filmmmakerId}")
+	public String getProfileView(HttpSession session, @PathVariable Long filmmmakerId, Map<String, Object> model) {
+		User user = userService.getUserById(filmmmakerId).orElse(null);
+		if (user == null || user.getType() != UserType.Filmmaker) {
 			return "redirect:/";
-		}
-		if (user.getType() != UserType.Filmmaker) {
-			return "redirect:/profile/{filmmakerID}";
 		}
 
 		Filmmaker filmmaker = (Filmmaker) user;
@@ -100,119 +93,115 @@ public class FilmmakerController {
 		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmByFilmmaker(filmmaker));
 		model.put("filmmakerProfileData", filmmakerProfileData);
 
+		model.put("followButton", true);
+		
 		User viewer = userService.getLoggedUser(session).orElse(null);
 		if (viewer == null) {
-			model.put("hidePrivacyRequestButton", true);
-			model.put("hidefollowButton", true);
-		} else {
-			if (viewer.getType().equals(UserType.Company)) {
-				Company viewerCompany = (Company) viewer;
-				List<PrivacyRequest> sentRequest= viewerCompany.getSentRequests().stream()
-						.filter((x -> x.getFilmmaker().getName().equals(filmmaker.getName()))).collect(Collectors.toList());
-				if (!sentRequest.isEmpty()) {
-					model.put("disablePrivacyRequestButton", true);
-					model.put("hidePrivacyRequestButton", true);
-					if(sentRequest.get(0).getRequestState() == RequestStateType.ACCEPTED){
-						model.put("personalInformation", true);
-						model.put("disablePrivacyRequestButton", false);
-					}
-				}
-				if(filmmaker.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== viewerCompany.getName())) {
-					model.put("unfollowButton", true);
-					model.put("hideFollowButton", true);
-				}
-			} else {
-				Filmmaker viewerFilmmaker = (Filmmaker) viewer;
-				model.put("hidePrivacyRequestButton", true);
-				if (viewerFilmmaker.getName().equals(filmmaker.getName())) {
-					model.put("accountButton", true);
-					model.put("hideFollowButton", true);
-				}
-				if(filmmaker.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== viewerFilmmaker.getName())) {
-					model.put("unfollowButton", true);
-					model.put("hideFollowButton", true);
-				}
+			return "filmmakerProfile";
+		}
+		
+		if (viewer.getType().equals(UserType.Company)) {
+			model.put("privacyRequestButton", true);
+			
+			Company viewerCompany = (Company) viewer;
+			PrivacyRequest sentRequest = viewerCompany.getSentRequests().stream()
+					.filter((x -> x.getFilmmaker().getName().equals(filmmaker.getName()))).findFirst().orElse(null);
+			if (sentRequest != null) {
+				model.put("disablePrivacyRequestButton", true);
+				//[TO-DO] Allow to accept privacy requests!!
+				//if (sentRequest.getRequestState() == RequestStateType.ACCEPTED) {
+					model.put("personalInformation", true);
+				//}
 			}
+		} else {
+			Filmmaker viewerFilmmaker = (Filmmaker) viewer;
+			if (viewerFilmmaker.getName().equals(filmmaker.getName())) {
+				model.remove("followButton");
+				model.put("accountButton", true);
+				model.put("personalInformation", true);
+			}
+		}
+		
+		if (filmmaker.getFilmmakerSubscribers().stream().anyMatch(x -> x.getName() == viewer.getName())) {
+			model.put("alreadyFollowed", true);
 		}
 
 		return "filmmakerProfile";
 	}
 
-	@PostMapping("/profile/{userID}/subscription")
-	public String sucribesToFilmmaker(HttpSession session, @PathVariable("userID") Long userID) {
+	@PostMapping("/profile/{userId}/subscription")
+	public String sucribesToFilmmaker(HttpSession session, @PathVariable Long userId) {
 		User follower = userService.getLoggedUser(session).orElse(null);
 		if (follower == null) {
 			return "redirect:/login";
 		}
 
-		User user = userService.getUserById(userID).orElse(null);
-
+		User user = userService.getUserById(userId).orElse(null);
 		if (user.getType() != UserType.Filmmaker) {
-			return String.format("redirect:/profile/%d", userID);
+			return String.format("redirect:/profile/%d", userId);
 		}
 
 		Filmmaker followed = (Filmmaker) user;
-		
-		if(followed.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== follower.getName())) {
-			return String.format("redirect:/profile/%d", userID);
+		if (followed.getFilmmakerSubscribers().stream().anyMatch(x -> x.getName() == follower.getName())) {
+			return String.format("redirect:/profile/%d", userId);
 		}
+
 		if (followed.getName().equals(follower.getName())) {
-			return String.format("redirect:/profile/%d", userID);
+			return String.format("redirect:/profile/%d", userId);
 		}
-		
+
 		userService.subscribesTo(follower, followed);
-		return String.format("redirect:/profile/%d", userID);
-
+		return String.format("redirect:/profile/%d", userId);
 	}
-	
-	@PostMapping("/profile/{userID}/unsubscription")
-	public String unsucribesToFilmmaker(HttpSession session, @PathVariable("userID") Long userID) {
+
+	@PostMapping("/profile/{userId}/unsubscription")
+	public String unsucribesToFilmmaker(HttpSession session, @PathVariable Long userId) {
 		User follower = userService.getLoggedUser(session).orElse(null);
 		if (follower == null) {
 			return "redirect:/login";
 		}
 
-		User user = userService.getUserById(userID).orElse(null);
-
+		User user = userService.getUserById(userId).orElse(null);
 		if (user.getType() != UserType.Filmmaker) {
-			return String.format("redirect:/profile/%d", userID);
+			return String.format("redirect:/profile/%d", userId);
 		}
 
 		Filmmaker followed = (Filmmaker) user;
-		
-		if(!followed.getFilmmakerSubscribers().stream().anyMatch(x-> x.getName()== follower.getName())) {
-			return String.format("redirect:/profile/%d", userID);
+		if (!followed.getFilmmakerSubscribers().stream().anyMatch(x -> x.getName() == follower.getName())) {
+			return String.format("redirect:/profile/%d", userId);
 		}
+
 		if (followed.getName().equals(follower.getName())) {
-			return String.format("redirect:/profile/%d", userID);
+			return String.format("redirect:/profile/%d", userId);
 		}
 
 		userService.unsubscribesTo(follower, followed);
-		return String.format("redirect:/profile/%d", userID);
-
+		return String.format("redirect:/profile/%d", userId);
 	}
-	@PostMapping("/profile/{filmmakerID}/privacyrequest")
-	public String sendPrivacyRequest(HttpSession session, @PathVariable("filmmakerID") Long userID) {
+
+	@PostMapping("/profile/{filmmakerId}/privacyrequest")
+	public String sendPrivacyRequest(HttpSession session, @PathVariable Long filmmakerId) {
 		User sender = userService.getLoggedUser(session).orElse(null);
 		if (sender == null) {
 			return "redirect:/login";
 		}
 		if (sender.getType() != UserType.Company) {
-			return String.format("redirect:/profile/%d", userID);
+			return String.format("redirect:/profile/%d", filmmakerId);
 		}
 
-		User receiver = userService.getUserById(userID).orElse(null);
-
+		User receiver = userService.getUserById(filmmakerId).orElse(null);
 		if (receiver.getType() != UserType.Filmmaker) {
-			return String.format("redirect:/profile/%d", userID);
+			return String.format("redirect:/profile/%d", filmmakerId);
 		}
+
 		Company company = (Company) sender;
 		if (company.getSentRequests().stream().anyMatch(x -> x.getFilmmaker().getName().equals(receiver.getName()))) {
-			return String.format("redirect:/profile/%d", userID);
+			return String.format("redirect:/profile/%d", filmmakerId);
 		}
+
 		Filmmaker filmmaker = (Filmmaker) receiver;
 		privacyRequestService.sendPrivacyRequest(company, filmmaker);
-		return String.format("redirect:/profile/%d", userID);
+		return String.format("redirect:/profile/%d", filmmakerId);
 	}
 
 	@GetMapping("/account/filmmaker")
@@ -234,8 +223,8 @@ public class FilmmakerController {
 
 	@PostMapping("/account/filmmaker")
 	public String doManageAccount(HttpSession session,
-			@ModelAttribute("filmmakerConfigurationData") FilmmakerConfigurationData filmmakerConfigurationData,
-			BindingResult result, Map<String, Object> model) {
+			@ModelAttribute FilmmakerConfigurationData filmmakerConfigurationData, BindingResult result,
+			Map<String, Object> model) {
 		User user = userService.getLoggedUser(session).orElse(null);
 		if (user == null) {
 			return "redirect:/login";

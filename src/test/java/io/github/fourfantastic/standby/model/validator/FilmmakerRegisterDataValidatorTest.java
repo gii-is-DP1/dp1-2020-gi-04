@@ -103,4 +103,33 @@ public class FilmmakerRegisterDataValidatorTest {
 		assertThat(errors.getFieldErrorCount("officeAddress")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("taxIDNumber")).isEqualTo(0);
 	}
+	
+	@Test
+	public void validateOutOfBoundsTest() {
+		final FilmmakerRegisterData mockData = new FilmmakerRegisterData();
+		mockData.setName("abc");
+		mockData.setEmail("filmmaker@gmail.com");
+		mockData.setPassword("password");
+		mockData.setConfirmPassword("password");
+		mockData.setCity("Seville");
+		mockData.setCountry("Spain");
+		mockData.setFullname("Filmmaker Díaz García");
+		mockData.setPhone("675987432");
+		
+		BindException errors = new BindException(mockData, "FilmmakerRegisterData");
+		validator.validate(mockData, errors);
+		
+		assertTrue(errors.hasErrors());
+		assertFalse(errors.hasGlobalErrors());
+		assertTrue(errors.hasFieldErrors());
+		
+		assertThat(errors.getFieldErrorCount("name")).isEqualTo(1);
+		assertThat(errors.getFieldErrorCount("email")).isEqualTo(0);
+		assertThat(errors.getFieldErrorCount("password")).isEqualTo(0);
+		assertThat(errors.getFieldErrorCount("confirmPassword")).isEqualTo(0);
+		assertThat(errors.getFieldErrorCount("businessPhone")).isEqualTo(0);
+		assertThat(errors.getFieldErrorCount("companyName")).isEqualTo(0);
+		assertThat(errors.getFieldErrorCount("officeAddress")).isEqualTo(0);
+		assertThat(errors.getFieldErrorCount("taxIDNumber")).isEqualTo(0);
+	}
 }

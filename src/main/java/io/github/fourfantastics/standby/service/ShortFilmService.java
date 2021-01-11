@@ -63,7 +63,7 @@ public class ShortFilmService {
 	public void deleteShortFilm(ShortFilm shortFilm) {
 		shortFilmRepository.delete(shortFilm);
 	}
-
+	
 	public ShortFilm upload(ShortFilmUploadData shortFilmUploadData, Filmmaker uploader)
 			throws InvalidExtensionException, TooBigException, RuntimeException {
 		MultipartFile videoFile = shortFilmUploadData.getFile();
@@ -115,6 +115,12 @@ public class ShortFilmService {
 		}
 		
 		shortFilm.setThumbnailUrl(thumbnailPath);
+	}
+	
+	public void updateShortFilmMetadata(ShortFilm shortFilm, String title, String description) {
+		shortFilm.setTitle(title);
+		shortFilm.setDescription(description);
+		save(shortFilm);
 	}
 
 	public Set<ShortFilm> getShortFilmByFilmmaker(Filmmaker filmmaker) {
