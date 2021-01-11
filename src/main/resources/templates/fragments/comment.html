@@ -10,18 +10,18 @@
         </th-block>
     </div>
     <div class="flex-grow-1 pl-3 d-flex flex-column">
-        <th-block data-th-switch="${profileId} != null">
-            <div data-th-case="true" class="d-flex justify-content-between">
-                <div class="d-flex align-items-baseline">
+        <div class="d-flex justify-content-between">
+            <th-block data-th-switch="${profileId} != null">
+                <div data-th-case="true" class="d-flex align-items-baseline">
                     <a class="font-weight-bold text-decoration-none" data-th-classappend="${isUploader} ? 'badge badge-dark' : 'text-dark'" data-th-href="${profileId} ? '/profile/' + ${profileId} : null" data-th-text="${userName}"></a>
                     <label class="text-muted ml-2 mb-0" data-th-text="${date}"></label>
                 </div>
-                <button data-th-if="${deleteable}" name="deleteComment" data-th-value="${commentId}" type="submit" class="close" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <span data-th-case="false" class="font-weight-bold" data-th-classappend="${isUploader} ? 'badge badge-dark' : 'text-dark'" data-th-text="${userName}"></span>
-        </th-block>
+                <span data-th-case="false" class="font-weight-bold" data-th-classappend="${isUploader} ? 'badge badge-dark' : 'text-dark'" data-th-text="${userName}"></span>
+            </th-block>
+            <button data-th-if="${deleteable}" name="deleteComment" data-th-value="${commentId}" type="submit" class="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
         <span data-th-if="${subscriberCount} != null" class="text-secondary" data-th-text="|${subscriberCount} subscribers|"></span>
         <th-block data-th-if="${text} != ''">
             <p data-th-id="|comment-text-${commentId}|" class="text-break mt-1 collapse text-collapse" style="white-space: pre-line;" data-th-text="${text}"></p>

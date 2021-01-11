@@ -81,9 +81,7 @@ public class CommentController {
 		Long commentId = deleteComment;
 		try {
 			commentService.removeUserComment(commentId, loggedUser);
-		} catch (NotFoundException e) {
-			result.reject("", e.getMessage());
-		} catch (UnauthorizedException e) {
+		} catch (NotFoundException | UnauthorizedException e) {
 			result.reject("", e.getMessage());
 		}
 
