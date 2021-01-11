@@ -1,139 +1,143 @@
 <!DOCTYPE html>
-<th-block data-th-with="filmmaker = ${filmmakerProfileData.getFilmmaker()}">
-    <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
-        <title data-th-text="|${filmmaker.getName()} profile - Standby|"></title>
-        <section>
-            <h3 data-th-text="|${filmmaker.getName()} profile|"></h3>
-            <hr />
+<th-block
+	data-th-with="filmmaker = ${filmmakerProfileData.getFilmmaker()}">
+<html
+	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+<title data-th-text="|${filmmaker.getName()} profile - Standby|"></title>
+<section>
+	<h3 data-th-text="|${filmmaker.getName()} profile|"></h3>
+	<hr />
 
-            <div class="d-flex justify-content-end">
-                <th-block data-th-if="${accountButton}">
-                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
-                </th-block>
-            </div>
+	<div class="d-flex justify-content-end">
+		<th-block data-th-if="${accountButton}">
+		<button
+			data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
+		</th-block>
+	</div>
 
-            <div class="row mb-3" data-th-classappend="!${accountButton} ? 'mt-4' : null">
-                <div class="col-12 col-md-4 text-center mb-3 mb-md-0">
-                    <img data-th-replace="~{@{fragments/profilePicture}(src=${filmmaker.getPhotoUrl()}, class='img-fluid', style='max-height: 150px; max-width: 150px')}" />
-                </div>
-                <div class="col-12 col-md-6 d-flex flex-column-reverse flex-md-column">
-                    <div class="d-flex justify-content-between mt-4 mb-5 my-md-0 px-3 px-md-0">
-                        <div class="d-flex flex-column">
-                            <h6>Shortfilms</h6>
-                            <span class="badge badge-secondary align-self-center" data-th-text="${#lists.size(filmmakerProfileData.getUploadedShortFilms())}"></span>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <h6>Followers</h6>
-                            <span class="badge badge-secondary align-self-center" data-th-text="${#lists.size(filmmakerProfileData.getFilmmakerSubscribers())}"></span>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <h6>Followed</h6>
-                            <span class="badge badge-secondary align-self-center" data-th-text="${#lists.size(filmmakerProfileData.getFilmmakersSubscribedTo())}"></span>
-                        </div>
-                    </div>
-                    <div class="d-flex mt-3 mt-md-5">
-                        <form data-th-if="${privacyRequestButton}"
-                              data-th-action="@{'/profile/' + ${filmmaker.getId()} + '/privacyrequest'}" method="POST"
-                              data-th-style="${followButton} ? 'flex-basis: 50%;' : 'flex-basis: 100%'"
-                              class="mr-2">
-                            <button type="submit"
-                                    class="btn btn-primary btn-block"
-                                    data-th-disabled="${disablePrivacyRequestButton} ? 'disabled' : null"
-                                    data-th-text="${disablePrivacyRequestButton} ? (${personalInformation} ? 'Accepted' : 'Already requested') : 'Request contact info'"
-                            ></button>
-                        </form>
-                        <form data-th-if="${followButton}"
-                              data-th-action="'/profile/' + ${filmmaker.getId()} + (${alreadyFollowed} ? '/unsubscription' : '/subscription')" method="POST"
-                              data-th-style="${privacyRequestButton} ? 'flex-basis: 50%;' : 'flex-basis: 100%'"
-                              class="ml-2">
-                            <button type="submit"
-                                    class="btn btn-primary btn-block"
-                                    data-th-text="${alreadyFollowed} ? 'Unfollow' : 'Follow'"
-                            ></button>
-                        </form>
-                    </div>
-                    <div class="d-flex flex-column mt-3 mt-md-4">
-                        <h6 class="font-weight-bold" data-th-text="${filmmaker.getFullname()}"></h6>
-                        <th-block data-th-if="${personalInformation}">
-                            <h6 data-th-if="!${#strings.isEmpty(filmmaker.getCity())} and !${#strings.isEmpty(filmmaker.getCountry())}" data-th-text="|Lives in ${filmmaker.getCity()} (${filmmaker.getCountry()})|"></h6>
-                            <h6 data-th-if="!${#strings.isEmpty(filmmaker.getPhone())}" data-th-text="${filmmaker.getPhone()}"></h6>
-                            <a data-th-if="!${#strings.isEmpty(filmmaker.getEmail())}" data-th-href="|mailto:${filmmaker.getEmail()}|" data-th-text="${filmmaker.getEmail()}"></a>
-                        </th-block>
-                    </div>
-                </div>
-            </div>
-            <nav>
-                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a class="nav-link active" id="nav-uploadShortfilms-tab" data-toggle="tab" href="#nav-uploadShortfilms" role="tab" aria-controls="nav-uploadShortfilms" aria-selected="true"> Upload shortfilms </a>
-                    <a class="nav-link" id="nav-attachedShortFilms-tab" data-toggle="tab" href="#nav-attachedShortFilms" role="tab" aria-controls="nav-attachedShortFilms" aria-selected="false">Attached shortfilms</a>
-                </div>
-            </nav>
-            <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-uploadShortfilms" role="tabpanel" aria-labelledby="nav-uploadShortfilms-tab" data-th-with="uploadedShortFilms = ${filmmakerProfileData.getUploadedShortFilms()}">
-                    <div data-th-switch="${uploadedShortFilms} != null and ${!uploadedShortFilms.isEmpty()}">
-                        <div data-th-case="true">
-                            <div data-th-each="shortFilm : ${uploadedShortFilms}">
-                                <div class="card mb-3">
-                                    <div class="row no-gutters">
-                                        <div class="col-md-4">
-                                            <a data-th-href="@{'/shortfilm/'+ ${shortFilm.getId()}}">
-                                                <img data-th-replace="~{@{fragments/thumbnail}(src=${shortFilm.getThumbnailUrl()}, class='card-img', alt='...')}" />
-                                            </a>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                                <form data-th-object="${accountButton}">
-                                                    <span class="float-right" th:if="${accountButton}">
-                                                        <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/'+ ${shortFilm.getId()}+'/edit'})}"></button>
-                                                    </span>
-                                                </form>
-                                                <h5 class="card-title" data-th-text="${shortFilm.getTitle()}"></h5>
-                                                <p class="card-text" data-th-text="${shortFilm.getDescription()}"></p>
-                                                <p class="card-text" data-th-text="|${shortFilm.getViewCount()} views|"></p>
-                                                <p class="card-text" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div data-th-case="false">
-                            <br />
-                            <div class="d-flex p-2 bd-highlight bg-secondary text-white rounded-lg">There are no shortfilms</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="nav-attachedShortFilms" role="tabpanel" aria-labelledby="nav-attachedShortFilms-tab" data-th-with="uploadedAttachedFilms = ${filmmakerProfileData.getAttachedShortFilms()}">
-                    <div data-th-switch="${attachedShortFilms != null} and !${attachedShortFilms.isEmpty()}">
-                        <div data-th-case="true">
-                            <div data-th-each="shortFilm : ${attachedShortFilms}">
-                                <div class="card mb-3">
-                                    <div class="row no-gutters">
-                                        <div class="col-md-4">
-                                            <a data-th-href="@{'/shortfilm/'+ ${shortFilm.getId()}}">
-                                                <img data-th-replace="~{@{fragments/thumbnail}(src=${shortFilm.getThumbnailUrl()}, class='card-img', alt='...')}" />
-                                            </a>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                                <h5 class="card-title" data-th-text="${shortFilm.getTitle()}"></h5>
-                                                <p class="card-text" data-th-text="${shortFilm.getDescription()}"></p>
-                                                <p class="card-text" data-th-text="|${shortFilm.getViewCount()} views|"></p>
-                                                <p class="card-text" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div data-th-case="false">
-                            <br />
-                            <div class="d-flex p-2 bd-highlight bg-secondary text-white rounded-lg">There are no shortfilms</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br />
-        </section>
-    </html>
+	<div class="row"
+		data-th-classappend="!${accountButton} ? 'mt-4' : null">
+		<div class="col-12 col-md-4 text-center mb-3 mb-md-0">
+			<img
+				data-th-replace="~{@{fragments/profilePicture}(src=${filmmaker.getPhotoUrl()}, class='img-fluid', style='max-height: 150px; max-width: 150px')}" />
+		</div>
+		<div class="col-12 col-md-7 d-flex flex-column-reverse flex-md-column">
+			<div
+				class="d-flex justify-content-around mt-4 mb-5 my-md-0 px-2 px-md-0">
+				<div class="d-flex flex-column">
+					<h6>Shortfilms</h6>
+					<span class="badge badge-secondary align-self-center"
+						data-th-text="${#lists.size(filmmakerProfileData.getUploadedShortFilms())}"></span>
+				</div>
+				<div class="d-flex flex-column">
+					<h6>Followers</h6>
+					<span class="badge badge-secondary align-self-center"
+						data-th-text="${#lists.size(filmmakerProfileData.getFilmmakerSubscribers())}"></span>
+				</div>
+				<div class="d-flex flex-column">
+					<h6>Followed</h6>
+					<span class="badge badge-secondary align-self-center"
+						data-th-text="${#lists.size(filmmakerProfileData.getFilmmakersSubscribedTo())}"></span>
+				</div>
+			</div>
+			<div data-th-if="${privacyRequestButton} or ${followButton}"
+				class="d-flex flex-wrap flex-md-nowrap mt-3 mt-md-5 align-items-stretch">
+				<form data-th-if="${followButton}"
+					data-th-action="'/profile/' + ${filmmaker.getId()} + (${alreadyFollowed} ? '/unsubscription' : '/subscription')"
+					method="POST" class="mr-md-2 w-100">
+					<button type="submit" class="btn btn-primary btn-block h-100"
+						data-th-text="${alreadyFollowed} ? 'Unfollow' : 'Follow'"></button>
+				</form>
+				<form data-th-if="${privacyRequestButton}"
+					data-th-action="@{'/profile/' + ${filmmaker.getId()} + '/privacyrequest'}"
+					method="POST" class="ml-md-2 mt-3 mt-md-0 w-100">
+					<button type="submit" class="btn btn-primary btn-block h-100"
+						data-th-disabled="${disablePrivacyRequestButton} ? 'disabled' : null"
+						data-th-text="${disablePrivacyRequestButton} ? (${personalInformation} ? 'Accepted' : 'Already requested') : 'Request contact info'"></button>
+				</form>
+			</div>
+			<div class="d-flex flex-column mt-3 my-md-5">
+				<h6 class="font-weight-bold"
+					data-th-text="${filmmaker.getFullname()}"></h6>
+				<th-block data-th-if="${personalInformation}">
+				<h6
+					data-th-if="!${#strings.isEmpty(filmmaker.getCity())} and !${#strings.isEmpty(filmmaker.getCountry())}"
+					data-th-text="|Lives in ${filmmaker.getCity()} (${filmmaker.getCountry()})|"></h6>
+				<h6 data-th-if="!${#strings.isEmpty(filmmaker.getPhone())}"
+					data-th-text="${filmmaker.getPhone()}"></h6>
+				<a data-th-if="!${#strings.isEmpty(filmmaker.getEmail())}"
+					data-th-href="|mailto:${filmmaker.getEmail()}|"
+					data-th-text="${filmmaker.getEmail()}"></a> </th-block>
+			</div>
+		</div>
+	</div>
+	<ul class="nav nav-tabs" id="nav-tab" role="tablist">
+		<li class="nav-item"><a class="nav-link active"
+			id="nav-uploadedShortFilms-tab" data-toggle="tab"
+			href="#nav-uploadedShortFilms" role="tab"
+			aria-controls="nav-uploadShortfilms" aria-selected="true"> <img
+				data-th-src="@{/static/uploaded-icon.svg}" /> <span
+				class="d-none d-md-inline ml-2 text-dark">Uploaded short
+					films</span>
+		</a></li>
+		<li class="nav-item"><a class="nav-link"
+			id="nav-attachedShortFilms-tab" data-toggle="tab"
+			href="#nav-attachedShortFilms" role="tab"
+			aria-controls="nav-attachedShortFilms" aria-selected="false"> <img
+				data-th-src="@{/static/attached-icon.svg}" /> <span
+				class="d-none d-md-inline ml-2 text-dark">Attached short
+					films</span>
+		</a></li>
+	</ul>
+
+	<div class="tab-content" id="nav-tabContent">
+		<div class="tab-pane fade show active pt-3"
+			id="nav-uploadedShortFilms" role="tabpanel"
+			aria-labelledby="nav-uploadedShortfilms-tab"
+			data-th-with="uploadedShortFilms = ${filmmakerProfileData.getUploadedShortFilms()}">
+			<div
+				data-th-switch="${uploadedShortFilms} != null and ${!uploadedShortFilms.isEmpty()}">
+				<th-block data-th-case="true"> <th-block
+					data-th-each="shortFilm : ${uploadedShortFilms}">
+				<div
+					data-th-replace="~{@{fragments/shortFilmItem}(
+                                    id=${shortFilm.getId()},
+                                    title=${shortFilm.getTitle()},
+                                    description=${shortFilm.getDescription()},
+                                    thumbnailUrl=${shortFilm.getThumbnailUrl()},
+                                    viewCount=${shortFilm.getViewCount()},
+                                    uploadDate=${shortFilm.getFormattedUploadDate()},
+                                    editable=(${accountButton} != null),
+                                )}"></div>
+				</th-block> </th-block>
+				<div data-th-case="false" class="alert alert-dark mt-3">There
+					are no shortfilms to show</div>
+			</div>
+		</div>
+		<div class="tab-pane fade" id="nav-attachedShortFilms" role="tabpanel"
+			aria-labelledby="nav-attachedShortFilms-tab"
+			data-th-with="uploadedAttachedFilms = ${filmmakerProfileData.getAttachedShortFilms()}">
+			<div
+				data-th-switch="${attachedShortFilms != null} and !${attachedShortFilms.isEmpty()}">
+				<div data-th-case="true">
+					<div data-th-each="shortFilm : ${attachedShortFilms}">
+						<div
+							data-th-replace="~{@{fragments/shortFilmItem}(
+                                    id=${shortFilm.getId()},
+                                    title=${shortFilm.getTitle()},
+                                    description=${shortFilm.getDescription()},
+                                    thumbnailUrl=${shortFilm.getThumbnailUrl()},
+                                    viewCount=${shortFilm.getViewCount()},
+                                    uploadDate=${shortFilm.getFormattedUploadDate()},
+                                    editable=(${accountButton} != null),
+                                )}"></div>
+					</div>
+				</div>
+				<div data-th-case="false" class="alert alert-dark mt-3">There
+					are no shortfilms to show</div>
+			</div>
+		</div>
+	</div>
+</section>
+</html>
 </th-block>

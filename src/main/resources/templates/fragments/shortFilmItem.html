@@ -1,0 +1,24 @@
+<div data-th-fragment="shortFilmItem(id, title)" class="card mb-3">
+    <div class="row no-gutters">
+        <div class="col-md-4 d-flex flex-column justify-content-center">
+            <a data-th-href="@{'/shortfilm/' + ${id}}" class="img-responsive-16by9">
+                <img data-th-replace="~{@{fragments/thumbnail}(src=${thumbnailUrl}, class='card-img')}" />
+            </a>
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <span class="float-right">
+	                <th-block data-th-if="${editable} == true">
+	                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/' + ${id} + '/edit'})}"></button>
+	                </th-block>
+	                <label class="text-muted card-text" data-th-if="${uploadDate}" data-th-text="|Uploaded ${uploadDate}|"></label>
+                </span>
+                <h5 class="card-title">
+                    <a class="text-decoration-none text-dark" data-th-text="${title}" data-th-href="@{'/shortfilm/' + ${id}}"></a>
+                </h5>
+                <p class="card-text text-collapse" style="white-space: pre-line" data-th-if="${description}" data-th-text="${description}"></p>
+                <label class="card-text text-muted" data-th-if="${viewCount}" data-th-text="|${viewCount} views|"></label>
+            </div>
+        </div>
+    </div>
+</div>
