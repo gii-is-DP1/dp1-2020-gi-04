@@ -32,11 +32,11 @@ public class NotificationController {
 	@Autowired
 	UserService userService;
 
-	@GetMapping(value = "userNotifications", produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Object getUserNotifications(HttpSession session) {
+	@GetMapping(value = "/notifications/count", produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody Object getUserNotificationCount(HttpSession session) {
 		Map<String, Object> res = new HashMap<String, Object>();
+		
 		User user = userService.getLoggedUser(session).orElse(null);
-
 		if (user == null) {
 			res.put("status", 302);
 			res.put("url", "/login");
@@ -54,7 +54,6 @@ public class NotificationController {
 	public String getNotificationsView(HttpSession session, Map<String, Object> model,
 			@ModelAttribute NotificationData notificationData) {
 		User user = userService.getLoggedUser(session).orElse(null);
-
 		if (user == null) {
 			return "redirect:/login";
 		}

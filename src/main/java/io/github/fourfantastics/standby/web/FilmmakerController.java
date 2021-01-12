@@ -91,7 +91,6 @@ public class FilmmakerController {
 		Filmmaker filmmaker = (Filmmaker) user;
 		FilmmakerProfileData filmmakerProfileData = FilmmakerProfileData.fromFilmmaker(filmmaker);
 		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmByFilmmaker(filmmaker));
-		System.out.println(filmmakerProfileData.getAttachedShortFilms());
 		model.put("filmmakerProfileData", filmmakerProfileData);
 
 		model.put("followButton", true);

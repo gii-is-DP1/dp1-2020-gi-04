@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
+import io.github.fourfantastics.standby.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,6 +33,9 @@ import lombok.ToString;
 @ToString(exclude = { "ratings", "comments", "tags", "favouriteUsers", "uploader" })
 @AllArgsConstructor
 public class ShortFilm {
+	static Integer collapsableMinLength = 250;
+	static Integer collapsableMinLines = 5;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
@@ -85,6 +89,11 @@ public class ShortFilm {
 	public String getFormattedUploadDate() {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
 		return dateFormatter.format(new Date(getUploadDate()));
+	}
+	
+	public Boolean isCollapsable() {
+		String text = getDescription();
+		return text.length() > collapsableMinLength || Utils.lineCount(text) > collapsableMinLines;
 	}
 	
 	public ShortFilm() {
