@@ -45,23 +45,21 @@ public class RatingService {
 	}
 
 	public Double getAverageRating(ShortFilm shortFilm) {
-		return ratingRepository.averageShortFilmRating(shortFilm.getId());
+		Double rating = ratingRepository.averageShortFilmRating(shortFilm.getId());
+		return rating == null ? 0 : rating;
 	}
 
 	public Rating rateShortFilm(ShortFilm shortFilm, User user, Integer rate) {
-		Rating alreadyRated = ratingRepository.findByUserAndShortFilm(user, shortFilm).orElse(null);
-		if (alreadyRated != null) {
-			alreadyRated.setGrade(rate);
-			alreadyRated.setDate(Instant.now().toEpochMilli());
-			return ratingRepository.save(alreadyRated);
+		Rating rating = ratingRepository.findByUserAndShortFilm(user, shortFilm).orElse(null);
+		if (rating == null) {
+			rating = new Rating();
+			rating.setUser(user);
+			rating.setShortFilm(shortFilm);
 		}
 
-		Rating rating = new Rating();
 		rating.setDate(Instant.now().toEpochMilli());
 		rating.setGrade(rate);
-		rating.setShortFilm(shortFilm);
-		rating.setUser(user);
-
+		
 		return ratingRepository.save(rating);
 	}
 

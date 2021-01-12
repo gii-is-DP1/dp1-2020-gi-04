@@ -3,7 +3,6 @@ package io.github.fourfantastics.standby.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +26,10 @@ public class RoleService {
 		this.roleRepository = roleRepository;
 		this.userService = userService;
 	}
-
-	public Optional<Role> getRoleById(Long id) {
-		return roleRepository.findById(id);
-	}
-
-	public void saveRole(Role role) {
-		roleRepository.save(role);
-	}
 	
 	public void setRolesOfShortFilm(Collection<RoleData> roles, ShortFilm shortFilm) {
 		for (Role role : shortFilm.getRoles()) {
-			deleteRole(role);
+			roleRepository.delete(role);
 		}
 		shortFilm.getRoles().clear();
 		
@@ -56,7 +47,7 @@ public class RoleService {
 			newRole.setFilmmaker((Filmmaker) roleUser);
 			newRole.setRole(roleData.getRoleType());
 			newRole.setShortfilm(shortFilm);
-			saveRole(newRole);
+			roleRepository.save(newRole);
 		}
 	}
 
@@ -67,9 +58,5 @@ public class RoleService {
 			roles.add(iterator.next());
 		}
 		return roles;
-	}
-
-	public void deleteRole(Role role) {
-		roleRepository.delete(role);
 	}
 }
