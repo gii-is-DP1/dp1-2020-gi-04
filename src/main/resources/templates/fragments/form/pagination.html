@@ -1,5 +1,5 @@
 <th-block data-th-fragment="pagination(name)" data-th-if="${name} != null and *{__${name}__.getTotalPages()} > 1">
-    <nav data-th-with="this = *{__${name}__}">
+    <nav data-th-class="${class}?: null" data-th-with="this = *{__${name}__}">
         <ul
             data-th-class="'pagination' +
         ((${size} == 'big') ? ' pagination-lg' : (
