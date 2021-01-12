@@ -1,0 +1,26 @@
+<div data-th-fragment="shortFilmItem(id, title)" class="card mb-3">
+    <div class="row no-gutters">
+        <div class="col-md-4 d-flex flex-column justify-content-center">
+            <a data-th-href="@{'/shortfilm/' + ${id}}" class="img-responsive-16by9">
+                <img data-th-replace="~{@{fragments/thumbnail}(src=${thumbnailUrl}, class='card-img')}" />
+            </a>
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <div class="d-flex flex-column-reverse flex-md-row align-items-stretch justify-content-md-between align-items-baseline">
+	                <h5 class="card-title m-0">
+	                    <a class="text-decoration-none text-dark" data-th-text="${title}" data-th-href="@{'/shortfilm/' + ${id}}"></a>
+	                </h5>
+	                <div class="d-flex flex-row-reverse d-md-inline-block align-items-start justify-content-between">
+		                <th-block data-th-if="${editable} == true">
+		                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/' + ${id} + '/edit'})}"></button>
+		                </th-block>
+		                <span class="text-muted" data-th-if="${uploadDate}" data-th-text="|Uploaded ${uploadDate}|"></span>
+	                </div>
+                </div>
+                <p class="card-text text-collapse m-0" style="white-space: pre-line;" data-th-if="!${#strings.isEmpty(description)}" data-th-text="${description}"></p>
+                <label class="card-text text-muted mt-3" data-th-if="${viewCount} != null" data-th-text="|${viewCount} views|"></label>
+            </div>
+        </div>
+    </div>
+</div>

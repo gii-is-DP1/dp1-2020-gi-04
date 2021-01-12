@@ -25,11 +25,11 @@ public class FilmmakerRegisterDataValidator implements Validator {
 				"Password confirmation cannot be empty!");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "fullname", "", "Full name cannot be empty!");
 		
-		if (filmmakerRegisterData.getName() != null && filmmakerRegisterData.getName().length() < 5 || filmmakerRegisterData.getName().length() > 64) {
+		if (errors.getFieldErrorCount("name") == 0 && filmmakerRegisterData.getName().length() < 5 || filmmakerRegisterData.getName().length() > 64) {
 			errors.rejectValue("name", "", "Name length is out of bounds! (between 5 and 64 characters)");
 		}
 		
-		if (!filmmakerRegisterData.getPassword().equals(filmmakerRegisterData.getConfirmPassword())) {
+		if (errors.getFieldErrorCount("password") == 0 && errors.getFieldErrorCount("confirmPassword") == 0 && !filmmakerRegisterData.getPassword().equals(filmmakerRegisterData.getConfirmPassword())) {
 			errors.rejectValue("confirmPassword", "", "Passwords don't match!");
 		}
 	}

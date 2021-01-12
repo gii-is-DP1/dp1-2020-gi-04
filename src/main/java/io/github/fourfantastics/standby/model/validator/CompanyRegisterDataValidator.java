@@ -28,12 +28,12 @@ public class CompanyRegisterDataValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "",
 				"Password confirmation cannot be empty!");
 		
-		if (companyRegisterData.getName() != null && companyRegisterData.getName().length() < 5 || companyRegisterData.getName().length() > 64) {
+		if (errors.getFieldErrorCount("name") == 0 && companyRegisterData.getName().length() < 5 || companyRegisterData.getName().length() > 64) {
 			errors.rejectValue("name", "", "Name length is out of bounds! (between 5 and 64 characters)");
 		}
 		
-		if (!companyRegisterData.getPassword().equals(companyRegisterData.getConfirmPassword())) {
-			errors.rejectValue("confirmPassword", "", "Paswords don't match!");
+		if (errors.getFieldErrorCount("password") == 0 && errors.getFieldErrorCount("confirmPassword") == 0 && !companyRegisterData.getPassword().equals(companyRegisterData.getConfirmPassword())) {
+			errors.rejectValue("confirmPassword", "", "Passwords don't match!");
 		}
 	}
 }

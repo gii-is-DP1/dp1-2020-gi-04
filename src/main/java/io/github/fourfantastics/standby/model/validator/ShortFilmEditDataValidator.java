@@ -31,7 +31,7 @@ public class ShortFilmEditDataValidator implements Validator {
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "", "Title cannot be empty!");
 			
-			if (shortFilmEditData.getTitle() != null && shortFilmEditData.getTitle().length() > 128) {
+			if (errors.getFieldErrorCount("title") == 0 && shortFilmEditData.getTitle().length() > 128) {
 				errors.rejectValue("title", "", "Title cannot be longer than 128 characters");
 			}
 			

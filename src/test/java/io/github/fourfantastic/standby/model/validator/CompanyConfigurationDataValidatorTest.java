@@ -59,6 +59,8 @@ public class CompanyConfigurationDataValidatorTest {
 		assertFalse(errors.hasGlobalErrors());
 		assertTrue(errors.hasFieldErrors());
 		
+		System.out.println(errors);
+		
 		assertThat(errors.getFieldErrorCount("businessPhone")).isEqualTo(1);
 		assertThat(errors.getFieldErrorCount("companyName")).isEqualTo(0);
 		assertThat(errors.getFieldErrorCount("officeAddress")).isEqualTo(1);
