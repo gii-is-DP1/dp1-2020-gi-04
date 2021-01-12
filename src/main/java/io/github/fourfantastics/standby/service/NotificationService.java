@@ -1,6 +1,7 @@
 package io.github.fourfantastics.standby.service;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.Notification;
+import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.NotificationRepository;
 
@@ -34,7 +36,7 @@ public class NotificationService {
 	public Integer getUnreadNotifications(User user) {
 		return notificationRepository.countByUserAndReadDate(user, null);
 	}
-	
+
 	public void deleteNotification(Notification notification) {
 		notificationRepository.delete(notification);
 	}
@@ -54,5 +56,24 @@ public class NotificationService {
 				saveNotification(notification);
 			}
 		}
+	}
+
+	public void sendNotification(User receiver, NotificationType type, String text) {
+		Notification notification = new Notification();
+		notification.setEmissionDate(new Date().getTime());
+		notification.setText(text);
+		notification.setUser(receiver);
+		notification.setType(type);
+		notificationRepository.save(notification);
+	}
+
+	public void sendPrivacyRequestNotification(String senderName, User receiver) {
+		sendNotification(receiver, NotificationType.PRIVACY_REQUEST,
+				String.format("%s wants to know more about you ;)", senderName));
+	}
+
+	public void sendPrivacyRequestResponseNotification(String senderName, User receiver, Boolean accepted) {
+		sendNotification(receiver, NotificationType.PRIVACY_REQUEST,
+				String.format("%s has %s your petition", senderName, accepted ? "accepted" : "declined"));
 	}
 }
