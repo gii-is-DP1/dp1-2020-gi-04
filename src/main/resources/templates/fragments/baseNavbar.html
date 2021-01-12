@@ -29,7 +29,7 @@
             </ul>
         </th-block>
         <script>
-            fetch("/userNotifications")
+            fetch("/notifications/count")
                 .then((x) => x.json())
                 .then((res) => {
                     if (res.status == 200) {
