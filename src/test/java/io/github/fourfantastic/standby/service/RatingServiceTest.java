@@ -35,6 +35,7 @@ public class RatingServiceTest {
 	@BeforeEach
 	public void setup() {
 		ratingService = new RatingService(ratingRepository);
+		
 		when(ratingRepository.save(any(Rating.class))).then(AdditionalAnswers.returnsFirstArg());
 	}
 
@@ -56,7 +57,6 @@ public class RatingServiceTest {
 		verify(ratingRepository, times(1)).findByUserAndShortFilm(mockUser, mockShortFilm);
 		verify(ratingRepository, times(1)).save(rating);
 		verifyNoMoreInteractions(ratingRepository);
-
 	}
 
 	@Test
@@ -81,6 +81,5 @@ public class RatingServiceTest {
 		verify(ratingRepository, times(1)).findByUserAndShortFilm(mockUser, mockShortFilm);
 		verify(ratingRepository, times(1)).save(rating);
 		verifyNoMoreInteractions(ratingRepository);
-
 	}
 }

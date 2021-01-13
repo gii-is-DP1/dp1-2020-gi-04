@@ -1,9 +1,6 @@
 package io.github.fourfantastics.standby.service;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,19 +22,6 @@ public class PrivacyRequestService {
 			NotificationService notificationService) {
 		this.privacyRequestRepository = privacyRequestRepository;
 		this.notificationService = notificationService;
-	}
-
-	public void savePrivacyRequest(PrivacyRequest privacyRequest) {
-		privacyRequestRepository.save(privacyRequest);
-	}
-
-	public Set<PrivacyRequest> getAllPrivacyRequest() {
-		Set<PrivacyRequest> privacyRequests = new HashSet<>();
-		Iterator<PrivacyRequest> iterator = privacyRequestRepository.findAll().iterator();
-		while (iterator.hasNext()) {
-			privacyRequests.add(iterator.next());
-		}
-		return privacyRequests;
 	}
 
 	public void sendPrivacyRequest(Company sender, Filmmaker receiver) {

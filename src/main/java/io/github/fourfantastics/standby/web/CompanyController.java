@@ -9,14 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.CompanyConfigurationData;
-import io.github.fourfantastics.standby.model.form.CompanyProfileData;
 import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
 import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.CompanyRegisterDataValidator;
@@ -70,25 +68,6 @@ public class CompanyController {
 		return "redirect:/";
 	}
 
-	@GetMapping("/profile/company/{companyId}")
-	public String getProfileView(@PathVariable Long companyId, Map<String, Object> model) {
-		User user = userService.getUserById(companyId).orElse(null);
-		if (user == null) {
-			return "redirect:/";
-		}
-
-		if (user.getType() != UserType.Company) {
-			return "redirect:/profile/{companyID}";
-		}
-
-		Company company = (Company) user;
-		CompanyProfileData companyProfileData = CompanyProfileData.fromCompany(company);
-
-		model.put("companyProfileData", companyProfileData);
-
-		return "companyProfile";
-	}
-
 	@GetMapping("/account/company")
 	public String getManageAccount(HttpSession session, Map<String, Object> model) {
 		User user = userService.getLoggedUser(session).orElse(null);
@@ -125,7 +104,7 @@ public class CompanyController {
 		}
 
 		Company userCompany = (Company) user;
-		companyConfigurationData.copyToCompany(userCompany);
+		companyService.updateCompanyData(userCompany, companyConfigurationData);
 		if (companyConfigurationData.getNewPhoto() != null && !companyConfigurationData.getNewPhoto().isEmpty()) {
 			try {
 				userService.setProfilePicture(userCompany, companyConfigurationData.getNewPhoto());
@@ -135,7 +114,6 @@ public class CompanyController {
 				return "manageCompanyAccount";
 			}
 		}
-		userCompany = (Company) userService.saveUser(userCompany);
 
 		model.put("companyData", companyConfigurationData);
 		model.put("photoUrl", user.getPhotoUrl());

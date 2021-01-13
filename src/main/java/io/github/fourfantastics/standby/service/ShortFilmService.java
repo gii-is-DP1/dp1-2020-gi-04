@@ -3,8 +3,6 @@ package io.github.fourfantastics.standby.service;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -43,27 +41,6 @@ public class ShortFilmService {
 		return shortFilmRepository.findById(id);
 	}
 
-	public Optional<ShortFilm> getShortFilmByTitle(String title) {
-		return shortFilmRepository.findByTitle(title);
-	}
-
-	public ShortFilm save(ShortFilm shortFilm) {
-		return shortFilmRepository.save(shortFilm);
-	}
-
-	public Set<ShortFilm> getAllShortFilms() {
-		Set<ShortFilm> shortFilms = new HashSet<>();
-		Iterator<ShortFilm> iterator = shortFilmRepository.findAll().iterator();
-		while (iterator.hasNext()) {
-			shortFilms.add(iterator.next());
-		}
-		return shortFilms;
-	}
-
-	public void deleteShortFilm(ShortFilm shortFilm) {
-		shortFilmRepository.delete(shortFilm);
-	}
-	
 	public ShortFilm upload(ShortFilmUploadData shortFilmUploadData, Filmmaker uploader)
 			throws InvalidExtensionException, TooBigException, RuntimeException {
 		MultipartFile videoFile = shortFilmUploadData.getFile();
@@ -120,11 +97,16 @@ public class ShortFilmService {
 	public void updateShortFilmMetadata(ShortFilm shortFilm, String title, String description) {
 		shortFilm.setTitle(title);
 		shortFilm.setDescription(description);
-		save(shortFilm);
+		shortFilmRepository.save(shortFilm);
 	}
 
 	public Set<ShortFilm> getShortFilmByFilmmaker(Filmmaker filmmaker) {
 		Set<Role> roles = filmmaker.getParticipateAs();
 		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet());
+	}
+	
+	public void updateViewCount(ShortFilm shortFilm, Integer sum) {
+		shortFilm.setViewCount(shortFilm.getViewCount() + sum);
+		shortFilmRepository.save(shortFilm);
 	}
 }

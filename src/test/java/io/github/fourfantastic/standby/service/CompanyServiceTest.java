@@ -48,7 +48,7 @@ public class CompanyServiceTest {
 		when(userService.register(any(Company.class))).then(AdditionalAnswers.returnsFirstArg());
 		when(notificationConfigurationService.saveNotificationConfiguration(any(NotificationConfiguration.class)))
 			.then(AdditionalAnswers.returnsFirstArg());
-		when(userService.saveUser(any(Company.class))).then(AdditionalAnswers.returnsFirstArg());
+		when(companyRepository.save(any(Company.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 	}
 	
 	@Test
@@ -82,7 +82,6 @@ public class CompanyServiceTest {
 			
 			verify(userService, times(1)).register(companyRegisterData.toCompany());
 			verify(notificationConfigurationService, only()).saveNotificationConfiguration(any(NotificationConfiguration.class));
-			verify(userService, times(1)).saveUser(companyRegisterData.toCompany());
 			verifyNoMoreInteractions(userService);
 		});
 	}
