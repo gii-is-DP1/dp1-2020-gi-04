@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,6 @@ import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
-import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exception.TooBigException;
@@ -46,26 +44,24 @@ public class ShortFilmServiceTest {
 
 	@Mock
 	FileRepository fileRepository;
-
-	@Mock
-	FilmmakerService filmmakerService;
+	
+	Filmmaker mockUploader;
 	
 	@BeforeEach
 	public void setup() throws InvalidExtensionException, RuntimeException {
 		shortFilmService = new ShortFilmService(shortFilmRepository, fileRepository);
 
-		final Filmmaker filmmaker1 = new Filmmaker();
-		filmmaker1.setId(1L);
-		filmmaker1.setName("filmmaker1");
-		filmmaker1.setPassword("password");
-		filmmaker1.setEmail("filmmaker@gmail.com");
-		filmmaker1.setPhotoUrl("url photo");
-		filmmaker1.setCity("Seville");
-		filmmaker1.setCountry("Spain");
-		filmmaker1.setFullname("Filmmaker Díaz García");
-		filmmaker1.setPhone("675987432");
+		mockUploader = new Filmmaker();
+		mockUploader.setId(1L);
+		mockUploader.setName("filmmaker1");
+		mockUploader.setPassword("password");
+		mockUploader.setEmail("filmmaker@gmail.com");
+		mockUploader.setPhotoUrl("url photo");
+		mockUploader.setCity("Seville");
+		mockUploader.setCountry("Spain");
+		mockUploader.setFullname("Filmmaker Díaz García");
+		mockUploader.setPhone("675987432");
 		
-		when(filmmakerService.getFilmmmakerByName("filmmaker1")).thenReturn(Optional.of(filmmaker1));
 		when(shortFilmRepository.save(any(ShortFilm.class))).then(AdditionalAnswers.returnsFirstArg());
 	}
 
@@ -85,8 +81,7 @@ public class ShortFilmServiceTest {
 		uploadData.setFile(mockVideo);
 
 		assertDoesNotThrow(() -> {
-			ShortFilm shortFilm = shortFilmService.upload(uploadData,
-					filmmakerService.getFilmmmakerByName("filmmaker1").get());
+			ShortFilm shortFilm = shortFilmService.upload(uploadData, mockUploader);
 
 			assertThat(shortFilm.getTitle()).isEqualTo(uploadData.getTitle());
 			assertThat(shortFilm.getDescription()).isEqualTo(uploadData.getDescription());
@@ -118,7 +113,7 @@ public class ShortFilmServiceTest {
 		uploadData.setFile(mockFile);
 
 		assertThrows(InvalidExtensionException.class, () -> {
-			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+			shortFilmService.upload(uploadData, mockUploader);
 		});
 	}
 	
@@ -138,7 +133,7 @@ public class ShortFilmServiceTest {
 		uploadData.setFile(mockFile);
 
 		assertThrows(TooBigException.class, () -> {
-			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+			shortFilmService.upload(uploadData, mockUploader);
 		});
 	}
 	
@@ -158,7 +153,7 @@ public class ShortFilmServiceTest {
 		uploadData.setFile(mockFile);
 
 		assertThrows(RuntimeException.class, () -> {
-			shortFilmService.upload(uploadData, filmmakerService.getFilmmmakerByName("filmmaker1").get());
+			shortFilmService.upload(uploadData, mockUploader);
 		});
 	}
 	

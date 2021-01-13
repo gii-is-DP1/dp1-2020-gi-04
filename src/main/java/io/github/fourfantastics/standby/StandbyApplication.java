@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby;
 
-import java.time.Instant;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,15 +9,16 @@ import org.springframework.stereotype.Component;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.Notification;
-import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.ShortFilm;
+import io.github.fourfantastics.standby.model.form.CompanyRegisterData;
+import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
+import io.github.fourfantastics.standby.repository.ShortFilmRepository;
+import io.github.fourfantastics.standby.service.CompanyService;
+import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.NotificationConfigurationService;
 import io.github.fourfantastics.standby.service.NotificationService;
 import io.github.fourfantastics.standby.service.RatingService;
-import io.github.fourfantastics.standby.service.ShortFilmService;
-import io.github.fourfantastics.standby.service.UserService;
 
 @SpringBootApplication
 public class StandbyApplication {
@@ -30,18 +29,21 @@ public class StandbyApplication {
 	@Profile("!test")
 	@Component
 	public class CommandLineAppStartupRunner implements CommandLineRunner {
-		UserService userService;
-		ShortFilmService shortFilmService;
+		FilmmakerService filmmakerService;
+		CompanyService companyService;
+		ShortFilmRepository shortFilmRepository;
 		NotificationConfigurationService notificationConfigurationService;
 		NotificationService notificationService;
 		RatingService ratingService;
 
 		@Autowired
-		public CommandLineAppStartupRunner(UserService userService, ShortFilmService shortFilmService,
+		public CommandLineAppStartupRunner(FilmmakerService filmmakerService, CompanyService companyService,
+				ShortFilmRepository shortFilmRepository,
 				NotificationConfigurationService notificationConfigurationService,
 				NotificationService notificationService, RatingService ratingService) {
-			this.userService = userService;
-			this.shortFilmService = shortFilmService;
+			this.filmmakerService = filmmakerService;
+			this.companyService = companyService;
+			this.shortFilmRepository = shortFilmRepository;
 			this.notificationConfigurationService = notificationConfigurationService;
 			this.notificationService = notificationService;
 			this.ratingService = ratingService;
@@ -49,50 +51,19 @@ public class StandbyApplication {
 
 		@Override
 		public void run(String... args) throws Exception {
-			Filmmaker filmmaker = new Filmmaker();
-			filmmaker.setName("filmmaker1");
-			filmmaker.setPassword("password");
-			filmmaker.setEmail("filmmaker@gmail.com");
-			filmmaker.setPhotoUrl(null);
-			filmmaker.setCity("Seville");
-			filmmaker.setCountry("Spain");
-			filmmaker.setFullname("Filmmaker Díaz García");
-			filmmaker.setPhone("675987432");
-			userService.register(filmmaker);
+			FilmmakerRegisterData filmmakerRegisterData = new FilmmakerRegisterData();
+			filmmakerRegisterData.setName("filmmaker1");
+			filmmakerRegisterData.setPassword("password");
+			filmmakerRegisterData.setEmail("filmmaker@gmail.com");
+			filmmakerRegisterData.setCity("Seville");
+			filmmakerRegisterData.setCountry("Spain");
+			filmmakerRegisterData.setFullname("Filmmaker Díaz García");
+			filmmakerRegisterData.setPhone("675987432");
+			Filmmaker filmmaker = filmmakerService.registerFilmmaker(filmmakerRegisterData);
 
-			NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
-			notificationConfiguration.setByComments(true);
-			notificationConfiguration.setByRatings(true);
-			notificationConfiguration.setBySubscriptions(true);
-			notificationConfiguration.setByPrivacyRequests(false);
-			notificationConfiguration.setUser(filmmaker);
-			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
-			filmmaker.setConfiguration(notificationConfiguration);
-			userService.saveUser(filmmaker);
-
-			Notification notification = new Notification();
-			notification.setEmissionDate(Instant.now().toEpochMilli());
-			notification.setText("Test notification 1");
-			notification.setType(NotificationType.SUBSCRIPTION);
-			notification.setUser(filmmaker);
-
-			notificationService.saveNotification(notification);
-
-			notification = new Notification();
-			notification.setEmissionDate(Instant.now().toEpochMilli());
-			notification.setText("Test notification 2");
-			notification.setType(NotificationType.SUBSCRIPTION);
-			notification.setUser(filmmaker);
-
-			notificationService.saveNotification(notification);
-
-			notification = new Notification();
-			notification.setEmissionDate(Instant.now().toEpochMilli());
-			notification.setText("Test notification 3");
-			notification.setType(NotificationType.SUBSCRIPTION);
-			notification.setUser(filmmaker);
-
-			notificationService.saveNotification(notification);
+			notificationService.sendNotification(filmmaker, NotificationType.SUBSCRIPTION, "Test notification 1");
+			notificationService.sendNotification(filmmaker, NotificationType.SUBSCRIPTION, "Test notification 2");
+			notificationService.sendNotification(filmmaker, NotificationType.SUBSCRIPTION, "Test notification 3");
 
 			ShortFilm shortFilm = new ShortFilm();
 			shortFilm.setTitle("Test film");
@@ -101,33 +72,21 @@ public class StandbyApplication {
 			shortFilm.setDescription("");
 			shortFilm.setViewCount(0L);
 			shortFilm.setUploader(filmmaker);
-
-			shortFilmService.save(shortFilm);
+			shortFilmRepository.save(shortFilm);
 
 			ratingService.rateShortFilm(shortFilm, filmmaker, 3);
 
-			Company company = new Company();
-			company.setName("company1");
-			company.setPassword("password");
-			company.setEmail("business@company.com");
-			company.setPhotoUrl(null);
-			company.setBusinessPhone("612345678");
-			company.setCompanyName("Company Studios");
-			company.setOfficeAddress("Calle Manzana 4");
-			company.setTaxIDNumber("123-45-1234567");
-			userService.register(company);
+			CompanyRegisterData companyRegisterData = new CompanyRegisterData();
+			companyRegisterData.setName("company1");
+			companyRegisterData.setPassword("password");
+			companyRegisterData.setEmail("business@company.com");
+			companyRegisterData.setBusinessPhone("612345678");
+			companyRegisterData.setCompanyName("Company Studios");
+			companyRegisterData.setOfficeAddress("Calle Manzana 4");
+			companyRegisterData.setTaxIDNumber("123-45-1234567");
+			Company company = companyService.registerCompany(companyRegisterData);
 
 			ratingService.rateShortFilm(shortFilm, company, 3);
-
-			notificationConfiguration = new NotificationConfiguration();
-			notificationConfiguration.setByComments(false);
-			notificationConfiguration.setByRatings(false);
-			notificationConfiguration.setBySubscriptions(false);
-			notificationConfiguration.setByPrivacyRequests(true);
-			notificationConfiguration.setUser(company);
-			notificationConfigurationService.saveNotificationConfiguration(notificationConfiguration);
-			company.setConfiguration(notificationConfiguration);
-			userService.saveUser(company);
 		}
 	}
 }
