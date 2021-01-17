@@ -2,6 +2,7 @@ Notification:
 text: @notnull
 emisionDate: @notnull
 readDate:
+type: @notnull
 
 TOTAL: 2
 
@@ -26,7 +27,7 @@ name: @notnull @unique @lengthMin 5 @lengthMax 64
 email: @notnull @unique @email
 password: @notnull
 creationDate: @notnull
-photo:
+photoUrl:
 
 TOTAL: 9
 
@@ -62,10 +63,10 @@ date: @notnull
 TOTAL: 4
 
 Short Film:
-name: @notnull @notempty @lengthMax 128
+title: @notnull @notempty @lengthMax 128
+description: @lengthMax 10000
 videoUrl: @notnull @notempty
 thumbnailUrl:
-description: @lengthMax 10000
 uploadDate: @notnull
 viewCount: @notnull @min 0
 
