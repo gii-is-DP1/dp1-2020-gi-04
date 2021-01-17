@@ -1,7 +1,6 @@
 package io.github.fourfantastics.standby.service;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,10 +17,6 @@ public class TagService {
 	public TagService(TagRepository tagRepository) {
 		this.tagRepository = tagRepository;
 	}
-
-	public Optional<Tag> getTagByName(String name) {
-		return tagRepository.findByName(name);
-	}
 	
 	public void tagShortFilm(Collection<String> tags, ShortFilm shortFilm) {
 		shortFilm.getTags().clear();
@@ -30,7 +25,7 @@ public class TagService {
 				continue;
 			}
 
-			Tag tag = getTagByName(tagName).orElse(null);
+			Tag tag = tagRepository.findByName(tagName).orElse(null);
 			if (tag == null) {
 				tag = new Tag();
 				tag.setName(tagName);

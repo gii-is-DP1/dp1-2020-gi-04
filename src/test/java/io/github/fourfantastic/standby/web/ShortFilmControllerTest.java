@@ -659,7 +659,6 @@ public class ShortFilmControllerTest {
 		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
 		when(userService.getUserByName(mockFilmmaker.getName())).thenReturn(Optional.of(mockFilmmaker));
-		when(tagService.getTagByName(any(String.class))).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
@@ -708,7 +707,6 @@ public class ShortFilmControllerTest {
 		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
 		when(userService.getUserByName(mockFilmmaker.getName())).thenReturn(Optional.of(mockFilmmaker));
-		when(tagService.getTagByName(any(String.class))).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))

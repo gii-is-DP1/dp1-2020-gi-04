@@ -271,8 +271,7 @@ public class CompanyControllerTest {
 		});
 		
 		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
-		mockConfigCompany.copyToCompany(mockCompany);
-		verify(userService, times(1)).saveUser(mockCompany);
+		verify(companyService, only()).updateCompanyData(mockCompany, mockConfigCompany);
 		verifyNoMoreInteractions(userService);
 	}
 	
@@ -309,9 +308,8 @@ public class CompanyControllerTest {
 		});
 		
 		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
-		mockConfigCompany.copyToCompany(mockCompany);
+		verify(companyService, only()).updateCompanyData(mockCompany, mockConfigCompany);
 		verify(userService, times(1)).setProfilePicture(mockCompany, mockConfigCompany.getNewPhoto());
-		verify(userService, times(1)).saveUser(mockCompany);
 		verifyNoMoreInteractions(userService);
 	}
 	

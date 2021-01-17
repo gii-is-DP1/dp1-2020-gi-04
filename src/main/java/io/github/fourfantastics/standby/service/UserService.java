@@ -55,10 +55,6 @@ public class UserService {
 		return userRepository.findByName(name);
 	}
 
-	public User saveUser(User user) {
-		return userRepository.save(user);
-	}
-
 	public User register(User user) throws NotUniqueException {
 		Optional<User> foundUser = getUserByName(user.getName());
 		if (foundUser.isPresent()) {
@@ -155,5 +151,6 @@ public class UserService {
 		}
 
 		user.setPhotoUrl(filePath);
+		userRepository.save(user);
 	}
 }

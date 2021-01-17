@@ -1,12 +1,11 @@
 package io.github.fourfantastics.standby.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
+import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
@@ -25,18 +24,6 @@ public class FilmmakerService {
 		this.userService = userService;
 	}
 
-	public Optional<Filmmaker> getFilmmmakerById(Long id) {
-		return filmmakerRepository.findById(id);
-	}
-
-	public Optional<Filmmaker> getFilmmmakerByName(String name) {
-		return filmmakerRepository.findByName(name);
-	}
-
-	public void saveFilmmaker(Filmmaker filmmaker) {
-		filmmakerRepository.save(filmmaker);
-	}
-
 	public Filmmaker registerFilmmaker(FilmmakerRegisterData filmmakerRegisterData) throws NotUniqueException {
 		Filmmaker filmmaker = filmmakerRegisterData.toFilmmaker();
 		filmmaker = (Filmmaker) userService.register(filmmaker);
@@ -47,7 +34,11 @@ public class FilmmakerService {
 		configuration = configurationService.saveNotificationConfiguration(configuration);
 		filmmaker.setConfiguration(configuration);
 
-		return (Filmmaker) userService.saveUser(filmmaker);
+		return filmmakerRepository.save(filmmaker);
 	}
-
+	
+	public void updateFilmmakerData(Filmmaker filmmaker, FilmmakerConfigurationData filmmakerConfigurationData) {
+		filmmakerConfigurationData.copyToFilmmaker(filmmaker);
+		filmmakerRepository.save(filmmaker);
+	}
 }
