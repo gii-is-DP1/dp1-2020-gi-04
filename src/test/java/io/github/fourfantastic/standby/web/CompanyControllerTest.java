@@ -1,14 +1,12 @@
 package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,8 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.Optional;
-
-import javax.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,36 +53,33 @@ public class CompanyControllerTest {
 
 	@MockBean
 	UserService userService;
-	
+
 	@Test
 	void registerViewTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/register/company"))
-				.andExpect(status().isOk())
-				.andExpect(model().attribute("companyRegisterData", new CompanyRegisterData()))
-				.andExpect(view().name("registerCompany"));
+			mockMvc.perform(get("/register/company")).andExpect(status().isOk())
+					.andExpect(model().attribute("companyRegisterData", new CompanyRegisterData()))
+					.andExpect(view().name("registerCompany"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(companyService);
 	}
-	
+
 	@Test
 	void registerViewUserIsPresentTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new User()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/register/company"))
-				.andExpect(status().isFound())
-				.andExpect(redirectedUrl("/"));
+			mockMvc.perform(get("/register/company")).andExpect(status().isFound()).andExpect(redirectedUrl("/"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(companyService);
 	}
-	
+
 	@Test
 	void registerCompanyTest() throws Exception {
 		final CompanyRegisterData mockCompanyRegisterData = new CompanyRegisterData();
@@ -98,29 +91,27 @@ public class CompanyControllerTest {
 		mockCompanyRegisterData.setCompanyName("Company1");
 		mockCompanyRegisterData.setOfficeAddress("Calle Manzanita 3");
 		mockCompanyRegisterData.setTaxIDNumber("123-78-1234567");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		when(companyService.registerCompany(mockCompanyRegisterData)).then(x -> ((CompanyRegisterData) x.getArgument(0)).toCompany());
-		
-		mockMvc.perform(post("/register/company").with(csrf())
-				.param("name", mockCompanyRegisterData.getName())
+
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+		when(companyService.registerCompany(mockCompanyRegisterData))
+				.then(x -> ((CompanyRegisterData) x.getArgument(0)).toCompany());
+
+		mockMvc.perform(post("/register/company").with(csrf()).param("name", mockCompanyRegisterData.getName())
 				.param("email", mockCompanyRegisterData.getEmail())
 				.param("password", mockCompanyRegisterData.getPassword())
 				.param("confirmPassword", mockCompanyRegisterData.getConfirmPassword())
 				.param("businessPhone", mockCompanyRegisterData.getBusinessPhone())
 				.param("companyName", mockCompanyRegisterData.getCompanyName())
 				.param("officeAddress", mockCompanyRegisterData.getOfficeAddress())
-				.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber()))
-		.andExpect(status().isFound())
-		.andExpect(redirectedUrl("/"));
-		
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+				.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber())).andExpect(status().isFound())
+				.andExpect(redirectedUrl("/"));
+
+		verify(userService, times(1)).getLoggedUser();
 		verify(companyService, only()).registerCompany(mockCompanyRegisterData);
 		verifyNoMoreInteractions(companyService);
-		verify(userService, times(1)).logIn(any(HttpSession.class), eq(mockCompanyRegisterData.toCompany()));
 		verifyNoMoreInteractions(userService);
 	}
-	
+
 	@Test
 	void registerCompanyUserIsPresentTest() throws NotUniqueException {
 		final CompanyRegisterData mockCompanyRegisterData = new CompanyRegisterData();
@@ -132,27 +123,25 @@ public class CompanyControllerTest {
 		mockCompanyRegisterData.setCompanyName("Company1");
 		mockCompanyRegisterData.setOfficeAddress("Calle Manzanita 3");
 		mockCompanyRegisterData.setTaxIDNumber("123-78-1234567");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
-		
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new User()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/register/company").with(csrf())
-					.param("name", mockCompanyRegisterData.getName())
+			mockMvc.perform(post("/register/company").with(csrf()).param("name", mockCompanyRegisterData.getName())
 					.param("email", mockCompanyRegisterData.getEmail())
 					.param("password", mockCompanyRegisterData.getPassword())
 					.param("confirmPassword", mockCompanyRegisterData.getConfirmPassword())
 					.param("businessPhone", mockCompanyRegisterData.getBusinessPhone())
 					.param("companyName", mockCompanyRegisterData.getCompanyName())
 					.param("officeAddress", mockCompanyRegisterData.getOfficeAddress())
-					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber()))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/"));
+					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber())).andExpect(status().isFound())
+					.andExpect(redirectedUrl("/"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(companyService);
 	}
-	
+
 	@Test
 	void registerCompanyMissingDataTest() throws NotUniqueException {
 		final CompanyRegisterData mockCompanyRegisterData = new CompanyRegisterData();
@@ -163,28 +152,26 @@ public class CompanyControllerTest {
 		mockCompanyRegisterData.setBusinessPhone("");
 		mockCompanyRegisterData.setCompanyName("Company1");
 		mockCompanyRegisterData.setTaxIDNumber("123-78-1234567");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/register/company").with(csrf())
-					.param("name", mockCompanyRegisterData.getName())
+			mockMvc.perform(post("/register/company").with(csrf()).param("name", mockCompanyRegisterData.getName())
 					.param("email", mockCompanyRegisterData.getEmail())
 					.param("password", mockCompanyRegisterData.getPassword())
 					.param("confirmPassword", mockCompanyRegisterData.getConfirmPassword())
 					.param("businessPhone", mockCompanyRegisterData.getBusinessPhone())
 					.param("companyName", mockCompanyRegisterData.getCompanyName())
 					.param("officeAddress", mockCompanyRegisterData.getOfficeAddress())
-					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber()))
-			.andExpect(status().isOk())
-			.andExpect(model().attributeHasErrors("companyRegisterData"))
-			.andExpect(view().name("registerCompany"));
+					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber())).andExpect(status().isOk())
+					.andExpect(model().attributeHasErrors("companyRegisterData"))
+					.andExpect(view().name("registerCompany"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(companyService);
 	}
-	
+
 	@Test
 	void registerCompanyAlreadyUsedNameTest() throws NotUniqueException {
 		final CompanyRegisterData mockCompanyRegisterData = new CompanyRegisterData();
@@ -196,29 +183,28 @@ public class CompanyControllerTest {
 		mockCompanyRegisterData.setCompanyName("Company1");
 		mockCompanyRegisterData.setOfficeAddress("Calle Manzanita 3");
 		mockCompanyRegisterData.setTaxIDNumber("123-78-1234567");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		when(companyService.registerCompany(mockCompanyRegisterData)).thenThrow(new NotUniqueException("", Utils.hashSet("name")));
-		
+
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+		when(companyService.registerCompany(mockCompanyRegisterData))
+				.thenThrow(new NotUniqueException("", Utils.hashSet("name")));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/register/company").with(csrf())
-					.param("name", mockCompanyRegisterData.getName())
+			mockMvc.perform(post("/register/company").with(csrf()).param("name", mockCompanyRegisterData.getName())
 					.param("email", mockCompanyRegisterData.getEmail())
 					.param("password", mockCompanyRegisterData.getPassword())
 					.param("confirmPassword", mockCompanyRegisterData.getConfirmPassword())
 					.param("businessPhone", mockCompanyRegisterData.getBusinessPhone())
 					.param("companyName", mockCompanyRegisterData.getCompanyName())
 					.param("officeAddress", mockCompanyRegisterData.getOfficeAddress())
-					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber()))
-			.andExpect(status().isOk())
-			.andExpect(model().attributeHasFieldErrors("companyRegisterData", "name"))
-			.andExpect(view().name("registerCompany"));
+					.param("taxIDNumber", mockCompanyRegisterData.getTaxIDNumber())).andExpect(status().isOk())
+					.andExpect(model().attributeHasFieldErrors("companyRegisterData", "name"))
+					.andExpect(view().name("registerCompany"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(companyService, only()).registerCompany(mockCompanyRegisterData);
 	}
-	
+
 	@Test
 	void manageAccountCompanyView() {
 		final Company mockCompany = new Company();
@@ -228,19 +214,18 @@ public class CompanyControllerTest {
 		mockCompany.setTaxIDNumber("123-78-1234567");
 		mockCompany.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/account/company"))
-					.andExpect(status().isOk())
+			mockMvc.perform(get("/account/company")).andExpect(status().isOk())
 					.andExpect(model().attribute("companyConfigurationData",
 							CompanyConfigurationData.fromCompany(mockCompany)))
 					.andExpect(view().name("manageCompanyAccount"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
-	
+
 	@Test
 	void manageAccountCompany() {
 		final Company mockCompany = new Company();
@@ -248,33 +233,32 @@ public class CompanyControllerTest {
 		mockCompany.setCompanyName("Company1");
 		mockCompany.setOfficeAddress("Calle Manzanita 3");
 		mockCompany.setTaxIDNumber("123-78-1234567");
-		mockCompany.setConfiguration(new NotificationConfiguration());	
-		
+		mockCompany.setConfiguration(new NotificationConfiguration());
+
 		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
 		mockConfigCompany.setBusinessPhone("675849765");
 		mockConfigCompany.setByPrivacyRequests(false);
 		mockConfigCompany.setCompanyName("Company2");
 		mockConfigCompany.setOfficeAddress("Apple street 3");
 		mockConfigCompany.setTaxIDNumber("123-78-1234567");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
-		
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/account/company").with(csrf())
-					.param("companyName", mockConfigCompany.getCompanyName())
-					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
-					.param("businessPhone", mockConfigCompany.getBusinessPhone())
-					.param("officeAddress", mockConfigCompany.getOfficeAddress())
-					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
-					.andExpect(status().isOk())
-					.andExpect(view().name("manageCompanyAccount"));
+			mockMvc.perform(
+					post("/account/company").with(csrf()).param("companyName", mockConfigCompany.getCompanyName())
+							.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+							.param("businessPhone", mockConfigCompany.getBusinessPhone())
+							.param("officeAddress", mockConfigCompany.getOfficeAddress())
+							.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isOk()).andExpect(view().name("manageCompanyAccount"));
 		});
-		
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, times(1)).getLoggedUser();
 		verify(companyService, only()).updateCompanyData(mockCompany, mockConfigCompany);
 		verifyNoMoreInteractions(userService);
 	}
-	
+
 	@Test
 	void manageAccountCompanyChangePicture() throws TooBigException, InvalidExtensionException, RuntimeException {
 		final Company mockCompany = new Company();
@@ -282,37 +266,35 @@ public class CompanyControllerTest {
 		mockCompany.setCompanyName("Company1");
 		mockCompany.setOfficeAddress("Calle Manzanita 3");
 		mockCompany.setTaxIDNumber("123-78-1234567");
-		mockCompany.setConfiguration(new NotificationConfiguration());	
-		
+		mockCompany.setConfiguration(new NotificationConfiguration());
+
 		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
 		mockConfigCompany.setBusinessPhone("675849765");
 		mockConfigCompany.setByPrivacyRequests(false);
 		mockConfigCompany.setCompanyName("Company2");
 		mockConfigCompany.setOfficeAddress("Apple street 3");
 		mockConfigCompany.setTaxIDNumber("123-78-1234567");
-		mockConfigCompany.setNewPhoto(new MockMultipartFile("newPhoto", "mockFile.png", "image/png", "This is an example".getBytes()));
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
-		
+		mockConfigCompany.setNewPhoto(
+				new MockMultipartFile("newPhoto", "mockFile.png", "image/png", "This is an example".getBytes()));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(multipart("/account/company")
-					.file((MockMultipartFile) mockConfigCompany.getNewPhoto())
-					.with(csrf())
-					.param("companyName", mockConfigCompany.getCompanyName())
+			mockMvc.perform(multipart("/account/company").file((MockMultipartFile) mockConfigCompany.getNewPhoto())
+					.with(csrf()).param("companyName", mockConfigCompany.getCompanyName())
 					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
 					.param("businessPhone", mockConfigCompany.getBusinessPhone())
 					.param("officeAddress", mockConfigCompany.getOfficeAddress())
 					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
-					.andExpect(status().isOk())
-					.andExpect(view().name("manageCompanyAccount"));
+					.andExpect(status().isOk()).andExpect(view().name("manageCompanyAccount"));
 		});
-		
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, times(1)).getLoggedUser();
 		verify(companyService, only()).updateCompanyData(mockCompany, mockConfigCompany);
 		verify(userService, times(1)).setProfilePicture(mockCompany, mockConfigCompany.getNewPhoto());
 		verifyNoMoreInteractions(userService);
 	}
-	
+
 	@Test
 	void manageAccountCompanyNotLogged() {
 		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
@@ -321,23 +303,22 @@ public class CompanyControllerTest {
 		mockConfigCompany.setCompanyName("Company2");
 		mockConfigCompany.setOfficeAddress("Apple street 3");
 		mockConfigCompany.setTaxIDNumber("123-78-1234567");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/account/company").with(csrf())
-					.param("companyName", mockConfigCompany.getCompanyName())
-					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
-					.param("businessPhone", mockConfigCompany.getBusinessPhone())
-					.param("officeAddress", mockConfigCompany.getOfficeAddress())
-					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
-					.andExpect(status().isFound())
-					.andExpect(redirectedUrl("/login"));
+			mockMvc.perform(
+					post("/account/company").with(csrf()).param("companyName", mockConfigCompany.getCompanyName())
+							.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+							.param("businessPhone", mockConfigCompany.getBusinessPhone())
+							.param("officeAddress", mockConfigCompany.getOfficeAddress())
+							.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isFound()).andExpect(redirectedUrl("/login"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 	}
-	
+
 	@Test
 	void manageAccountCompanyMissingData() {
 		final Company mockCompany = new Company();
@@ -345,31 +326,30 @@ public class CompanyControllerTest {
 		mockCompany.setCompanyName("Company1");
 		mockCompany.setOfficeAddress("Calle Manzanita 3");
 		mockCompany.setTaxIDNumber("123-78-1234567");
-		mockCompany.setConfiguration(new NotificationConfiguration());	
-		
+		mockCompany.setConfiguration(new NotificationConfiguration());
+
 		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
 		mockConfigCompany.setBusinessPhone("675849765");
 		mockConfigCompany.setByPrivacyRequests(false);
 		mockConfigCompany.setCompanyName("");
 		mockConfigCompany.setOfficeAddress("Apple street 3");
 		mockConfigCompany.setTaxIDNumber("");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
-		
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/account/company").with(csrf())
-					.param("companyName", mockConfigCompany.getCompanyName())
-					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
-					.param("businessPhone", mockConfigCompany.getBusinessPhone())
-					.param("officeAddress", mockConfigCompany.getOfficeAddress())
-					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
-					.andExpect(status().isOk())
-					.andExpect(view().name("manageCompanyAccount"));
+			mockMvc.perform(
+					post("/account/company").with(csrf()).param("companyName", mockConfigCompany.getCompanyName())
+							.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+							.param("businessPhone", mockConfigCompany.getBusinessPhone())
+							.param("officeAddress", mockConfigCompany.getOfficeAddress())
+							.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isOk()).andExpect(view().name("manageCompanyAccount"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 	}
-	
+
 	@Test
 	void manageAccountCompanyAsFilmmaker() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -378,27 +358,26 @@ public class CompanyControllerTest {
 		mockFilmmaker.setCity("Seville");
 		mockFilmmaker.setPhone("678543167");
 		mockFilmmaker.setConfiguration(new NotificationConfiguration());
-		
+
 		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
 		mockConfigCompany.setBusinessPhone("675849765");
 		mockConfigCompany.setByPrivacyRequests(false);
 		mockConfigCompany.setCompanyName("Company2");
 		mockConfigCompany.setOfficeAddress("Apple street 3");
 		mockConfigCompany.setTaxIDNumber("123-78-1234567");
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
-		
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/account/company").with(csrf())
-					.param("companyName", mockConfigCompany.getCompanyName())
-					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
-					.param("businessPhone", mockConfigCompany.getBusinessPhone())
-					.param("officeAddress", mockConfigCompany.getOfficeAddress())
-					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
-					.andExpect(status().isFound())
-					.andExpect(redirectedUrl("/manageAccount"));
+			mockMvc.perform(
+					post("/account/company").with(csrf()).param("companyName", mockConfigCompany.getCompanyName())
+							.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+							.param("businessPhone", mockConfigCompany.getBusinessPhone())
+							.param("officeAddress", mockConfigCompany.getOfficeAddress())
+							.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isFound()).andExpect(redirectedUrl("/manageAccount"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 	}
 }

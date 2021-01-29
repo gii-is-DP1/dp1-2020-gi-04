@@ -1,7 +1,6 @@
 package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -13,8 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Optional;
-
-import javax.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +40,13 @@ public class RatingControllerTest {
 
 	@MockBean
 	RatingService ratingService;
-	
+
 	@MockBean
 	UserService userService;
 
 	@MockBean
 	ShortFilmService shortFilmService;
-	
+
 	@Test
 	public void rateShortFilmTest() {
 		final Long shortFilmId = 1L;
@@ -57,65 +54,59 @@ public class RatingControllerTest {
 		final ShortFilmViewData mockShortFilmViewData = new ShortFilmViewData();
 		mockShortFilmViewData.setWatcherName("Hey! keep track of this string");
 		final Integer grade = 6;
-		
+
 		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.of(new ShortFilm()));
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new User()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(viewShortFilmUrl).with(csrf())
-					.param("rate", grade.toString())
-					.param("watcherName", mockShortFilmViewData.getWatcherName()))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl(viewShortFilmUrl))
-			.andExpect(flash().attribute("shortFilmViewData", mockShortFilmViewData));
+			mockMvc.perform(post(viewShortFilmUrl).with(csrf()).param("rate", grade.toString()).param("watcherName",
+					mockShortFilmViewData.getWatcherName())).andExpect(status().isFound())
+					.andExpect(redirectedUrl(viewShortFilmUrl))
+					.andExpect(flash().attribute("shortFilmViewData", mockShortFilmViewData));
 		});
-		
+
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verify(ratingService, only()).rateShortFilm(new ShortFilm(), new User(), grade);
 	}
-	
+
 	@Test
 	public void rateInvalidShortFilmTest() {
 		final Long shortFilmId = 1L;
 		final String viewShortFilmUrl = String.format("/shortfilm/%s", shortFilmId);
 		final Integer grade = 6;
-		
+
 		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.empty());
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(viewShortFilmUrl).with(csrf())
-					.param("rate", grade.toString()))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/"));
+			mockMvc.perform(post(viewShortFilmUrl).with(csrf()).param("rate", grade.toString()))
+					.andExpect(status().isFound()).andExpect(redirectedUrl("/"));
 		});
-		
+
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
 		verifyNoInteractions(userService);
 		verifyNoInteractions(ratingService);
 	}
-	
+
 	@Test
 	public void postCommentNotLoggedTest() {
 		final Long shortFilmId = 1L;
 		final String viewShortFilmUrl = String.format("/shortfilm/%s", shortFilmId);
 		final Integer grade = 6;
-		
+
 		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.of(new ShortFilm()));
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(viewShortFilmUrl).with(csrf())
-					.param("rate", grade.toString()))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/login"));
+			mockMvc.perform(post(viewShortFilmUrl).with(csrf()).param("rate", grade.toString()))
+					.andExpect(status().isFound()).andExpect(redirectedUrl("/login"));
 		});
-		
+
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(ratingService);
 	}
-	
+
 	@Test
 	public void rateShortFilmOutOfBoundsTest() {
 		final Long shortFilmId = 1L;
@@ -123,88 +114,80 @@ public class RatingControllerTest {
 		final ShortFilmViewData mockShortFilmViewData = new ShortFilmViewData();
 		mockShortFilmViewData.setWatcherName("Hey! keep track of this string");
 		final Integer grade = 45;
-		
+
 		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.of(new ShortFilm()));
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new User()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(viewShortFilmUrl).with(csrf())
-					.param("rate", grade.toString())
-					.param("watcherName", mockShortFilmViewData.getWatcherName()))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl(viewShortFilmUrl))
-			.andExpect(flash().attribute("shortFilmViewData", mockShortFilmViewData));
+			mockMvc.perform(post(viewShortFilmUrl).with(csrf()).param("rate", grade.toString()).param("watcherName",
+					mockShortFilmViewData.getWatcherName())).andExpect(status().isFound())
+					.andExpect(redirectedUrl(viewShortFilmUrl))
+					.andExpect(flash().attribute("shortFilmViewData", mockShortFilmViewData));
 		});
-		
+
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verify(ratingService, only()).rateShortFilm(new ShortFilm(), new User(), 10);
 	}
-	
+
 	@Test
 	public void removeCommentTest() throws NotFoundException, UnauthorizedException {
 		final Long shortFilmId = 1L;
 		final String viewShortFilmUrl = String.format("/shortfilm/%s", shortFilmId);
 		final ShortFilmViewData mockShortFilmViewData = new ShortFilmViewData();
 		mockShortFilmViewData.setWatcherName("Hey! keep track of this string");
-		
+
 		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.of(new ShortFilm()));
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new User()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(viewShortFilmUrl).with(csrf())
-					.param("deleteRating", "")
-					.param("watcherName", mockShortFilmViewData.getWatcherName()))
-					
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl(viewShortFilmUrl))
-			.andExpect(flash().attribute("shortFilmViewData", mockShortFilmViewData));
+			mockMvc.perform(post(viewShortFilmUrl).with(csrf()).param("deleteRating", "").param("watcherName",
+					mockShortFilmViewData.getWatcherName()))
+
+					.andExpect(status().isFound()).andExpect(redirectedUrl(viewShortFilmUrl))
+					.andExpect(flash().attribute("shortFilmViewData", mockShortFilmViewData));
 		});
-		
+
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verify(ratingService, only()).removeRating(new User(), new ShortFilm());
 	}
-	
+
 	@Test
 	public void removeRatingInvalidShortFilmTest() {
 		final Long shortFilmId = 1L;
 		final String viewShortFilmUrl = String.format("/shortfilm/%s", shortFilmId);
 		final ShortFilmViewData mockShortFilmViewData = new ShortFilmViewData();
 		mockShortFilmViewData.setWatcherName("Hey! keep track of this string");
-		
+
 		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.empty());
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(viewShortFilmUrl).with(csrf())
-					.param("deleteRating", ""))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/"));
+			mockMvc.perform(post(viewShortFilmUrl).with(csrf()).param("deleteRating", "")).andExpect(status().isFound())
+					.andExpect(redirectedUrl("/"));
 		});
-		
+
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
 		verifyNoInteractions(userService);
 		verifyNoInteractions(ratingService);
 	}
-	
+
 	@Test
 	public void removeRatingNotLoggedTest() {
 		final Long shortFilmId = 1L;
 		final String viewShortFilmUrl = String.format("/shortfilm/%s", shortFilmId);
 		final Long commentId = 2L;
-		
+
 		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.of(new ShortFilm()));
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(viewShortFilmUrl).with(csrf())
-					.param("deleteRating", commentId.toString()))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/login"));
+			mockMvc.perform(post(viewShortFilmUrl).with(csrf()).param("deleteRating", commentId.toString()))
+					.andExpect(status().isFound()).andExpect(redirectedUrl("/login"));
 		});
-		
+
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(ratingService);
 	}
 }

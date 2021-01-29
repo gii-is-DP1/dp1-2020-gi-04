@@ -1,7 +1,6 @@
 package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,36 +56,34 @@ public class NotificationControllerTest {
 
 	@MockBean
 	Page<Notification> mockPage;
-	
+
 	@Test
 	public void getNotificationCountTest() {
 		final User mockUser = new User();
 		final Integer unreadNotifications = 5;
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockUser));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockUser));
 		when(notificationService.getUnreadNotifications(mockUser)).thenReturn(unreadNotifications);
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/notifications/count"))
-			.andExpect(status().isOk())
-			.andExpect(content().json(String.format("{status: %d, count: %d}", HttpStatus.OK.value(), unreadNotifications)));
+			mockMvc.perform(get("/notifications/count")).andExpect(status().isOk()).andExpect(content()
+					.json(String.format("{status: %d, count: %d}", HttpStatus.OK.value(), unreadNotifications)));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verify(notificationService, only()).getUnreadNotifications(mockUser);
 	}
-	
+
 	@Test
 	public void getNotificationCountNotLoggedTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/notifications/count"))
-			.andExpect(status().isOk())
-			.andExpect(content().json(String.format("{status: %d, url: %s}", HttpStatus.FOUND.value(), "'/login'")));
+			mockMvc.perform(get("/notifications/count")).andExpect(status().isOk()).andExpect(
+					content().json(String.format("{status: %d, url: %s}", HttpStatus.FOUND.value(), "'/login'")));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(notificationService);
 	}
 
@@ -96,46 +91,47 @@ public class NotificationControllerTest {
 	public void getNotificationViewTest() {
 		final User mockUser = new User();
 		final List<Notification> mockNotifications = new ArrayList<Notification>();
-		mockNotifications.add(new Notification(1L, "Notification example 1", 3L, null, NotificationType.COMMENT, mockUser));
-		mockNotifications.add(new Notification(2L, "Notification example 2", 2L, null, NotificationType.PRIVACY_REQUEST, mockUser));
-		mockNotifications.add(new Notification(3L, "Notification example 3", 1L, null, NotificationType.RATING, mockUser));
+		mockNotifications
+				.add(new Notification(1L, "Notification example 1", 3L, null, NotificationType.COMMENT, mockUser));
+		mockNotifications.add(
+				new Notification(2L, "Notification example 2", 2L, null, NotificationType.PRIVACY_REQUEST, mockUser));
+		mockNotifications
+				.add(new Notification(3L, "Notification example 3", 1L, null, NotificationType.RATING, mockUser));
 		final Pagination mockPagination = Pagination.of(mockNotifications.size());
 		final PageRequest mockPageRequest = mockPagination.getPageRequest(Sort.by("emissionDate").descending());
 		final NotificationData mockNotificationData = new NotificationData();
 		mockNotificationData.setNotifications(mockNotifications.stream()
-									.sorted((x, y) -> (y.getEmissionDate().intValue() - x.getEmissionDate().intValue()))
-									.map(NotificationWrapper::of).collect(Collectors.toList()));
+				.sorted((x, y) -> (y.getEmissionDate().intValue() - x.getEmissionDate().intValue()))
+				.map(NotificationWrapper::of).collect(Collectors.toList()));
 		mockNotificationData.setPagination(mockPagination);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockUser));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockUser));
 		when(notificationService.countNotifications(mockUser)).thenReturn(mockNotifications.size());
 		when(notificationService.getPaginatedNotifications(mockUser, mockPageRequest)).thenReturn(mockPage);
 		when(mockPage.getContent()).thenReturn(mockNotifications);
-		
+
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/notifications")).andExpect(status().isOk())
-			.andExpect(view().name("userNotifications"))
-			.andExpect(model().attribute("notificationData", mockNotificationData));
+					.andExpect(view().name("userNotifications"))
+					.andExpect(model().attribute("notificationData", mockNotificationData));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verify(notificationService, times(1)).countNotifications(mockUser);
 		verify(notificationService, times(1)).getPaginatedNotifications(mockUser, mockPageRequest);
 		verify(notificationService, times(1)).readNotifications(mockNotifications);
 		verifyNoMoreInteractions(notificationService);
 	}
-	
+
 	@Test
 	public void getNotificationViewNotLoggedTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/notifications"))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/login"));
+			mockMvc.perform(get("/notifications")).andExpect(status().isFound()).andExpect(redirectedUrl("/login"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(notificationService);
 	}
 }

@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.web;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -25,7 +23,7 @@ import io.github.fourfantastics.standby.service.exception.UnauthorizedException;
 public class CommentController {
 	@Autowired
 	CommentService commentService;
-	
+
 	@Autowired
 	UserService userService;
 
@@ -36,15 +34,14 @@ public class CommentController {
 	ShortFilmViewDataValidator shortFilmViewDataValidator;
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "postComment" })
-	public String postComment(HttpSession session, @PathVariable Long shortFilmId,
-			@ModelAttribute ShortFilmViewData shortFilmViewData, BindingResult result,
-			RedirectAttributes redirections) {
+	public String postComment(@PathVariable Long shortFilmId, @ModelAttribute ShortFilmViewData shortFilmViewData,
+			BindingResult result, RedirectAttributes redirections) {
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
 		if (shortFilm == null) {
 			return "redirect:/";
 		}
 
-		User loggedUser = userService.getLoggedUser(session).orElse(null);
+		User loggedUser = userService.getLoggedUser().orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
 		}
@@ -63,7 +60,7 @@ public class CommentController {
 	}
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "deleteComment" })
-	public String removeComment(HttpSession session, @RequestParam Long deleteComment, @PathVariable Long shortFilmId,
+	public String removeComment(@RequestParam Long deleteComment, @PathVariable Long shortFilmId,
 			@ModelAttribute ShortFilmViewData shortFilmViewData, BindingResult result,
 			RedirectAttributes redirections) {
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
@@ -71,7 +68,7 @@ public class CommentController {
 			return "redirect:/";
 		}
 
-		User loggedUser = userService.getLoggedUser(session).orElse(null);
+		User loggedUser = userService.getLoggedUser().orElse(null);
 		if (loggedUser == null) {
 			return "redirect:/login";
 		}
