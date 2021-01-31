@@ -1,0 +1,17 @@
+<button data-th-fragment="imgBtn(src)"
+type="button"
+data-th-attrappend="href=${href} ? @{${href}}"
+data-th-class="'btn ' + (${classes} ?: 'btn-light mr-0 mr-md-2')"
+data-th-type="${type}?: null"
+data-th-name="${name}?: null"
+data-th-style="'
+background-image: url(' + @{${src}} + ');
+background-size: ' + (${size} ? ${size} + 'px' : '20px') + ';
+background-repeat: no-repeat;
+background-position: center;
+width: ' + (${width} ?: '40px') + ';
+height: ' + (${height} ?: '38px') + ';
+'"><span class="badge badge-danger" data-th-id=${badgeId} data-th-if="${badgeId} != null" data-th-style="'
+top: -10px;
+right: -10px;
+'"></span></button>

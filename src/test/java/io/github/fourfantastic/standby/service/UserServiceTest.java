@@ -34,6 +34,7 @@ import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
 import io.github.fourfantastics.standby.service.NotificationService;
+import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
@@ -49,11 +50,14 @@ public class UserServiceTest {
 	NotificationService notificationService;
 
 	@Mock
+	ShortFilmService shortFilmService;
+
+	@Mock
 	FileRepository fileRepository;
 
 	@BeforeEach
 	public void setup() {
-		userService = new UserService(userRepository, notificationService, fileRepository);
+		userService = new UserService(userRepository, notificationService, fileRepository, shortFilmService);
 
 		when(userRepository.save(any(User.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 	}

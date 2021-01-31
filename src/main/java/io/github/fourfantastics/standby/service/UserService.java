@@ -27,6 +27,7 @@ import io.github.fourfantastics.standby.model.Account;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.NotificationType;
+import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
@@ -44,14 +45,16 @@ public class UserService {
 
 	UserRepository userRepository;
 	NotificationService notificationService;
+	ShortFilmService shortFilmService;
 	FileRepository fileRepository;
 
 	@Autowired
 	public UserService(UserRepository userRepository, NotificationService notificationService,
-			FileRepository fileRepository) {
+			FileRepository fileRepository, ShortFilmService shortFilmService) {
 		this.userRepository = userRepository;
 		this.notificationService = notificationService;
 		this.fileRepository = fileRepository;
+		this.shortFilmService = shortFilmService;
 	}
 
 	public Optional<User> getUserById(Long id) {
@@ -133,6 +136,28 @@ public class UserService {
 
 		user.setPhotoUrl(filePath);
 		userRepository.save(user);
+	}
+
+	public void favouriteShortFilm(ShortFilm shortFilm, User user) {
+		//user.getFavouriteShortFilms().add(shortFilm);
+		//userRepository.save(user);
+		user.getFavouriteShortFilms().add(shortFilm);
+		shortFilm.getFavouriteUsers().add(user);
+		shortFilmService.save(shortFilm);
+
+	}
+
+	public void removeFavouriteShortFilm(ShortFilm shortFilm, User user) {
+		//user.getFavouriteShortFilms().remove(shortFilm);	
+		//userRepository.save(user);
+		user.getFavouriteShortFilms().remove(shortFilm);
+		shortFilm.getFavouriteUsers().remove(user);
+		shortFilmService.save(shortFilm);
+	
+	}
+
+	public Boolean hasFavouriteShortFilm(ShortFilm shortFilm, User user) {
+		return user.getFavouriteShortFilms().contains(shortFilm);
 	}
 
 }

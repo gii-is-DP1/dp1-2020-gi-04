@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -80,7 +81,7 @@ public class ShortFilm {
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "favouriteShortFilms")
 	Set<User> favouriteUsers = new HashSet<User>();
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortfilm")
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, mappedBy = "shortfilm")
 	Set<Role> roles = new HashSet<Role>();
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)

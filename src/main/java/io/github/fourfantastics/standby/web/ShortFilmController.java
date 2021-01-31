@@ -80,7 +80,7 @@ public class ShortFilmController {
 		model.put("shortFilmUploadData", new ShortFilmUploadData());
 		return "uploadShortFilm";
 	}
-	
+
 	@PostMapping(value = "upload", produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Object uploadShortFilm(@ModelAttribute ShortFilmUploadData shortFilmUploadData,
 			BindingResult result) {
@@ -141,7 +141,6 @@ public class ShortFilmController {
 		}
 
 		shortFilmService.updateViewCount(shortFilm, 1);
-
 		shortFilmViewData.setShortFilm(shortFilm);
 		shortFilmViewData.getCommentPagination().setTotalElements(commentService.getCommentCountByShortFilm(shortFilm));
 		shortFilmViewData.setComments(commentService
@@ -151,9 +150,12 @@ public class ShortFilmController {
 
 		User loggedUser = userService.getLoggedUser().orElse(null);
 		if (loggedUser != null) {
+			shortFilmViewData.setHasFavourite(userService.hasFavouriteShortFilm(shortFilm, loggedUser));
 			shortFilmViewData.setWatcherId(loggedUser.getId());
 			shortFilmViewData.setWatcherName(loggedUser.getName());
 			shortFilmViewData.setWatcherPhotoUrl(loggedUser.getPhotoUrl());
+		} else {
+			shortFilmViewData.setHasFavourite(false);
 		}
 
 		Double meanRating = ratingService.getAverageRating(shortFilm);
@@ -186,7 +188,6 @@ public class ShortFilmController {
 			model.put("shortFilmEditData", ShortFilmEditData.fromShortFilm(shortFilm));
 			shortFilmEditData = ShortFilmEditData.fromShortFilm(shortFilm);
 		}
-
 		return "editShortFilm";
 	}
 
