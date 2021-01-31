@@ -1,7 +1,6 @@
 package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,8 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
-
-import javax.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,247 +52,229 @@ import io.github.fourfantastics.standby.utils.Utils;
 public class ShortFilmControllerTest {
 	@Autowired
 	MockMvc mockMvc;
-	
+
 	@MockBean
 	UserService userService;
 
 	@MockBean
 	ShortFilmService shortFilmService;
-	
+
 	@MockBean
 	TagService tagService;
-	
+
 	@MockBean
 	RoleService roleService;
-	
+
 	@Test
 	public void uploadViewTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new Filmmaker()));
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new Filmmaker()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/upload"))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmUploadData", new ShortFilmUploadData()))
-			.andExpect(view().name("uploadShortFilm"));
+			mockMvc.perform(get("/upload")).andExpect(status().isOk())
+					.andExpect(model().attribute("shortFilmUploadData", new ShortFilmUploadData()))
+					.andExpect(view().name("uploadShortFilm"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(shortFilmService);
 	}
-	
+
 	@Test
 	public void uploadViewNotLoggedTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/upload"))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/login"));
+			mockMvc.perform(get("/upload")).andExpect(status().isFound()).andExpect(redirectedUrl("/login"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(shortFilmService);
 	}
-	
+
 	@Test
 	public void uploadViewLoggedAsCompanyTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new Company()));
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new Company()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/upload"))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/"));
+			mockMvc.perform(get("/upload")).andExpect(status().isFound()).andExpect(redirectedUrl("/"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(shortFilmService);
 	}
-	
+
 	@Test
 	public void uploadShortFilmTest() throws InvalidExtensionException, TooBigException, RuntimeException {
 		final Filmmaker mockFilmmaker = new Filmmaker();
 		final ShortFilmUploadData mockShortFilmUploadData = new ShortFilmUploadData();
 		mockShortFilmUploadData.setTitle("Title example");
 		mockShortFilmUploadData.setDescription("Description example");
-		mockShortFilmUploadData.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
+		mockShortFilmUploadData
+				.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
 		final ShortFilm mockShortFilm = mockShortFilmUploadData.toShortFilm();
 		mockShortFilm.setId(123456L);
 		mockShortFilm.setVideoUrl(UUID.randomUUID().toString());
 		mockShortFilm.setUploadDate(new Date().getTime());
 		mockShortFilm.setUploader(mockFilmmaker);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.upload(mockShortFilmUploadData, mockFilmmaker)).thenReturn(mockShortFilm);
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(multipart("/upload")
-					.file((MockMultipartFile) mockShortFilmUploadData.getFile())
-					.with(csrf())
-					.param("title", mockShortFilmUploadData.getTitle())
-					.param("description", mockShortFilmUploadData.getDescription()))
-			.andExpect(status().isOk())
-			.andExpect(content().json(
-				String.format(
-					"{'url': '/shortfilm/%d/edit', 'status': 302}",
-					mockShortFilm.getId()
-				)
-			));
+			mockMvc.perform(multipart("/upload").file((MockMultipartFile) mockShortFilmUploadData.getFile())
+					.with(csrf()).param("title", mockShortFilmUploadData.getTitle())
+					.param("description", mockShortFilmUploadData.getDescription())).andExpect(status().isOk())
+					.andExpect(content().json(
+							String.format("{'url': '/shortfilm/%d/edit', 'status': 302}", mockShortFilm.getId())));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).upload(mockShortFilmUploadData, mockFilmmaker);
 	}
-	
+
 	@Test
-	public void uploadShortFilmNotLoggedTest()  {
+	public void uploadShortFilmNotLoggedTest() {
 		final ShortFilmUploadData mockShortFilmUploadData = new ShortFilmUploadData();
 		mockShortFilmUploadData.setTitle("Title example");
 		mockShortFilmUploadData.setDescription("Description example");
-		mockShortFilmUploadData.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+		mockShortFilmUploadData
+				.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(multipart("/upload")
-					.file((MockMultipartFile) mockShortFilmUploadData.getFile())
-					.with(csrf())
-					.param("title", mockShortFilmUploadData.getTitle())
-					.param("description", mockShortFilmUploadData.getDescription()))
-			.andExpect(status().isOk())
-			.andExpect(content().json("{'url': '/login', 'status': 302}"));
+			mockMvc.perform(multipart("/upload").file((MockMultipartFile) mockShortFilmUploadData.getFile())
+					.with(csrf()).param("title", mockShortFilmUploadData.getTitle())
+					.param("description", mockShortFilmUploadData.getDescription())).andExpect(status().isOk())
+					.andExpect(content().json("{'url': '/login', 'status': 302}"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(shortFilmService);
 	}
-	
+
 	@Test
-	public void uploadShortFilmLoggedAsCompanyTest()  {
+	public void uploadShortFilmLoggedAsCompanyTest() {
 		final ShortFilmUploadData mockShortFilmUploadData = new ShortFilmUploadData();
 		mockShortFilmUploadData.setTitle("Title example");
 		mockShortFilmUploadData.setDescription("Description example");
-		mockShortFilmUploadData.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new Company()));
-		
+		mockShortFilmUploadData
+				.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new Company()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(multipart("/upload")
-					.file((MockMultipartFile) mockShortFilmUploadData.getFile())
-					.with(csrf())
-					.param("title", mockShortFilmUploadData.getTitle())
-					.param("description", mockShortFilmUploadData.getDescription()))
-			.andExpect(status().isOk())
-			.andExpect(content().json("{'url': '/', 'status': 302}"));
+			mockMvc.perform(multipart("/upload").file((MockMultipartFile) mockShortFilmUploadData.getFile())
+					.with(csrf()).param("title", mockShortFilmUploadData.getTitle())
+					.param("description", mockShortFilmUploadData.getDescription())).andExpect(status().isOk())
+					.andExpect(content().json("{'url': '/', 'status': 302}"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(shortFilmService);
 	}
-	
+
 	@Test
-	public void uploadShortFilmMissingDataTest()  {
+	public void uploadShortFilmMissingDataTest() {
 		final ShortFilmUploadData mockShortFilmUploadData = new ShortFilmUploadData();
 		mockShortFilmUploadData.setTitle("");
 		mockShortFilmUploadData.setDescription("Description example");
-		mockShortFilmUploadData.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
+		mockShortFilmUploadData
+				.setFile(new MockMultipartFile("file", "mockFile.mp4", "video/mp4", "This is an example".getBytes()));
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new Filmmaker()));
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new Filmmaker()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(multipart("/upload")
-					.file((MockMultipartFile) mockShortFilmUploadData.getFile())
-					.with(csrf())
-					.param("title", mockShortFilmUploadData.getTitle())
-					.param("description", mockShortFilmUploadData.getDescription()))
-			.andExpect(status().isOk())
-			.andExpect(content().json("{'message': '', 'status': 400, 'fieldErrors': {}}"));
+			mockMvc.perform(multipart("/upload").file((MockMultipartFile) mockShortFilmUploadData.getFile())
+					.with(csrf()).param("title", mockShortFilmUploadData.getTitle())
+					.param("description", mockShortFilmUploadData.getDescription())).andExpect(status().isOk())
+					.andExpect(content().json("{'message': '', 'status': 400, 'fieldErrors': {}}"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(shortFilmService);
 	}
-	
+
 	@Test
-	public void uploadShortFilmInvalidExtensionTest() throws InvalidExtensionException, TooBigException, RuntimeException  {
+	public void uploadShortFilmInvalidExtensionTest()
+			throws InvalidExtensionException, TooBigException, RuntimeException {
 		final ShortFilmUploadData mockShortFilmUploadData = new ShortFilmUploadData();
 		mockShortFilmUploadData.setTitle("Title example");
 		mockShortFilmUploadData.setDescription("Description example");
-		mockShortFilmUploadData.setFile(new MockMultipartFile("file", "mockFile.txt", "text/plain", "This is an example".getBytes()));
+		mockShortFilmUploadData
+				.setFile(new MockMultipartFile("file", "mockFile.txt", "text/plain", "This is an example".getBytes()));
 		final Filmmaker mockFilmmaker = new Filmmaker();
 		final String exceptionMessage = "This file has an invalid extension";
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.upload(mockShortFilmUploadData, mockFilmmaker))
-			.thenThrow(new InvalidExtensionException(exceptionMessage, Utils.hashSet("file")));
-		
+				.thenThrow(new InvalidExtensionException(exceptionMessage, Utils.hashSet("file")));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(multipart("/upload")
-					.file((MockMultipartFile) mockShortFilmUploadData.getFile())
-					.with(csrf())
-					.param("title", mockShortFilmUploadData.getTitle())
-					.param("description", mockShortFilmUploadData.getDescription()))
-			.andExpect(status().isOk())
-			.andExpect(content().json(String.format("{'message': '', 'status': 400, 'fieldErrors': {'file': '%s'}}", exceptionMessage)));
+			mockMvc.perform(multipart("/upload").file((MockMultipartFile) mockShortFilmUploadData.getFile())
+					.with(csrf()).param("title", mockShortFilmUploadData.getTitle())
+					.param("description", mockShortFilmUploadData.getDescription())).andExpect(status().isOk())
+					.andExpect(content().json(String.format(
+							"{'message': '', 'status': 400, 'fieldErrors': {'file': '%s'}}", exceptionMessage)));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).upload(mockShortFilmUploadData, mockFilmmaker);
 	}
-	
+
 	@Test
-	public void uploadShortFilmTooBigTest() throws InvalidExtensionException, TooBigException, RuntimeException  {
+	public void uploadShortFilmTooBigTest() throws InvalidExtensionException, TooBigException, RuntimeException {
 		final ShortFilmUploadData mockShortFilmUploadData = new ShortFilmUploadData();
 		mockShortFilmUploadData.setTitle("Title example");
 		mockShortFilmUploadData.setDescription("Description example");
-		mockShortFilmUploadData.setFile(new MockMultipartFile("file", "mockFile.txt", "text/plain", "This is an example".getBytes()));
+		mockShortFilmUploadData
+				.setFile(new MockMultipartFile("file", "mockFile.txt", "text/plain", "This is an example".getBytes()));
 		final Filmmaker mockFilmmaker = new Filmmaker();
 		final String exceptionMessage = "This file is too big";
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.upload(mockShortFilmUploadData, mockFilmmaker))
-			.thenThrow(new TooBigException(exceptionMessage, Utils.hashSet("file")));
-		
+				.thenThrow(new TooBigException(exceptionMessage, Utils.hashSet("file")));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(multipart("/upload")
-					.file((MockMultipartFile) mockShortFilmUploadData.getFile())
-					.with(csrf())
-					.param("title", mockShortFilmUploadData.getTitle())
-					.param("description", mockShortFilmUploadData.getDescription()))
-			.andExpect(status().isOk())
-			.andExpect(content().json(String.format("{'message': '', 'status': 400, 'fieldErrors': {'file': '%s'}}", exceptionMessage)));
+			mockMvc.perform(multipart("/upload").file((MockMultipartFile) mockShortFilmUploadData.getFile())
+					.with(csrf()).param("title", mockShortFilmUploadData.getTitle())
+					.param("description", mockShortFilmUploadData.getDescription())).andExpect(status().isOk())
+					.andExpect(content().json(String.format(
+							"{'message': '', 'status': 400, 'fieldErrors': {'file': '%s'}}", exceptionMessage)));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).upload(mockShortFilmUploadData, mockFilmmaker);
 	}
-	
+
 	@Test
-	public void uploadShortFilmRuntimeExceptionTest() throws InvalidExtensionException, TooBigException, RuntimeException  {
+	public void uploadShortFilmRuntimeExceptionTest()
+			throws InvalidExtensionException, TooBigException, RuntimeException {
 		final ShortFilmUploadData mockShortFilmUploadData = new ShortFilmUploadData();
 		mockShortFilmUploadData.setTitle("Title example");
 		mockShortFilmUploadData.setDescription("Description example");
-		mockShortFilmUploadData.setFile(new MockMultipartFile("file", "mockFile.txt", "text/plain", "This is an example".getBytes()));
+		mockShortFilmUploadData
+				.setFile(new MockMultipartFile("file", "mockFile.txt", "text/plain", "This is an example".getBytes()));
 		final Filmmaker mockFilmmaker = new Filmmaker();
 		final String exceptionMessage = "An unexpected exception ocurred!";
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.upload(mockShortFilmUploadData, mockFilmmaker))
-			.thenThrow(new RuntimeException(exceptionMessage));
-		
+				.thenThrow(new RuntimeException(exceptionMessage));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(multipart("/upload")
-					.file((MockMultipartFile) mockShortFilmUploadData.getFile())
-					.with(csrf())
-					.param("title", mockShortFilmUploadData.getTitle())
-					.param("description", mockShortFilmUploadData.getDescription()))
-			.andExpect(status().isOk())
-			.andExpect(content().json(String.format("{'message': '%s', 'status': 500, 'fieldErrors': {}}", exceptionMessage)));
+			mockMvc.perform(multipart("/upload").file((MockMultipartFile) mockShortFilmUploadData.getFile())
+					.with(csrf()).param("title", mockShortFilmUploadData.getTitle())
+					.param("description", mockShortFilmUploadData.getDescription())).andExpect(status().isOk())
+					.andExpect(content().json(
+							String.format("{'message': '%s', 'status': 500, 'fieldErrors': {}}", exceptionMessage)));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).upload(mockShortFilmUploadData, mockFilmmaker);
 	}
-	
+
 	@Test
 	public void editViewTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -305,53 +284,50 @@ public class ShortFilmControllerTest {
 		mockShortFilm.setTitle("Example title");
 		mockShortFilm.setDescription("Example description");
 		mockShortFilm.setUploadDate(0L);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get(String.format("/shortfilm/%d/edit", mockShortFilm.getId())))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", ShortFilmEditData.fromShortFilm(mockShortFilm)))
-			.andExpect(view().name("editShortFilm"));
+			mockMvc.perform(get(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))).andExpect(status().isOk())
+					.andExpect(model().attribute("shortFilmEditData", ShortFilmEditData.fromShortFilm(mockShortFilm)))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 	}
-	
+
 	@Test
 	public void editViewTestNotLogged() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
-		
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/shortfilm/999/edit"))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/login"));
+			mockMvc.perform(get("/shortfilm/999/edit")).andExpect(status().isFound())
+					.andExpect(redirectedUrl("/login"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(shortFilmService);
 	}
-	
+
 	@Test
 	public void editViewTestShortFilmNotFound() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
 		final long shortFilmId = 999;
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.empty());
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get(String.format("/shortfilm/%d/edit", shortFilmId)))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/"));
+			mockMvc.perform(get(String.format("/shortfilm/%d/edit", shortFilmId))).andExpect(status().isFound())
+					.andExpect(redirectedUrl("/"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
 	}
-	
+
 	@Test
 	public void editViewTestUploaderMismatch() {
 		final Filmmaker loggedMockFilmmaker = new Filmmaker();
@@ -361,20 +337,19 @@ public class ShortFilmControllerTest {
 		final ShortFilm mockShortFilm = new ShortFilm();
 		mockShortFilm.setId(999L);
 		mockShortFilm.setUploader(uploaderMockFilmmaker);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(loggedMockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(loggedMockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		
+
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get(String.format("/shortfilm/%d/edit", mockShortFilm.getId())))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/"));
+					.andExpect(status().isFound()).andExpect(redirectedUrl("/"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 	}
-	
+
 	@Test
 	public void editShortFilmAddTagTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -386,31 +361,29 @@ public class ShortFilmControllerTest {
 		final String newTagName = "action";
 		final ShortFilmEditData mockShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
 		mockShortFilmEditData.setNewTagName(newTagName);
-		
+
 		final ShortFilmEditData returnedShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
 		returnedShortFilmEditData.getTags().add(newTagName);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
 					.param("newRoleFilmmaker", mockShortFilmEditData.getNewRoleFilmmaker())
-					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString())
-					.param("addTag", ""))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", returnedShortFilmEditData))
-			.andExpect(view().name("editShortFilm"));
+					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString()).param("addTag", ""))
+					.andExpect(status().isOk())
+					.andExpect(model().attribute("shortFilmEditData", returnedShortFilmEditData))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 	}
-	
+
 	@Test
 	public void editShortFilmAddInvalidTagTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -422,29 +395,26 @@ public class ShortFilmControllerTest {
 		final String newTagName = "";
 		final ShortFilmEditData mockShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
 		mockShortFilmEditData.setNewTagName(newTagName);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
 					.param("newRoleFilmmaker", mockShortFilmEditData.getNewRoleFilmmaker())
-					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString())
-					.param("addTag", ""))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
-			.andExpect(model().attributeHasFieldErrors("shortFilmEditData", "newTagName"))
-			.andExpect(view().name("editShortFilm"));
+					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString()).param("addTag", ""))
+					.andExpect(status().isOk()).andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
+					.andExpect(model().attributeHasFieldErrors("shortFilmEditData", "newTagName"))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 	}
-	
+
 	@Test
 	public void editShortFilmRemoveTagTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -456,30 +426,28 @@ public class ShortFilmControllerTest {
 		final String tagName = "action";
 		final ShortFilmEditData mockShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
 		mockShortFilmEditData.getTags().add(tagName);
-		
+
 		final ShortFilmEditData returnedShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
 					.param("newRoleFilmmaker", mockShortFilmEditData.getNewRoleFilmmaker())
 					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString())
-					.param("removeTag", tagName))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", returnedShortFilmEditData))
-			.andExpect(view().name("editShortFilm"));
+					.param("removeTag", tagName)).andExpect(status().isOk())
+					.andExpect(model().attribute("shortFilmEditData", returnedShortFilmEditData))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 	}
-	
+
 	@Test
 	public void editShortFilmAddRoleTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -492,37 +460,36 @@ public class ShortFilmControllerTest {
 		final ShortFilmEditData mockShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
 		mockShortFilmEditData.setNewRoleFilmmaker(mockFilmmaker.getName());
 		mockShortFilmEditData.setNewRoleType(RoleType.ANIMATOR);
-		
+
 		final ShortFilmEditData returnedShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
-		returnedShortFilmEditData.getRoles().add(RoleData.of(mockFilmmaker.getName(), mockShortFilmEditData.getNewRoleType()));
+		returnedShortFilmEditData.getRoles()
+				.add(RoleData.of(mockFilmmaker.getName(), mockShortFilmEditData.getNewRoleType()));
 		returnedShortFilmEditData.setNewRoleFilmmaker(mockShortFilmEditData.getNewRoleFilmmaker());
 		returnedShortFilmEditData.setNewRoleType(mockShortFilmEditData.getNewRoleType());
 		returnedShortFilmEditData.getRolePagination().setTotalElements(returnedShortFilmEditData.getRoles().size());
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
 		when(userService.getUserByName(mockFilmmaker.getName())).thenReturn(Optional.of(mockFilmmaker));
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
 					.param("newRoleFilmmaker", mockShortFilmEditData.getNewRoleFilmmaker())
-					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString())
-					.param("addRole", ""))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", returnedShortFilmEditData))
-			.andExpect(view().name("editShortFilm"));
+					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString()).param("addRole", ""))
+					.andExpect(status().isOk())
+					.andExpect(model().attribute("shortFilmEditData", returnedShortFilmEditData))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, times(1)).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 		verify(userService, times(1)).getUserByName(mockFilmmaker.getName());
 		verifyNoMoreInteractions(userService);
 	}
-	
+
 	@Test
 	public void editShortFilmAddRoleFilmmakerNotFoundTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -534,32 +501,29 @@ public class ShortFilmControllerTest {
 		final ShortFilmEditData mockShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
 		mockShortFilmEditData.setNewRoleFilmmaker("filmmaker2");
 		mockShortFilmEditData.setNewRoleType(RoleType.ANIMATOR);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
 		when(userService.getUserByName(mockShortFilmEditData.getNewRoleFilmmaker())).thenReturn(Optional.empty());
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
 					.param("newRoleFilmmaker", mockShortFilmEditData.getNewRoleFilmmaker())
-					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString())
-					.param("addRole", ""))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
-			.andExpect(model().attributeHasFieldErrors("shortFilmEditData", "newRoleFilmmaker"))
-			.andExpect(view().name("editShortFilm"));
+					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString()).param("addRole", ""))
+					.andExpect(status().isOk()).andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
+					.andExpect(model().attributeHasFieldErrors("shortFilmEditData", "newRoleFilmmaker"))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, times(1)).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 		verify(userService, times(1)).getUserByName(mockShortFilmEditData.getNewRoleFilmmaker());
 		verifyNoMoreInteractions(userService);
 	}
-	
+
 	@Test
 	public void editShortFilmAddRoleCompanyTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -571,32 +535,30 @@ public class ShortFilmControllerTest {
 		final ShortFilmEditData mockShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
 		mockShortFilmEditData.setNewRoleFilmmaker("company1");
 		mockShortFilmEditData.setNewRoleType(RoleType.CINEMATOGRAPHER);
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		when(userService.getUserByName(mockShortFilmEditData.getNewRoleFilmmaker())).thenReturn(Optional.of(new Company()));
-		
+		when(userService.getUserByName(mockShortFilmEditData.getNewRoleFilmmaker()))
+				.thenReturn(Optional.of(new Company()));
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
 					.param("newRoleFilmmaker", mockShortFilmEditData.getNewRoleFilmmaker())
-					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString())
-					.param("addRole", ""))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
-			.andExpect(model().attributeHasFieldErrors("shortFilmEditData", "newRoleFilmmaker"))
-			.andExpect(view().name("editShortFilm"));
+					.param("newRoleType", mockShortFilmEditData.getNewRoleType().toString()).param("addRole", ""))
+					.andExpect(status().isOk()).andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
+					.andExpect(model().attributeHasFieldErrors("shortFilmEditData", "newRoleFilmmaker"))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, times(1)).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 		verify(userService, times(1)).getUserByName(mockShortFilmEditData.getNewRoleFilmmaker());
 		verifyNoMoreInteractions(userService);
 	}
-	
+
 	@Test
 	public void editShortFilmRemoveRoleTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -610,18 +572,17 @@ public class ShortFilmControllerTest {
 		mockShortFilmEditData.getRoles().add(RoleData.of(mockFilmmaker.getName(), RoleType.ACTOR));
 		mockShortFilmEditData.getRoles().add(RoleData.of(mockFilmmaker.getName(), RoleType.ANIMATOR));
 		final Integer roleIndexToRemove = 0;
-		
+
 		final ShortFilmEditData returnedShortFilmEditData = ShortFilmEditData.fromShortFilm(mockShortFilm);
 		returnedShortFilmEditData.getRoles().addAll(mockShortFilmEditData.getRoles());
 		returnedShortFilmEditData.getRoles().remove(roleIndexToRemove.intValue());
 		returnedShortFilmEditData.getRolePagination().setTotalElements(returnedShortFilmEditData.getRoles().size());
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
@@ -631,16 +592,15 @@ public class ShortFilmControllerTest {
 					.param("roles[0].roleType", mockShortFilmEditData.getRoles().get(0).getRoleType().toString())
 					.param("roles[1].filmmakerName", mockShortFilmEditData.getRoles().get(1).getFilmmakerName())
 					.param("roles[1].roleType", mockShortFilmEditData.getRoles().get(1).getRoleType().toString())
-					.param("removeRole", String.valueOf(roleIndexToRemove)))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", returnedShortFilmEditData))
-			.andExpect(view().name("editShortFilm"));
+					.param("removeRole", String.valueOf(roleIndexToRemove))).andExpect(status().isOk())
+					.andExpect(model().attribute("shortFilmEditData", returnedShortFilmEditData))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 	}
-	
+
 	@Test
 	public void editShortFilmTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -655,14 +615,13 @@ public class ShortFilmControllerTest {
 		mockShortFilmEditData.getTags().add("Scifi");
 		mockShortFilmEditData.getRoles().add(RoleData.of(mockFilmmaker.getName(), RoleType.ACTOR));
 		mockShortFilmEditData.getRoles().add(RoleData.of(mockFilmmaker.getName(), RoleType.ANIMATOR));
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
 		when(userService.getUserByName(mockFilmmaker.getName())).thenReturn(Optional.of(mockFilmmaker));
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
@@ -673,21 +632,21 @@ public class ShortFilmControllerTest {
 					.param("roles[0].roleType", mockShortFilmEditData.getRoles().get(0).getRoleType().toString())
 					.param("roles[1].filmmakerName", mockShortFilmEditData.getRoles().get(1).getFilmmakerName())
 					.param("roles[1].roleType", mockShortFilmEditData.getRoles().get(1).getRoleType().toString())
-					.param("applyChanges", ""))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
-			.andExpect(view().name("editShortFilm"));
+					.param("applyChanges", "")).andExpect(status().isOk())
+					.andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, times(1)).getShortFilmById(mockShortFilm.getId());
 
 		verify(tagService, only()).tagShortFilm(mockShortFilmEditData.getTags(), mockShortFilm);
 		verify(roleService, only()).setRolesOfShortFilm(mockShortFilmEditData.getRoles(), mockShortFilm);
-		verify(shortFilmService, times(1)).updateShortFilmMetadata(mockShortFilm, mockShortFilmEditData.getTitle(), mockShortFilmEditData.getDescription());
+		verify(shortFilmService, times(1)).updateShortFilmMetadata(mockShortFilm, mockShortFilmEditData.getTitle(),
+				mockShortFilmEditData.getDescription());
 		verifyNoMoreInteractions(shortFilmService);
 	}
-	
+
 	@Test
 	public void editShortFilmMissingDataTest() {
 		final Filmmaker mockFilmmaker = new Filmmaker();
@@ -703,14 +662,13 @@ public class ShortFilmControllerTest {
 		mockShortFilmEditData.getTags().add("Scifi");
 		mockShortFilmEditData.getRoles().add(RoleData.of(mockFilmmaker.getName(), RoleType.ACTOR));
 		mockShortFilmEditData.getRoles().add(RoleData.of(mockFilmmaker.getName(), RoleType.ANIMATOR));
-		
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
 		when(userService.getUserByName(mockFilmmaker.getName())).thenReturn(Optional.of(mockFilmmaker));
-		
+
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId()))
-					.with(csrf())
+			mockMvc.perform(post(String.format("/shortfilm/%d/edit", mockShortFilm.getId())).with(csrf())
 					.param("title", mockShortFilmEditData.getTitle())
 					.param("description", mockShortFilmEditData.getDescription())
 					.param("newTagName", mockShortFilmEditData.getNewTagName())
@@ -721,14 +679,13 @@ public class ShortFilmControllerTest {
 					.param("roles[0].roleType", mockShortFilmEditData.getRoles().get(0).getRoleType().toString())
 					.param("roles[1].filmmakerName", mockShortFilmEditData.getRoles().get(1).getFilmmakerName())
 					.param("roles[1].roleType", mockShortFilmEditData.getRoles().get(1).getRoleType().toString())
-					.param("applyChanges", ""))
-			.andExpect(status().isOk())
-			.andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
-			.andExpect(model().attributeHasFieldErrors("shortFilmEditData", "title"))
-			.andExpect(view().name("editShortFilm"));
+					.param("applyChanges", "")).andExpect(status().isOk())
+					.andExpect(model().attribute("shortFilmEditData", mockShortFilmEditData))
+					.andExpect(model().attributeHasFieldErrors("shortFilmEditData", "title"))
+					.andExpect(view().name("editShortFilm"));
 		});
-		
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 		verifyNoInteractions(tagService);
 		verifyNoInteractions(roleService);

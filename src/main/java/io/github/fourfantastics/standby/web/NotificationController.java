@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -28,15 +26,15 @@ import io.github.fourfantastics.standby.service.UserService;
 public class NotificationController {
 	@Autowired
 	NotificationService notificationService;
-	
+
 	@Autowired
 	UserService userService;
 
 	@GetMapping(value = "/notifications/count", produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody Object getUserNotificationCount(HttpSession session) {
+	public @ResponseBody Object getUserNotificationCount() {
 		Map<String, Object> res = new HashMap<String, Object>();
-		
-		User user = userService.getLoggedUser(session).orElse(null);
+
+		User user = userService.getLoggedUser().orElse(null);
 		if (user == null) {
 			res.put("status", 302);
 			res.put("url", "/login");
@@ -51,9 +49,8 @@ public class NotificationController {
 	}
 
 	@RequestMapping("/notifications")
-	public String getNotificationsView(HttpSession session, Map<String, Object> model,
-			@ModelAttribute NotificationData notificationData) {
-		User user = userService.getLoggedUser(session).orElse(null);
+	public String getNotificationsView(Map<String, Object> model, @ModelAttribute NotificationData notificationData) {
+		User user = userService.getLoggedUser().orElse(null);
 		if (user == null) {
 			return "redirect:/login";
 		}

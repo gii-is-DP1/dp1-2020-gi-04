@@ -1,13 +1,13 @@
 <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
     <title>Inicio</title>
     <section>
-        <th-block data-th-if="${user.getType().getName()} == 'Filmmaker'">
+        <th-block sec:authorize="hasRole('Filmmaker')">
             <h3>Welcome again, [[${user.name}]]</h3>
             <hr>
             <p>We know your full name is [[${user.fullname}]] and that you are a filmmaker.</p>
             <p>Oh! your email also is [[${user.email}]], and we know you live in [[${user.city}]] ([[${user.country}]])</p>
         </th-block>
-        <th-block data-th-if="${user.getType().getName()} == 'Company'">
+        <th-block sec:authorize="hasRole('Company')">
             <h3>Welcome back, [[${user.name}]]</h3>
             <hr>
             <p>We know you are a company named [[${user.companyName}]].</p>

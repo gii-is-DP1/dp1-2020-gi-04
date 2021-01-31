@@ -2,12 +2,14 @@ package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.service.UserService;
@@ -17,14 +19,14 @@ public class IndexController {
 	@Autowired
 	UserService userService;
 
-	@GetMapping("/")
-	public String getIndex(HttpSession session, @ModelAttribute User user, Map<String, Object> model) {
-		user = userService.getLoggedUser(session).orElse(null);
-		if (user == null) {
+	@RequestMapping
+	public String getIndex(@ModelAttribute User user, Map<String, Object> model) {
+		User loggedUser = userService.getLoggedUser().orElse(null);
+		if (loggedUser == null) {
 			return "redirect:/login";
 		}
-
-		model.put("user", user);
+		model.put("user", loggedUser);
 		return "index";
 	}
+
 }
