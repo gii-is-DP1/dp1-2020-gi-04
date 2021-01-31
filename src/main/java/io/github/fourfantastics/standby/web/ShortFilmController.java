@@ -141,8 +141,7 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
-		shortFilm.setViewCount(shortFilm.getViewCount() + 1L);
-		shortFilmService.save(shortFilm);
+		shortFilmService.updateViewCount(shortFilm, 1);
 
 		shortFilmViewData.setShortFilm(shortFilm);
 		shortFilmViewData.getCommentPagination().setTotalElements(commentService.getCommentCountByShortFilm(shortFilm));
@@ -159,7 +158,7 @@ public class ShortFilmController {
 		}
 
 		Double meanRating = ratingService.getAverageRating(shortFilm);
-		shortFilmViewData.setMeanRating(meanRating == null ? 0.0 : meanRating);
+		shortFilmViewData.setMeanRating(meanRating);
 		shortFilmViewData.setTotalRatings(ratingService.getRatingCount(shortFilm));
 		shortFilmViewData.setUserRating(ratingService.getRatingByUserAndShortFilm(loggedUser, shortFilm));
 

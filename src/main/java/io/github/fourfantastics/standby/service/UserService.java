@@ -55,10 +55,6 @@ public class UserService {
 		return userRepository.findByName(name);
 	}
 
-	public User saveUser(User user) {
-		return userRepository.save(user);
-	}
-
 	public User register(User user) throws NotUniqueException {
 		Optional<User> foundUser = getUserByName(user.getName());
 		if (foundUser.isPresent()) {
@@ -115,33 +111,24 @@ public class UserService {
 
 	public void subscribesTo(User follower, Filmmaker followed) {
 		follower.getFilmmakersSubscribedTo().add(followed);
-		followed.getFilmmakerSubscribers().add(follower);
 		if (followed.getConfiguration().getBySubscriptions()) {
-			Notification newFollowerNotification = new Notification();
-			newFollowerNotification.setEmissionDate(new Date().getTime());
-			newFollowerNotification.setText(follower.getName() + " has subscribed to your profile.");
-			newFollowerNotification.setUser(followed);
-			newFollowerNotification.setType(NotificationType.SUBSCRIPTION);
-			followed.getNotifications().add(newFollowerNotification);
-
-			notificationService.saveNotification(newFollowerNotification);
+			notificationService.sendNotification(followed, NotificationType.SUBSCRIPTION,
+					String.format("%s has subscribed to your profile.", follower.getName()));
+			
 		}
 		userRepository.save(follower);
-		userRepository.save(followed);
 	}
-	
+
 	public void unsubscribesTo(User follower, Filmmaker followed) {
-		follower.getFilmmakersSubscribedTo().remove(followed);
 		followed.getFilmmakerSubscribers().remove(follower);
-		List<Notification> notification = followed.getNotifications().stream().filter(x -> x.getText().equals(follower.getName() + " has subscribed to your profile."))
-											.collect(Collectors.toList());
-		if(!notification.isEmpty()){
-			System.out.println("paso por aqui");
+		List<Notification> notification = followed.getNotifications().stream()
+				.filter(x -> x.getText().equals(follower.getName() + " has subscribed to your profile."))
+				.collect(Collectors.toList());
+		if (!notification.isEmpty()) {
 			followed.getNotifications().remove(notification.get(0));
 			notificationService.deleteNotification(notification.get(0));
 		}
 		userRepository.save(follower);
-		userRepository.save(followed);
 	}
 
 	public void setProfilePicture(User user, MultipartFile imageFile)
@@ -157,12 +144,13 @@ public class UserService {
 		}
 
 		String filePath = UUID.randomUUID().toString() + extension;
-		
+
 		fileRepository.createDirectory(fileRoot);
 		if (!fileRepository.saveFile(imageFile, fileRoot.resolve(filePath))) {
 			throw new RuntimeException("Couldn't upload image");
 		}
-		
+
 		user.setPhotoUrl(filePath);
+		userRepository.save(user);
 	}
 }

@@ -241,7 +241,7 @@ public class FilmmakerController {
 		}
 
 		Filmmaker userFilmmaker = (Filmmaker) user;
-		filmmakerConfigurationData.copyToFilmmaker(userFilmmaker);
+		filmmakerService.updateFilmmakerData(userFilmmaker, filmmakerConfigurationData);
 		if (filmmakerConfigurationData.getNewPhoto() != null && !filmmakerConfigurationData.getNewPhoto().isEmpty()) {
 			try {
 				userService.setProfilePicture(userFilmmaker, filmmakerConfigurationData.getNewPhoto());
@@ -251,7 +251,6 @@ public class FilmmakerController {
 				return "manageFilmmakerAccount";
 			}
 		}
-		userFilmmaker = (Filmmaker) userService.saveUser(userFilmmaker);
 
 		model.put("filmmakerData", filmmakerConfigurationData);
 		model.put("photoUrl", user.getPhotoUrl());

@@ -52,7 +52,7 @@ public class FilmmakerServiceTest {
 		when(userService.register(any(Filmmaker.class))).then(AdditionalAnswers.returnsFirstArg());
 		when(notificationConfigurationService.saveNotificationConfiguration(any(NotificationConfiguration.class)))
 			.then(AdditionalAnswers.returnsFirstArg());
-		when(userService.saveUser(any(Filmmaker.class))).then(AdditionalAnswers.returnsFirstArg());
+		when(filmmakerRepository.save(any(Filmmaker.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 	}
 	
 	@Test
@@ -86,7 +86,6 @@ public class FilmmakerServiceTest {
 			
 			verify(userService, times(1)).register(filmmaker);
 			verify(notificationConfigurationService, only()).saveNotificationConfiguration(any(NotificationConfiguration.class));
-			verify(userService, times(1)).saveUser(filmmaker);
 			verifyNoMoreInteractions(userService);
 		});
 	}
