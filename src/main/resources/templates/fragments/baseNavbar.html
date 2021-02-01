@@ -17,9 +17,9 @@
                 </div>
             </form>
         </ul>
-        <th-block data-th-if="${#session.getAttribute('userId')} != null">
+        <th-block sec:authorize="isAuthenticated()">
             <ul class="nav mt-4 mt-md-0 justify-content-between" style="height: 40px;">
-                <th-block data-th-if="${#session.getAttribute('userType').getName()} == 'Filmmaker'">
+                <th-block sec:authorize="hasRole('Filmmaker')">
                     <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/upload-icon.svg}, href=@{/upload})}"></button>
                 </th-block>
                 <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/notification-icon.svg}, href=@{/notifications}, badgeId = 'notificationBadge')}"></button>

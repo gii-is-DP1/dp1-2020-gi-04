@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.model.ShortFilm;
+import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
@@ -43,6 +44,10 @@ public class ShortFilmService {
 
 	public Optional<ShortFilm> getShortFilmById(Long id) {
 		return shortFilmRepository.findById(id);
+	}
+
+	public ShortFilm save(ShortFilm shortFilm) {
+		return shortFilmRepository.save(shortFilm);
 	}
 
 	public ShortFilm upload(ShortFilmUploadData shortFilmUploadData, Filmmaker uploader)
@@ -94,10 +99,10 @@ public class ShortFilmService {
 		if (!fileRepository.saveFile(thumbnailFile, fileRoot.resolve(thumbnailPath))) {
 			throw new RuntimeException("Couldn't upload thumbnail");
 		}
-		
+
 		shortFilm.setThumbnailUrl(thumbnailPath);
 	}
-	
+
 	public void updateShortFilmMetadata(ShortFilm shortFilm, String title, String description) {
 		shortFilm.setTitle(title);
 		shortFilm.setDescription(description);
@@ -113,7 +118,8 @@ public class ShortFilmService {
 		Set<Role> roles = filmmaker.getParticipateAs();
 		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet()).size();
 	}
-	
+
+
 	public void updateViewCount(ShortFilm shortFilm, Integer sum) {
 		shortFilm.setViewCount(shortFilm.getViewCount() + sum);
 		shortFilmRepository.save(shortFilm);
@@ -133,6 +139,5 @@ public class ShortFilmService {
 	public Page<ShortFilm> getAttachedShortFilmByFilmmaker(Filmmaker filmmaker,Pageable pageable) {
 		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmaker.getId(),pageable);
 	}
-	
 
 }

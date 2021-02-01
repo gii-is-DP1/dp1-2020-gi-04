@@ -3,7 +3,6 @@ package io.github.fourfantastic.standby.web;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,14 +22,17 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
-
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -73,7 +75,7 @@ public class FilmmakerControllerTest {
 
 	@Test
 	void registerViewTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/register/filmmaker")).andExpect(status().isOk())
@@ -81,19 +83,19 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("registerFilmmaker"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(filmmakerService);
 	}
 
 	@Test
 	void registerViewUserIsPresentTest() {
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new User()));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/register/filmmaker")).andExpect(status().isFound()).andExpect(redirectedUrl("/"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(filmmakerService);
 	}
 
@@ -109,7 +111,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerRegisterData.setCity("Seville");
 		mockFilmmakerRegisterData.setPhone("678543167");
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 		when(filmmakerService.registerFilmmaker(mockFilmmakerRegisterData))
 				.then(x -> ((FilmmakerRegisterData) x.getArgument(0)).toFilmmaker());
 
@@ -123,10 +125,9 @@ public class FilmmakerControllerTest {
 				.param("phone", mockFilmmakerRegisterData.getPhone())).andExpect(status().isFound())
 				.andExpect(redirectedUrl("/"));
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(filmmakerService, only()).registerFilmmaker(mockFilmmakerRegisterData);
 		verifyNoMoreInteractions(filmmakerService);
-		verify(userService, times(1)).logIn(any(HttpSession.class), eq(mockFilmmakerRegisterData.toFilmmaker()));
 		verifyNoMoreInteractions(userService);
 	}
 
@@ -142,7 +143,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerRegisterData.setCity("Seville");
 		mockFilmmakerRegisterData.setPhone("678543167");
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(new User()));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new User()));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/register/filmmaker").with(csrf()).param("name", mockFilmmakerRegisterData.getName())
@@ -156,7 +157,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(filmmakerService);
 	}
 
@@ -172,7 +173,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerRegisterData.setCity("Seville");
 		mockFilmmakerRegisterData.setPhone("678543167");
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/register/filmmaker").with(csrf()).param("name", mockFilmmakerRegisterData.getName())
@@ -187,7 +188,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("registerFilmmaker"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(filmmakerService);
 	}
 
@@ -203,7 +204,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerRegisterData.setCity("Seville");
 		mockFilmmakerRegisterData.setPhone("678543167");
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 		when(filmmakerService.registerFilmmaker(mockFilmmakerRegisterData))
 				.thenThrow(new NotUniqueException("", Utils.hashSet("name")));
 
@@ -220,7 +221,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("registerFilmmaker"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 		verify(filmmakerService, only()).registerFilmmaker(mockFilmmakerRegisterData);
 	}
 
@@ -233,7 +234,7 @@ public class FilmmakerControllerTest {
 		mockFilmmaker.setPhone("678543167");
 		mockFilmmaker.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/account/filmmaker")).andExpect(status().isOk())
@@ -242,7 +243,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("manageFilmmakerAccount"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
 
 	@Test
@@ -263,7 +264,7 @@ public class FilmmakerControllerTest {
 		mockConfigFilmmaker.setFullname("Filmmaker1");
 		mockConfigFilmmaker.setPhone("616449997");
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/account/filmmaker").with(csrf()).param("fullname", mockConfigFilmmaker.getFullname())
@@ -275,7 +276,7 @@ public class FilmmakerControllerTest {
 					.andExpect(status().isOk()).andExpect(view().name("manageFilmmakerAccount"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(filmmakerService, only()).updateFilmmakerData(mockFilmmaker, mockConfigFilmmaker);
 		verifyNoMoreInteractions(userService);
 	}
@@ -300,7 +301,7 @@ public class FilmmakerControllerTest {
 		mockConfigFilmmaker.setNewPhoto(
 				new MockMultipartFile("newPhoto", "mockFile.png", "image/png", "This is an example".getBytes()));
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(multipart("/account/filmmaker").file((MockMultipartFile) mockConfigFilmmaker.getNewPhoto())
@@ -313,7 +314,7 @@ public class FilmmakerControllerTest {
 					.andExpect(status().isOk()).andExpect(view().name("manageFilmmakerAccount"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(filmmakerService, only()).updateFilmmakerData(mockFilmmaker, mockConfigFilmmaker);
 		verify(userService, times(1)).setProfilePicture(mockFilmmaker, mockConfigFilmmaker.getNewPhoto());
 		verifyNoMoreInteractions(userService);
@@ -330,7 +331,7 @@ public class FilmmakerControllerTest {
 		mockConfigFilmmaker.setFullname("Filmmaker1");
 		mockConfigFilmmaker.setPhone("616449997");
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/account/filmmaker").with(csrf()).param("fullname", mockConfigFilmmaker.getFullname())
@@ -342,7 +343,7 @@ public class FilmmakerControllerTest {
 					.andExpect(status().isFound()).andExpect(redirectedUrl("/login"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
 
 	@Test
@@ -363,7 +364,7 @@ public class FilmmakerControllerTest {
 		mockConfigFilmmaker.setFullname("");
 		mockConfigFilmmaker.setPhone("616449997");
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmaker));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/account/filmmaker").with(csrf()).param("fullname", mockConfigFilmmaker.getFullname())
@@ -375,7 +376,7 @@ public class FilmmakerControllerTest {
 					.andExpect(status().isOk()).andExpect(view().name("manageFilmmakerAccount"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
 
 	@Test
@@ -396,7 +397,7 @@ public class FilmmakerControllerTest {
 		mockConfigFilmmaker.setFullname("Filmmaker1");
 		mockConfigFilmmaker.setPhone("616449997");
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/account/filmmaker").with(csrf()).param("fullname", mockConfigFilmmaker.getFullname())
@@ -408,7 +409,7 @@ public class FilmmakerControllerTest {
 					.andExpect(status().isFound()).andExpect(redirectedUrl("/account"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
 
 	@Test
@@ -430,7 +431,7 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockViewerCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
 		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
 
@@ -444,7 +445,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
@@ -473,7 +474,7 @@ public class FilmmakerControllerTest {
 		mockViewed.setConfiguration(new NotificationConfiguration());
 		mockViewed.setFilmmakerSubscribers(followers);
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockViewerCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
 		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
 
@@ -486,7 +487,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
@@ -515,7 +516,7 @@ public class FilmmakerControllerTest {
 		mockViewerCompany.setConfiguration(new NotificationConfiguration());
 		mockViewerCompany.getSentRequests().add(request);
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockViewerCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
 		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
 
@@ -528,7 +529,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
@@ -553,7 +554,7 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollower));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
 		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
 
@@ -565,7 +566,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
@@ -594,7 +595,7 @@ public class FilmmakerControllerTest {
 		mockViewed.setConfiguration(new NotificationConfiguration());
 		mockViewed.getFilmmakerSubscribers().add(subscriptor);
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollower));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
 		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
 
@@ -607,7 +608,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
@@ -624,7 +625,7 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockViewed));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewed));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
 		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
 
@@ -637,7 +638,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
@@ -654,7 +655,7 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
 		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
 
@@ -666,7 +667,7 @@ public class FilmmakerControllerTest {
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
@@ -677,9 +678,7 @@ public class FilmmakerControllerTest {
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/profile/1"))
-			.andExpect(status().isFound())
-			.andExpect(redirectedUrl("/"));
+			mockMvc.perform(get("/profile/1")).andExpect(status().isFound()).andExpect(redirectedUrl("/"));
 		});
 
 		verify(userService, only()).getUserById(1L);
@@ -723,7 +722,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerFollowed.setPhone("678543167");
 		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollower));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
 
 		assertDoesNotThrow(() -> {
@@ -731,7 +730,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verify(userService, times(1)).subscribesTo(mockFollower, mockFilmmakerFollowed);
 		verifyNoMoreInteractions(userService);
@@ -756,7 +755,7 @@ public class FilmmakerControllerTest {
 		mockFollowed.setPhone("678543167");
 		mockFollowed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollowerCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollowerCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFollowed));
 
 		assertDoesNotThrow(() -> {
@@ -764,7 +763,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verify(userService, times(1)).subscribesTo(mockFollowerCompany, mockFollowed);
 		verifyNoMoreInteractions(userService);
@@ -781,14 +780,14 @@ public class FilmmakerControllerTest {
 		mockFollowed.setPhone("678543167");
 		mockFollowed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/profile/1/subscription").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/login"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
 
 	@Test
@@ -810,7 +809,7 @@ public class FilmmakerControllerTest {
 		mockFollowedCompany.setTaxIDNumber("123-78-1234567");
 		mockFollowedCompany.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollower));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFollowedCompany));
 
 		assertDoesNotThrow(() -> {
@@ -818,7 +817,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verifyNoMoreInteractions(userService);
 	}
@@ -834,7 +833,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerFollowed.setPhone("678543167");
 		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmakerFollowed));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
 
 		assertDoesNotThrow(() -> {
@@ -842,7 +841,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verifyNoMoreInteractions(userService);
 	}
@@ -867,7 +866,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
 		mockFilmmakerFollowed.getFilmmakerSubscribers().add(mockFollower);
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollower));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
 
 		assertDoesNotThrow(() -> {
@@ -875,7 +874,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verifyNoMoreInteractions(userService);
 	}
@@ -900,7 +899,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
 		mockFilmmakerFollowed.getFilmmakerSubscribers().add(mockFollower);
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollower));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
 
 		assertDoesNotThrow(() -> {
@@ -908,7 +907,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verify(userService, times(1)).unsubscribesTo(mockFollower, mockFilmmakerFollowed);
 		verifyNoMoreInteractions(userService);
@@ -934,7 +933,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
 		mockFilmmakerFollowed.getFilmmakerSubscribers().add(mockFollowerCompany);
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollowerCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollowerCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
 
 		assertDoesNotThrow(() -> {
@@ -942,7 +941,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verify(userService, times(1)).unsubscribesTo(mockFollowerCompany, mockFilmmakerFollowed);
 		verifyNoMoreInteractions(userService);
@@ -959,7 +958,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerFollowed.setPhone("678543167");
 		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmakerFollowed));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
 
 		assertDoesNotThrow(() -> {
@@ -967,7 +966,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verifyNoMoreInteractions(userService);
 	}
@@ -991,7 +990,7 @@ public class FilmmakerControllerTest {
 		mockFollowedCompany.setTaxIDNumber("123-78-1234567");
 		mockFollowedCompany.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollower));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFollowedCompany));
 
 		assertDoesNotThrow(() -> {
@@ -999,7 +998,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verifyNoMoreInteractions(userService);
 	}
@@ -1023,7 +1022,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerFollowed.setPhone("678543167");
 		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockFollower));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
 
 		assertDoesNotThrow(() -> {
@@ -1031,7 +1030,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verifyNoMoreInteractions(userService);
 	}
@@ -1047,14 +1046,14 @@ public class FilmmakerControllerTest {
 		mockFilmmakerFollowed.setPhone("678543167");
 		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/profile/1/unsubscription").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/login"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
 
 	@Test
@@ -1076,7 +1075,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerReceiver.setPhone("678543167");
 		mockFilmmakerReceiver.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockSenderCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockSenderCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerReceiver));
 
 		assertDoesNotThrow(() -> {
@@ -1084,7 +1083,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verify(privacyRequestService, only()).sendPrivacyRequest(mockSenderCompany, mockFilmmakerReceiver);
 		verifyNoMoreInteractions(userService);
@@ -1109,7 +1108,7 @@ public class FilmmakerControllerTest {
 		mockReceiverCompany.setTaxIDNumber("123-78-1234567");
 		mockReceiverCompany.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockSenderCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockSenderCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockReceiverCompany));
 
 		assertDoesNotThrow(() -> {
@@ -1117,7 +1116,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verifyNoMoreInteractions(userService);
 	}
@@ -1135,7 +1134,7 @@ public class FilmmakerControllerTest {
 
 		final PrivacyRequest request = new PrivacyRequest();
 		request.setFilmmaker(mockFilmmakerReceiver);
-		
+
 		final Company mockSenderCompany = new Company();
 		mockSenderCompany.setName("user1");
 		mockSenderCompany.setBusinessPhone("675849765");
@@ -1145,7 +1144,7 @@ public class FilmmakerControllerTest {
 		mockSenderCompany.setConfiguration(new NotificationConfiguration());
 		mockSenderCompany.getSentRequests().add(request);
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockSenderCompany));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockSenderCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerReceiver));
 
 		assertDoesNotThrow(() -> {
@@ -1153,7 +1152,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, times(1)).getLoggedUser(any(HttpSession.class));
+		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1l);
 		verifyNoMoreInteractions(userService);
 	}
@@ -1177,7 +1176,7 @@ public class FilmmakerControllerTest {
 		mockFilmmakerReceiver.setPhone("678543167");
 		mockFilmmakerReceiver.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.of(mockSenderFilmmaker));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockSenderFilmmaker));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerReceiver));
 
 		assertDoesNotThrow(() -> {
@@ -1185,7 +1184,7 @@ public class FilmmakerControllerTest {
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
 
 	@Test
@@ -1199,13 +1198,13 @@ public class FilmmakerControllerTest {
 		mockFilmmakerReceiver.setPhone("678543167");
 		mockFilmmakerReceiver.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser(any(HttpSession.class))).thenReturn(Optional.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/profile/1/privacyrequest").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/login"));
 		});
 
-		verify(userService, only()).getLoggedUser(any(HttpSession.class));
+		verify(userService, only()).getLoggedUser();
 	}
 }

@@ -27,6 +27,8 @@ public class ShortFilmViewData {
 	Pagination commentPagination = Pagination.empty();
 
 	String newCommentText;
-	
+
 	Rating userRating;
+	Boolean hasFavourite;
+
 }

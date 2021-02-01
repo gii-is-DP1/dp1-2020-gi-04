@@ -12,14 +12,22 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.github.fourfantastics.standby.model.Account;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.NotificationType;
+import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
@@ -37,14 +45,16 @@ public class UserService {
 
 	UserRepository userRepository;
 	NotificationService notificationService;
+	ShortFilmService shortFilmService;
 	FileRepository fileRepository;
 
 	@Autowired
 	public UserService(UserRepository userRepository, NotificationService notificationService,
-			FileRepository fileRepository) {
+			FileRepository fileRepository, ShortFilmService shortFilmService) {
 		this.userRepository = userRepository;
 		this.notificationService = notificationService;
 		this.fileRepository = fileRepository;
+		this.shortFilmService = shortFilmService;
 	}
 
 	public Optional<User> getUserById(Long id) {
@@ -69,40 +79,14 @@ public class UserService {
 		user.setPassword(getEncoder().encode(user.getPassword()));
 	}
 
-	public User authenticate(String name, String password) throws NotFoundException, DataMismatchException {
-		Optional<User> foundUser = userRepository.findByName(name);
-		if (!foundUser.isPresent()) {
-			throw new NotFoundException("Username not found!", Utils.hashSet("name"));
+	public Optional<User> getLoggedUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken)) {
+			Account account = (Account) auth.getPrincipal();
+			return Optional.of(account.getUser());
 		}
 
-		User user = foundUser.get();
-		if (!getEncoder().matches(password, user.getPassword())) {
-			throw new DataMismatchException("The entered password doesn't match", Utils.hashSet("password"));
-		}
-
-		return user;
-	}
-
-	public Optional<User> getLoggedUser(HttpSession session) {
-		if (session.getAttribute("userId") == null) {
-			return Optional.empty();
-		}
-
-		Optional<User> user = userRepository.findById((Long) session.getAttribute("userId"));
-		if (!user.isPresent()) {
-			logOut(session);
-		}
-		return user;
-	}
-
-	public void logIn(HttpSession session, User user) {
-		session.setAttribute("userId", user.getId());
-		session.setAttribute("userType", user.getType());
-	}
-
-	public void logOut(HttpSession session) {
-		session.removeAttribute("userId");
-		session.removeAttribute("userType");
+		return Optional.empty();
 	}
 
 	public PasswordEncoder getEncoder() {
@@ -114,7 +98,7 @@ public class UserService {
 		if (followed.getConfiguration().getBySubscriptions()) {
 			notificationService.sendNotification(followed, NotificationType.SUBSCRIPTION,
 					String.format("%s has subscribed to your profile.", follower.getName()));
-			
+
 		}
 		userRepository.save(follower);
 	}
@@ -153,4 +137,27 @@ public class UserService {
 		user.setPhotoUrl(filePath);
 		userRepository.save(user);
 	}
+
+	public void favouriteShortFilm(ShortFilm shortFilm, User user) {
+		//user.getFavouriteShortFilms().add(shortFilm);
+		//userRepository.save(user);
+		user.getFavouriteShortFilms().add(shortFilm);
+		shortFilm.getFavouriteUsers().add(user);
+		shortFilmService.save(shortFilm);
+
+	}
+
+	public void removeFavouriteShortFilm(ShortFilm shortFilm, User user) {
+		//user.getFavouriteShortFilms().remove(shortFilm);	
+		//userRepository.save(user);
+		user.getFavouriteShortFilms().remove(shortFilm);
+		shortFilm.getFavouriteUsers().remove(user);
+		shortFilmService.save(shortFilm);
+	
+	}
+
+	public Boolean hasFavouriteShortFilm(ShortFilm shortFilm, User user) {
+		return user.getFavouriteShortFilms().contains(shortFilm);
+	}
+
 }

@@ -2,8 +2,6 @@ package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -26,7 +24,7 @@ import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 public class CompanyController {
 	@Autowired
 	CompanyService companyService;
-	
+
 	@Autowired
 	UserService userService;
 
@@ -37,19 +35,18 @@ public class CompanyController {
 	CompanyConfigurationDataValidator companyConfigurationDataValidator;
 
 	@GetMapping("/register/company")
-	public String registerCompany(HttpSession session, Map<String, Object> model) {
-		if (userService.getLoggedUser(session).isPresent()) {
+	public String registerCompany(Map<String, Object> model) {
+		if (userService.getLoggedUser().isPresent()) {
 			return "redirect:/";
 		}
-		
+
 		model.put("companyRegisterData", new CompanyRegisterData());
 		return "registerCompany";
 	}
 
 	@PostMapping("/register/company")
-	public String doRegisterCompany(HttpSession session, @ModelAttribute CompanyRegisterData companyRegisterData,
-			BindingResult result) {
-		if (userService.getLoggedUser(session).isPresent()) {
+	public String doRegisterCompany(@ModelAttribute CompanyRegisterData companyRegisterData, BindingResult result) {
+		if (userService.getLoggedUser().isPresent()) {
 			return "redirect:/";
 		}
 
@@ -59,8 +56,7 @@ public class CompanyController {
 		}
 
 		try {
-			Company company = companyService.registerCompany(companyRegisterData);
-			userService.logIn(session, company);
+			companyService.registerCompany(companyRegisterData);
 		} catch (NotUniqueException e) {
 			result.rejectValue("name", "", e.getMessage());
 			return "registerCompany";
@@ -69,8 +65,8 @@ public class CompanyController {
 	}
 
 	@GetMapping("/account/company")
-	public String getManageAccount(HttpSession session, Map<String, Object> model) {
-		User user = userService.getLoggedUser(session).orElse(null);
+	public String getManageAccount(Map<String, Object> model) {
+		User user = userService.getLoggedUser().orElse(null);
 		if (user == null) {
 			return "redirect:/login";
 		}
@@ -86,10 +82,10 @@ public class CompanyController {
 	}
 
 	@PostMapping("/account/company")
-	public String doManageAccount(HttpSession session,
+	public String doManageAccount(
 			@ModelAttribute("companyConfigurationData") CompanyConfigurationData companyConfigurationData,
 			BindingResult result, Map<String, Object> model) {
-		User user = userService.getLoggedUser(session).orElse(null);
+		User user = userService.getLoggedUser().orElse(null);
 		if (user == null) {
 			return "redirect:/login";
 		}
