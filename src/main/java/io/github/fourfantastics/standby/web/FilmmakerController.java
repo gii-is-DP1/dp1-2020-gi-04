@@ -1,16 +1,19 @@
 package io.github.fourfantastics.standby.web;
 
+
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
@@ -81,16 +84,33 @@ public class FilmmakerController {
 		return "redirect:/";
 	}
 
-	@GetMapping("/profile/{filmmmakerId}")
-	public String getProfileView(HttpSession session, @PathVariable Long filmmmakerId, Map<String, Object> model) {
+	@RequestMapping("/profile/{filmmmakerId}")
+	public String getProfileView(HttpSession session, @PathVariable Long filmmmakerId, Map<String, Object> model ,
+			@ModelAttribute FilmmakerProfileData filmmakerProfileData) {
 		User user = userService.getUserById(filmmmakerId).orElse(null);
 		if (user == null || user.getType() != UserType.Filmmaker) {
 			return "redirect:/";
 		}
 
 		Filmmaker filmmaker = (Filmmaker) user;
-		FilmmakerProfileData filmmakerProfileData = FilmmakerProfileData.fromFilmmaker(filmmaker);
-		filmmakerProfileData.setAttachedShortFilms(shortFilmService.getShortFilmByFilmmaker(filmmaker));
+		filmmakerProfileData.updateFromFilmmaker(filmmaker);
+		//filmmakerProfileData.setAttachedShortFilms(new ArrayList<>(shortFilmService.getShortFilmByFilmmaker(filmmaker)));
+		filmmakerProfileData.setTotalShortFilms(shortFilmService.getShortFilmsCountByUploader(filmmaker));
+		filmmakerProfileData.getUploadedShortFilmPagination().setPageElements(2);
+		filmmakerProfileData.getUploadedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountByUploader(filmmaker));
+		filmmakerProfileData.setUploadedShortFilms(shortFilmService
+				.getShortFilmsByUploader(filmmaker,
+						filmmakerProfileData.getUploadedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
+				.getContent());
+		
+		filmmakerProfileData.getAttachedShortFilmPagination().setPageElements(2);
+		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountAttachedShortFilmByFilmmaker(filmmaker));
+		filmmakerProfileData.setAttachedShortFilms(shortFilmService
+				.getAttachedShortFilmByFilmmaker(filmmaker, 
+						filmmakerProfileData.getAttachedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
+				.getContent());
+		
+		
 		model.put("filmmakerProfileData", filmmakerProfileData);
 
 		model.put("followButton", true);

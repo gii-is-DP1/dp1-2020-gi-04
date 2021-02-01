@@ -20,7 +20,7 @@
                     <div class="d-flex justify-content-around mt-4 mb-5 my-md-0 px-2 px-md-0">
                         <div class="d-flex flex-column">
                             <h6>Shortfilms</h6>
-                            <span class="badge badge-secondary align-self-center" data-th-text="${#lists.size(filmmakerProfileData.getUploadedShortFilms())}"></span>
+                            <span class="badge badge-secondary align-self-center" data-th-text="${filmmakerProfileData.getTotalShortFilms()}"></span>
                         </div>
                         <div class="d-flex flex-column">
                             <h6>Followers</h6>
@@ -66,7 +66,7 @@
                     </a>
                 </li>
             </ul>
-
+			<form data-th-action="@{'/profile/' + ${filmmaker.getId()}}" method="POST" data-th-object="${filmmakerProfileData}">
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active pt-3" id="nav-uploadedShortFilms" role="tabpanel" aria-labelledby="nav-uploadedShortfilms-tab" data-th-with="uploadedShortFilms = ${filmmakerProfileData.getUploadedShortFilms()}">
                     <th-block data-th-switch="${uploadedShortFilms} != null and ${!uploadedShortFilms.isEmpty()}">
@@ -84,10 +84,12 @@
                                 )}"
                                 ></div>
                             </th-block>
+                            <nav data-th-replace="~{@{fragments/form/pagination}('uploadedShortFilmPagination')}"></nav>
                         </th-block>
                         <div data-th-case="false" class="alert alert-dark mt-3">There are no shortfilms to show</div>
                     </th-block>
                 </div>
+                
                 <div class="tab-pane fade pt-3" id="nav-attachedShortFilms" role="tabpanel" aria-labelledby="nav-attachedShortFilms-tab" data-th-with="attachedShortFilms = ${filmmakerProfileData.getAttachedShortFilms()}">
                     <th-block data-th-switch="${attachedShortFilms} != null and ${!attachedShortFilms.isEmpty()}">
                         <th-block data-th-case="true">
@@ -104,11 +106,13 @@
                                 )}"
                                 ></div>
                             </th-block>
+                             <nav data-th-replace="~{@{fragments/form/pagination}('attachedShortFilmPagination')}"></nav>
                         </th-block>
                         <div data-th-case="false" class="alert alert-dark mt-3">There are no shortfilms to show</div>
                     </th-block>
                 </div>
             </div>
+            </form>
         </section>
     </html>
 </th-block>
