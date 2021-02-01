@@ -1,6 +1,7 @@
 package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
@@ -433,6 +434,7 @@ public class FilmmakerControllerTest {
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
 		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
+
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())

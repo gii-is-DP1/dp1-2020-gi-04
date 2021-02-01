@@ -1,6 +1,8 @@
 package io.github.fourfantastics.standby.service;
 
 import java.nio.file.Path;
+
+
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Optional;
@@ -9,6 +11,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -109,10 +113,31 @@ public class ShortFilmService {
 		Set<Role> roles = filmmaker.getParticipateAs();
 		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet());
 	}
+	
+	public Integer getShortFilmsCountByFilmmaker(Filmmaker filmmaker) {
+		Set<Role> roles = filmmaker.getParticipateAs();
+		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet()).size();
+	}
+
 
 	public void updateViewCount(ShortFilm shortFilm, Integer sum) {
 		shortFilm.setViewCount(shortFilm.getViewCount() + sum);
 		shortFilmRepository.save(shortFilm);
+	}
+	
+	public Integer getShortFilmsCountByUploader(Filmmaker uploader) {
+		return shortFilmRepository.countByUploader(uploader);
+	}
+	
+	public Page<ShortFilm> getShortFilmsByUploader(Filmmaker uploader, Pageable pageable) {
+		return shortFilmRepository.findByUploader(uploader, pageable);
+	}
+	
+	public Integer getShortFilmsCountAttachedShortFilmByFilmmaker(Filmmaker filmmaker) {
+		return shortFilmRepository.countAttachedShortFilmByFilmmaker(filmmaker.getId());
+	}
+	public Page<ShortFilm> getAttachedShortFilmByFilmmaker(Filmmaker filmmaker,Pageable pageable) {
+		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmaker.getId(),pageable);
 	}
 
 }

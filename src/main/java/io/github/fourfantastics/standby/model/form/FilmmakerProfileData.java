@@ -1,6 +1,8 @@
 package io.github.fourfantastics.standby.model.form;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
@@ -12,21 +14,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FilmmakerProfileData {
 	Filmmaker filmmaker;
+	
+	Integer totalShortFilms;
+	
+	List<User> filmmakerSubscribers;// My followers
 
-	Set<User> filmmakerSubscribers;// My followers
+	List<Filmmaker> filmmakersSubscribedTo;
 
-	Set<Filmmaker> filmmakersSubscribedTo;
+	List<ShortFilm> uploadedShortFilms= new ArrayList<ShortFilm>();
 
-	Set<ShortFilm> uploadedShortFilms;
-
-	Set<ShortFilm> attachedShortFilms;
+	List<ShortFilm> attachedShortFilms= new ArrayList<ShortFilm>();
+	
+	Pagination uploadedShortFilmPagination = Pagination.empty();
+	
+	Pagination attachedShortFilmPagination = Pagination.empty();
 
 	public static FilmmakerProfileData fromFilmmaker(Filmmaker filmmaker) {
 		FilmmakerProfileData filmmakerProfileData = new FilmmakerProfileData();
 		filmmakerProfileData.setFilmmaker(filmmaker);
-		filmmakerProfileData.setFilmmakerSubscribers(filmmaker.getFilmmakerSubscribers());
-		filmmakerProfileData.setFilmmakersSubscribedTo(filmmaker.getFilmmakersSubscribedTo());
-		filmmakerProfileData.setUploadedShortFilms(filmmaker.getUploadedShortFilms());
+		filmmakerProfileData.setFilmmakerSubscribers(new ArrayList<User>(filmmaker.getFilmmakerSubscribers()));
+		filmmakerProfileData.setFilmmakersSubscribedTo(new ArrayList<Filmmaker>(filmmaker.getFilmmakersSubscribedTo()));
 		return filmmakerProfileData;
+	}
+	
+	public void  updateFromFilmmaker(Filmmaker filmmaker) {
+		this.setFilmmaker(filmmaker);
+		this.setFilmmakerSubscribers(new ArrayList<User>(filmmaker.getFilmmakerSubscribers()));
+		this.setFilmmakersSubscribedTo(new ArrayList<Filmmaker>(filmmaker.getFilmmakersSubscribedTo()));
 	}
 }
