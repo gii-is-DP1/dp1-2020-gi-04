@@ -81,11 +81,7 @@ public class FilmmakerController {
 	}
 
 	@RequestMapping("/profile/{filmmmakerId}")
-	public String getProfileView(HttpSession session, @PathVariable Long filmmmakerId, Map<String, Object> model ,
-			@ModelAttribute FilmmakerProfileData filmmakerProfileData) {
-
-	@GetMapping("/profile/{filmmmakerId}")
-	public String getProfileView(@PathVariable Long filmmmakerId, Map<String, Object> model) {
+	public String getProfileView(@PathVariable Long filmmmakerId, Map<String, Object> model,@ModelAttribute FilmmakerProfileData filmmakerProfileData) {
 
 		User user = userService.getUserById(filmmmakerId).orElse(null);
 		if (user == null || user.getType() != UserType.Filmmaker) {
