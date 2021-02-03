@@ -22,11 +22,19 @@ public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
 	
 	public Page<ShortFilm> findByUploader(Filmmaker uploader, Pageable pageable);
 	
+	@Query("SELECT count(shortfilm) from ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId")
+	public Integer countAttachedShortFilmByFilmmaker(@Param("filmmakerId") Long filmmakerId);
+	
 	@Query(value= "SELECT shortfilm from ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId",
 			countQuery="SELECT count(shortfilm) from ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId",
 			nativeQuery=false)
 	public Page<ShortFilm> findAttachedShortFilmByFilmmaker(@Param("filmmakerId") Long filmmakerId,Pageable pageable);
 
-	@Query("SELECT count(shortfilm) from ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId")
-	public Integer countAttachedShortFilmByFilmmaker(@Param("filmmakerId") Long filmmakerId);
+	@Query("SELECT count(shortfilm) from ShortFilm shortfilm")
+	public Integer countFavouriteShortFilmsByUser(@Param("userId") Long userId);
+	
+	@Query(value= "SELECT shortfilm from ShortFilm shortfilm",
+			countQuery="SELECT count(shortfilm) from ShortFilm shortfilm",
+			nativeQuery=false)
+	public Page<ShortFilm> findFavouriteShortFilmsByUser(@Param("userId") Long userId,Pageable pageable);
 }
