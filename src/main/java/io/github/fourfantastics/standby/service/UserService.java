@@ -9,15 +9,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,9 +26,7 @@ import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
-import io.github.fourfantastics.standby.service.exception.DataMismatchException;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
-import io.github.fourfantastics.standby.service.exception.NotFoundException;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 import io.github.fourfantastics.standby.service.exception.TooBigException;
 import io.github.fourfantastics.standby.utils.Utils;

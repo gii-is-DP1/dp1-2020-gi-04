@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import io.github.fourfantastics.standby.service.AccountService;
-import io.github.fourfantastics.standby.service.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -26,8 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().anyRequest().permitAll().and().formLogin().loginPage("/login")
-				.usernameParameter("name").passwordParameter("password").successForwardUrl("/").permitAll().and()
-				.logout().logoutSuccessUrl("/").permitAll();
+				.usernameParameter("name").passwordParameter("password").successForwardUrl("/").permitAll();
 	}
 
 	@Bean

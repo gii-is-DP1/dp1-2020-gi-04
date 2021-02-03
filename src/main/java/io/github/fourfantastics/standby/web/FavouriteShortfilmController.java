@@ -3,8 +3,10 @@ package io.github.fourfantastics.standby.web;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +23,6 @@ import io.github.fourfantastics.standby.model.form.ShortFilmViewData;
 import io.github.fourfantastics.standby.model.form.UserFavouriteShortFilmsData;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
-import io.github.fourfantastics.standby.utils.Utils;
 
 @Controller
 public class FavouriteShortfilmController {
