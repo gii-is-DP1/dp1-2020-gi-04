@@ -25,7 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().anyRequest().permitAll().and().formLogin().loginPage("/login")
-				.usernameParameter("name").passwordParameter("password").successForwardUrl("/").permitAll();
+				.usernameParameter("name").passwordParameter("password").successForwardUrl("/login/success");
 	}
 
 	@Bean

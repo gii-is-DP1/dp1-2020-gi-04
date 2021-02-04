@@ -22,6 +22,9 @@
                 <th-block sec:authorize="hasRole('Filmmaker')">
                     <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/upload-icon.svg}, href=@{/upload})}"></button>
                 </th-block>
+                <th-block sec:authorize="hasRole('Company')">
+                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/saved-icon.svg}, href=@{/favourites})}"></button>
+                </th-block>
                 <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/notification-icon.svg}, href=@{/notifications}, badgeId = 'notificationBadge')}"></button>
                 <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/user-icon.svg}, href=@{/profile})}"></button>
 

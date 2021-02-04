@@ -8,6 +8,7 @@
 
             <div class="d-flex justify-content-end">
                 <th-block data-th-if="${accountButton}">
+                <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/saved-icon.svg}, href=@{/favourites})}"></button>
                     <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
                 </th-block>
             </div>
