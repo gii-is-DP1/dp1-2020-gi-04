@@ -2,10 +2,10 @@ package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.annotation.Secured;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,8 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
-import io.github.fourfantastics.standby.model.UserType;
-import io.github.fourfantastics.standby.model.form.Pagination;
 import io.github.fourfantastics.standby.model.form.ShortFilmViewData;
 import io.github.fourfantastics.standby.model.form.UserFavouriteShortFilmsData;
 import io.github.fourfantastics.standby.service.ShortFilmService;
@@ -79,14 +77,12 @@ public class FavouriteShortfilmController {
 		if (user == null) {
 			return "redirect:/login";
 		}
-		
-		userFavouriteShortFilmsData.setFavouriteShortFilmPagination(Pagination.empty());
-		
-		userFavouriteShortFilmsData.getFavouriteShortFilmPagination().setPageElements(2);
+		userFavouriteShortFilmsData.getFavouriteShortFilmPagination().setPageElements(1);
 		userFavouriteShortFilmsData.getFavouriteShortFilmPagination().setTotalElements(shortFilmService.getCountFavouriteShortFilmsByUser(user));
 		userFavouriteShortFilmsData.setFavouriteShortFilms(shortFilmService
-				.getFavouriteShortFilmsByUser(user, userFavouriteShortFilmsData.getFavouriteShortFilmPagination().getPageRequest())
+				.getFavouriteShortFilmsByUser(user, userFavouriteShortFilmsData.getFavouriteShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
 				.getContent());
+		System.out.println(userFavouriteShortFilmsData.getFavouriteShortFilmPagination().getTotalElements());
 		System.out.println(user.getFavouriteShortFilms());
 		model.put("userFavouriteShortFilmsData", userFavouriteShortFilmsData);
 		System.out.println(userFavouriteShortFilmsData.getFavouriteShortFilms());
