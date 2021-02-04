@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
@@ -42,21 +43,23 @@ public class UserController {
 		if (userService.getLoggedUser().isPresent()) {
 			return "redirect:/";
 		}
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println("Is authenticated: " + authentication.isAuthenticated());
-		System.out.println("Is authenticated: " + authentication.getAuthorities());
+
 		model.put("credentials", new Credentials());
-		System.out.println(bindingResult.getAllErrors());
 		return "login";
 	}
-	
+
+	@PostMapping("/login/success")
+	public String redirectLoginSuccess() {
+		return "redirect:/";
+	}
+
 	@GetMapping("/logout")
 	public String doLogout(HttpServletRequest request, HttpServletResponse response) {
-	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	    if (auth != null){    
-	        new SecurityContextLogoutHandler().logout(request, response, auth);
-	    }
-	    return "redirect:/login";
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			new SecurityContextLogoutHandler().logout(request, response, auth);
+		}
+		return "redirect:/login";
 	}
 
 	@GetMapping("/account")
@@ -85,5 +88,15 @@ public class UserController {
 		} else {
 			return "redirect:/account";
 		}
+	}
+
+	@GetMapping("/")
+	public String getFeedView() {
+		User user = userService.getLoggedUser().orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
+
+		return "index";
 	}
 }
