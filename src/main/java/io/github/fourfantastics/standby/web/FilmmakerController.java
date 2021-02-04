@@ -92,17 +92,15 @@ public class FilmmakerController {
 		Filmmaker filmmaker = (Filmmaker) user;
 		filmmakerProfileData.updateFromFilmmaker(filmmaker);
 		filmmakerProfileData.setTotalShortFilms(shortFilmService.getShortFilmsCountByUploader(filmmaker));
-		filmmakerProfileData.getUploadedShortFilmPagination().setPageElements(2);
 		filmmakerProfileData.getUploadedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountByUploader(filmmaker));
 		filmmakerProfileData.setUploadedShortFilms(shortFilmService
 				.getShortFilmsByUploader(filmmaker,
 						filmmakerProfileData.getUploadedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
 				.getContent());
 		
-		filmmakerProfileData.getAttachedShortFilmPagination().setPageElements(2);
-		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountAttachedShortFilmByFilmmaker(filmmaker));
+		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountAttachedShortFilmByFilmmaker(filmmaker.getId()));
 		filmmakerProfileData.setAttachedShortFilms(shortFilmService
-				.getAttachedShortFilmByFilmmaker(filmmaker, 
+				.getAttachedShortFilmByFilmmaker(filmmaker.getId(), 
 						filmmakerProfileData.getAttachedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
 				.getContent());
 		

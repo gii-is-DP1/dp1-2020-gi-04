@@ -1,17 +1,8 @@
 <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
-    <title>Inicio</title>
+    <title>Your feed - Standby</title>
     <section>
-        <th-block sec:authorize="hasRole('Filmmaker')">
-            <h3>Welcome again, [[${user.name}]]</h3>
-            <hr>
-            <p>We know your full name is [[${user.fullname}]] and that you are a filmmaker.</p>
-            <p>Oh! your email also is [[${user.email}]], and we know you live in [[${user.city}]] ([[${user.country}]])</p>
-        </th-block>
-        <th-block sec:authorize="hasRole('Company')">
-            <h3>Welcome back, [[${user.name}]]</h3>
-            <hr>
-            <p>We know you are a company named [[${user.companyName}]].</p>
-            <p>Your business email is [[${user.email}]], your office address is [[${user.officeAddress}]] and your business phone is [[${user.businessPhone}]]</p>
-        </th-block>
+        <h3>Your feed</h3>
+        <hr>
+        
     </section>
 </html>
