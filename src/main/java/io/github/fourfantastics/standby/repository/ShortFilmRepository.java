@@ -26,4 +26,5 @@ public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
 
 	@Query(value = "SELECT shortfilm from User user JOIN user.filmmakersSubscribedTo subscribed JOIN subcribed.uploadedShortFilms shortfilm WHERE user.id = :userId", countQuery = "SELECT count(shortfilm) from User user JOIN user.filmmakersSubscribedTo subscribed JOIN subcribed.uploadedShortFilms shortfilm WHERE user.id = :userId", nativeQuery = false)
 	public Page<ShortFilm> followedShortFilms(@Param("userId") Long userId, Pageable pageable);
+
 }
