@@ -107,7 +107,6 @@ public class UserController {
 		if (user == null) {
 			return "redirect:/login";
 		}
-
 		feedData.setUser(user);
 		feedData.getFollowedShortFilmsPag().setTotalElements(shortFilmService
 				.getFollowedShortFilms(user.getId(),

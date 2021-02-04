@@ -115,7 +115,6 @@ public class ShortFilmService {
 		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet());
 	}
 
-
 	public void updateViewCount(ShortFilm shortFilm, Integer sum) {
 		shortFilm.setViewCount(shortFilm.getViewCount() + sum);
 		shortFilmRepository.save(shortFilm);
@@ -137,13 +136,8 @@ public class ShortFilmService {
 		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmakerID, pageable);
 	}
 
-
 	public Page<ShortFilm> getFollowedShortFilms(Long userID, Pageable pageable) {
 		return shortFilmRepository.followedShortFilms(userID, pageable);
-	}
-	
-	public Page<ShortFilm> getAttachedShortFilmByFilmmaker(Filmmaker filmmaker,Pageable pageable) {
-		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmaker.getId(),pageable);
 
 	}
 	
