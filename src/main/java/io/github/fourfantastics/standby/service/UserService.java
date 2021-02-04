@@ -132,27 +132,16 @@ public class UserService {
 	}
 
 	public void favouriteShortFilm(ShortFilm shortFilm, User user) {
-		//user.getFavouriteShortFilms().add(shortFilm);
-		//userRepository.save(user);
 		user.getFavouriteShortFilms().add(shortFilm);
-		shortFilm.getFavouriteUsers().add(user);
 		userRepository.save(user);
-		shortFilmService.save(shortFilm);
-
 	}
 
 	public void removeFavouriteShortFilm(ShortFilm shortFilm, User user) {
-		//user.getFavouriteShortFilms().remove(shortFilm);	
-		//userRepository.save(user);
-		user.getFavouriteShortFilms().remove(shortFilm);
-		shortFilm.getFavouriteUsers().remove(user);
+		user.getFavouriteShortFilms().remove(shortFilm);	
 		userRepository.save(user);
-		shortFilmService.save(shortFilm);
-	
 	}
 
 	public Boolean hasFavouriteShortFilm(ShortFilm shortFilm, User user) {
 		return user.getFavouriteShortFilms().contains(shortFilm);
 	}
-
 }

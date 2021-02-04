@@ -12,7 +12,7 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 
 public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
-	Optional<ShortFilm> findByTitle(String title);
+	public Optional<ShortFilm> findByTitle(String title);
 
 	public Integer countByUploader(Filmmaker uploader);
 
@@ -30,5 +30,4 @@ public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
 			countQuery = "SELECT count(shortfilm) from User user JOIN user.filmmakersSubscribedTo subscribed JOIN subscribed.uploadedShortFilms shortfilm WHERE user.id = :userId", 
 			nativeQuery = false)
 	public Page<ShortFilm> followedShortFilms(@Param("userId") Long userId, Pageable pageable);
-
 }
