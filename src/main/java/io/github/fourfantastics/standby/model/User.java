@@ -62,16 +62,16 @@ public class User {
 	@Column(nullable = true)
 	String photoUrl;
 
-	@ManyToMany(fetch = FetchType.EAGER) // subscribe List<Filmmaker> filmmakers;
-	Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();//Filmmakers a los que estoy subscrito
+	@ManyToMany(fetch = FetchType.EAGER)
+	Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user") // receive
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	Set<Notification> notifications = new HashSet<Notification>();
 
-	@OneToOne(fetch = FetchType.EAGER) // configures NotificationConfiguration
-	NotificationConfiguration configuration; // notificationconfiguration;
+	@OneToOne(fetch = FetchType.EAGER)
+	NotificationConfiguration configuration;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user") //
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	Set<Rating> ratings = new HashSet<Rating>();
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")

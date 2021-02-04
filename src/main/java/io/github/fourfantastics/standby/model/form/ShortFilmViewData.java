@@ -30,5 +30,4 @@ public class ShortFilmViewData {
 
 	Rating userRating;
 	Boolean hasFavourite;
-
 }

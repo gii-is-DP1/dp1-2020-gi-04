@@ -1,6 +1,5 @@
 package io.github.fourfantastics.standby.web;
 
-
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.form.FilmmakerProfileData;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
-import io.github.fourfantastics.standby.model.form.UserFavouriteShortFilmsData;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
@@ -82,8 +80,7 @@ public class FilmmakerController {
 	}
 
 	@RequestMapping("/profile/{filmmmakerId}")
-	public String getProfileView(@PathVariable Long filmmmakerId, Map<String, Object> model,@ModelAttribute FilmmakerProfileData filmmakerProfileData) {
-
+	public String getProfileView(@PathVariable Long filmmmakerId, Map<String, Object> model, @ModelAttribute FilmmakerProfileData filmmakerProfileData) {
 		User user = userService.getUserById(filmmmakerId).orElse(null);
 		if (user == null || user.getType() != UserType.Filmmaker) {
 			return "redirect:/";
@@ -91,22 +88,22 @@ public class FilmmakerController {
 
 		Filmmaker filmmaker = (Filmmaker) user;
 		filmmakerProfileData.updateFromFilmmaker(filmmaker);
-		filmmakerProfileData.setTotalShortFilms(shortFilmService.getShortFilmsCountByUploader(filmmaker));
-		filmmakerProfileData.getUploadedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountByUploader(filmmaker));
+		Integer shortFilmCount = shortFilmService.getShortFilmsCountByUploader(filmmaker);
+		filmmakerProfileData.setTotalShortFilms(shortFilmCount);
+		filmmakerProfileData.getUploadedShortFilmPagination().setTotalElements(shortFilmCount);
 		filmmakerProfileData.setUploadedShortFilms(shortFilmService
 				.getShortFilmsByUploader(filmmaker,
 						filmmakerProfileData.getUploadedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
 				.getContent());
 		
-		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountAttachedShortFilmByFilmmaker(filmmaker.getId()));
+		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements(shortFilmService.getAttachedShortFilmsCountByFilmmaker(filmmaker.getId()));
 		filmmakerProfileData.setAttachedShortFilms(shortFilmService
-				.getAttachedShortFilmByFilmmaker(filmmaker.getId(), 
+				.getAttachedShortFilmsByFilmmaker(filmmaker.getId(), 
 						filmmakerProfileData.getAttachedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
 				.getContent());
 		
 		
 		model.put("filmmakerProfileData", filmmakerProfileData);
-
 		model.put("followButton", true);
 
 		User viewer = userService.getLoggedUser().orElse(null);
