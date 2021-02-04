@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -13,13 +14,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.Credentials;
+import io.github.fourfantastics.standby.model.form.FeedData;
 import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
 import io.github.fourfantastics.standby.service.AccountService;
+import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 
 @Controller
@@ -36,6 +40,9 @@ public class UserController {
 	@Autowired
 	AccountService accountService;
 
+	@Autowired
+	ShortFilmService shortFilmService;
+
 	@GetMapping("/login")
 	public String getLogin(@ModelAttribute Credentials credentials, Map<String, Object> model,
 			BindingResult bindingResult) {
@@ -49,14 +56,14 @@ public class UserController {
 		System.out.println(bindingResult.getAllErrors());
 		return "login";
 	}
-	
+
 	@GetMapping("/logout")
 	public String doLogout(HttpServletRequest request, HttpServletResponse response) {
-	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	    if (auth != null){    
-	        new SecurityContextLogoutHandler().logout(request, response, auth);
-	    }
-	    return "redirect:/login";
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			new SecurityContextLogoutHandler().logout(request, response, auth);
+		}
+		return "redirect:/login";
 	}
 
 	@GetMapping("/account")
@@ -86,4 +93,24 @@ public class UserController {
 			return "redirect:/account";
 		}
 	}
+
+	@RequestMapping("/feed")
+	public String getFeedView(Map<String, Object> model, @ModelAttribute FeedData feedData) {
+
+		User user = userService.getLoggedUser().orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
+		feedData.setUser(user);
+		feedData.getFollowedShortFilmsPag().setTotalElements(shortFilmService
+				.getFollowedShortFilms(user.getId(),
+						feedData.getFollowedShortFilmsPag().getPageRequest(Sort.by("uploadDate").descending())).getSize());
+		feedData.setFollowedShortFilms(shortFilmService.getFollowedShortFilms(user.getId(),
+						feedData.getFollowedShortFilmsPag().getPageRequest(Sort.by("uploadDate").descending())).getContent());
+		
+		model.put("feedData", feedData);
+		
+		return "feed";
+	}
+
 }

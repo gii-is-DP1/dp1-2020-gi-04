@@ -110,31 +110,35 @@ public class ShortFilmService {
 		Set<Role> roles = filmmaker.getParticipateAs();
 		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet());
 	}
-	
+
 	public Integer getShortFilmsCountByFilmmaker(Filmmaker filmmaker) {
 		Set<Role> roles = filmmaker.getParticipateAs();
 		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet()).size();
 	}
 
-
 	public void updateViewCount(ShortFilm shortFilm, Integer sum) {
 		shortFilm.setViewCount(shortFilm.getViewCount() + sum);
 		shortFilmRepository.save(shortFilm);
 	}
-	
+
 	public Integer getShortFilmsCountByUploader(Filmmaker uploader) {
 		return shortFilmRepository.countByUploader(uploader);
 	}
-	
+
 	public Page<ShortFilm> getShortFilmsByUploader(Filmmaker uploader, Pageable pageable) {
 		return shortFilmRepository.findByUploader(uploader, pageable);
 	}
-	
-	public Integer getShortFilmsCountAttachedShortFilmByFilmmaker(Filmmaker filmmaker) {
-		return shortFilmRepository.countAttachedShortFilmByFilmmaker(filmmaker.getId());
+
+	public Integer getShortFilmsCountAttachedShortFilmByFilmmaker(Long filmmakerID) {
+		return shortFilmRepository.countAttachedShortFilmByFilmmaker(filmmakerID);
 	}
-	public Page<ShortFilm> getAttachedShortFilmByFilmmaker(Filmmaker filmmaker,Pageable pageable) {
-		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmaker.getId(),pageable);
+
+	public Page<ShortFilm> getAttachedShortFilmByFilmmaker(Long filmmakerID, Pageable pageable) {
+		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmakerID, pageable);
+	}
+
+	public Page<ShortFilm> getFollowedShortFilms(Long userID, Pageable pageable) {
+		return shortFilmRepository.followedShortFilms(userID, pageable);
 	}
 
 }
