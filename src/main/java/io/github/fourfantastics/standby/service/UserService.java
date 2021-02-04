@@ -136,6 +136,7 @@ public class UserService {
 		//userRepository.save(user);
 		user.getFavouriteShortFilms().add(shortFilm);
 		shortFilm.getFavouriteUsers().add(user);
+		userRepository.save(user);
 		shortFilmService.save(shortFilm);
 
 	}
@@ -145,6 +146,7 @@ public class UserService {
 		//userRepository.save(user);
 		user.getFavouriteShortFilms().remove(shortFilm);
 		shortFilm.getFavouriteUsers().remove(user);
+		userRepository.save(user);
 		shortFilmService.save(shortFilm);
 	
 	}

@@ -2,7 +2,9 @@ package io.github.fourfantastics.standby.service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -10,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -134,11 +137,15 @@ public class ShortFilmService {
 	}
 	
 	public Integer getCountFavouriteShortFilmsByUser(User user) {
-		return shortFilmRepository.countFavouriteShortFilmsByUser(user.getId());
+		List<ShortFilm> favouriteShortFilms= new ArrayList<>(user.getFavouriteShortFilms());
+		return favouriteShortFilms.size();
 	}
 	
 	public Page<ShortFilm> getFavouriteShortFilmsByUser(User user,Pageable pageable) {
-		return shortFilmRepository.findFavouriteShortFilmsByUser(user.getId(),pageable);
+		List<ShortFilm> favouriteShortFilms= new ArrayList<>(user.getFavouriteShortFilms());
+		int start= (int) pageable.getOffset();
+		int end = (start+pageable.getPageSize())>favouriteShortFilms.size()?favouriteShortFilms.size():(start+pageable.getPageSize());
+		return new PageImpl<ShortFilm>(favouriteShortFilms.subList(start, end),pageable,favouriteShortFilms.size());
 	}
 
 }
