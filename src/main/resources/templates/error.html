@@ -22,9 +22,11 @@
                     <h4 class="alert-heading text-center" data-th-text="|${throwable.getClass().getName()}|"></h4>
                     <p data-th-text="${throwable.getMessage()}"></p>
                     <span>Stack trace:</span>
-                    <th-block data-th-each="trace : ${throwable.getStackTrace()}">
-                        <span data-th-text="${trace}"></span>
-                    </th-block>
+                    <div class="d-flex flex-column">
+	                    <th-block data-th-each="trace : ${throwable.getStackTrace()}">
+	                        <span class="pb-1" data-th-text="${trace}"></span>
+	                    </th-block>
+                    </div>
                 </th-block>
                 <th-block data-th-case="false">
                     <span>There is no more information about the error</span>

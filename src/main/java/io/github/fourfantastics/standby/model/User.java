@@ -29,7 +29,7 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = { "notifications", "ratings", "comments", "favouriteShortFilms", "filmmakersSubscribedTo",
+@ToString(exclude = { "notifications", "ratings", "comments", "favouriteShortFilms",
 		"configuration" })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -61,9 +61,6 @@ public class User {
 
 	@Column(nullable = true)
 	String photoUrl;
-
-	@ManyToMany(fetch = FetchType.EAGER)
-	Set<Filmmaker> filmmakersSubscribedTo = new HashSet<Filmmaker>();
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	Set<Notification> notifications = new HashSet<Notification>();

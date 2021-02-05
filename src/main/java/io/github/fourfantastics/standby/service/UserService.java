@@ -3,11 +3,9 @@ package io.github.fourfantastics.standby.service;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -19,9 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.model.Account;
-import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.Notification;
-import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.FileRepository;
@@ -37,15 +32,13 @@ public class UserService {
 	final Set<String> allowedImageFileExtensions = Utils.hashSet(".bmp", ".png", ".jpg", ".jpeg", ".webp");
 
 	UserRepository userRepository;
-	NotificationService notificationService;
 	ShortFilmService shortFilmService;
 	FileRepository fileRepository;
 
 	@Autowired
-	public UserService(UserRepository userRepository, NotificationService notificationService,
+	public UserService(UserRepository userRepository,
 			FileRepository fileRepository, ShortFilmService shortFilmService) {
 		this.userRepository = userRepository;
-		this.notificationService = notificationService;
 		this.fileRepository = fileRepository;
 		this.shortFilmService = shortFilmService;
 	}
@@ -84,28 +77,6 @@ public class UserService {
 
 	public PasswordEncoder getEncoder() {
 		return new BCryptPasswordEncoder();
-	}
-
-	public void subscribesTo(User follower, Filmmaker followed) {
-		follower.getFilmmakersSubscribedTo().add(followed);
-		if (followed.getConfiguration().getBySubscriptions()) {
-			notificationService.sendNotification(followed, NotificationType.SUBSCRIPTION,
-					String.format("%s has subscribed to your profile.", follower.getName()));
-
-		}
-		userRepository.save(follower);
-	}
-
-	public void unsubscribesTo(User follower, Filmmaker followed) {
-		followed.getFilmmakerSubscribers().remove(follower);
-		List<Notification> notification = followed.getNotifications().stream()
-				.filter(x -> x.getText().equals(follower.getName() + " has subscribed to your profile."))
-				.collect(Collectors.toList());
-		if (!notification.isEmpty()) {
-			followed.getNotifications().remove(notification.get(0));
-			notificationService.deleteNotification(notification.get(0));
-		}
-		userRepository.save(follower);
 	}
 
 	public void setProfilePicture(User user, MultipartFile imageFile)

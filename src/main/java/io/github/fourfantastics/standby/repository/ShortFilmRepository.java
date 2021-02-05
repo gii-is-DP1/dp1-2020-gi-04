@@ -18,16 +18,16 @@ public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
 
 	public Page<ShortFilm> findByUploader(Filmmaker uploader, Pageable pageable);
 
-	@Query("SELECT count(shortfilm) from ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId")
+	@Query("SELECT count(shortfilm) FROM ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId")
 	public Integer countAttachedShortFilmByFilmmaker(@Param("filmmakerId") Long filmmakerId);
 	
-	@Query(value = "SELECT shortfilm from ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId", 
+	@Query(value = "SELECT shortfilm FROM ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId", 
 			countQuery = "SELECT count(shortfilm) from ShortFilm shortfilm JOIN shortfilm.roles roles JOIN roles.filmmaker filmmaker WHERE filmmaker.id = :filmmakerId", 
 			nativeQuery = false)
 	public Page<ShortFilm> findAttachedShortFilmByFilmmaker(@Param("filmmakerId") Long filmmakerId, Pageable pageable);
 
-	@Query(value = "SELECT shortfilm from User user JOIN user.filmmakersSubscribedTo subscribed JOIN subscribed.uploadedShortFilms shortfilm WHERE user.id = :userId", 
-			countQuery = "SELECT count(shortfilm) from User user JOIN user.filmmakersSubscribedTo subscribed JOIN subscribed.uploadedShortFilms shortfilm WHERE user.id = :userId", 
+	@Query(value = "SELECT shortfilm FROM Subscription subscription JOIN subscription.subscriber subscriber JOIN subscription.filmmaker filmmaker JOIN filmmaker.uploadedShortFilms shortfilm WHERE subscriber.id = :userId", 
+			countQuery = "SELECT count(shortfilm) FROM Subscription subscription JOIN subscription.subscriber subscriber JOIN subscription.filmmaker filmmaker JOIN filmmaker.uploadedShortFilms shortfilm WHERE subscriber.id = :userId", 
 			nativeQuery = false)
 	public Page<ShortFilm> followedShortFilms(@Param("userId") Long userId, Pageable pageable);
 }
