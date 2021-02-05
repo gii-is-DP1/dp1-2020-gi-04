@@ -9,10 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class Account implements UserDetails {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private User user;
 
@@ -61,5 +57,4 @@ public class Account implements UserDetails {
 	public User getUser() {
 		return this.user;
 	}
-
 }
