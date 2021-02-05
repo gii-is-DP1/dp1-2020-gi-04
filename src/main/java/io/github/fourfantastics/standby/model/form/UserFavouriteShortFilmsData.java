@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserFavouriteShortFilmsData {
-	List<ShortFilm> favouriteShortFilms= new ArrayList<ShortFilm>();
-	
-	Pagination favouriteShortFilmPagination = Pagination.empty();
+	List<ShortFilm> favouriteShortFilms = new ArrayList<ShortFilm>();
 
+	Pagination favouriteShortFilmPagination = Pagination.empty();
 }

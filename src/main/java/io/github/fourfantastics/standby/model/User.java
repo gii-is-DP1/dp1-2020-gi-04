@@ -1,6 +1,7 @@
 package io.github.fourfantastics.standby.model;
 
 import java.util.HashSet;
+
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -11,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
@@ -29,8 +29,7 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = { "notifications", "ratings", "comments", "favouriteShortFilms",
-		"configuration" })
+@ToString(exclude = { "notifications", "ratings", "comments","configuration" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -74,6 +73,5 @@ public class User {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	Set<Comment> comments = new HashSet<Comment>();
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	Set<ShortFilm> favouriteShortFilms = new HashSet<ShortFilm>();
+
 }
