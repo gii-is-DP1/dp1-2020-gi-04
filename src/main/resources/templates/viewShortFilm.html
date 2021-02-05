@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<th-block data-th-with="shortFilm = ${shortFilmViewData.getShortFilm()}, comments = ${shortFilmViewData.getComments()}">
+<th-block data-th-with="shortFilm = ${shortFilmViewData.getShortFilm()}, comments = ${shortFilmViewData.getComments()},followers=${shortFilmViewData.getFollowerCount()}">
     <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
         <title data-th-text="|Watching ${shortFilm.getTitle()} - Standby|"></title>
         <section>
@@ -84,7 +84,7 @@
                                             text=${shortFilm.getDescription()},
                                             photoUrl=${uploader.getPhotoUrl()}, 
                                             profileId=${uploader.getId()},
-                                            subscriberCount=${#lists.size(uploader.getFilmmakerSubscribers())},
+                                            subscriberCount=${#lists.size(followers)},
                                             collapsable=(${shortFilm.isCollapsable()} ? true : null),
                                         )}"
                     ></div>
