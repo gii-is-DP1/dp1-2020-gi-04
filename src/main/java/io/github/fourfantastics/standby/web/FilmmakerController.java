@@ -1,6 +1,5 @@
 package io.github.fourfantastics.standby.web;
 
-
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +20,12 @@ import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
 import io.github.fourfantastics.standby.model.form.FilmmakerProfileData;
 import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
-import io.github.fourfantastics.standby.model.form.UserFavouriteShortFilmsData;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.PrivacyRequestService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
+import io.github.fourfantastics.standby.service.SubscriptionService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
 
@@ -40,6 +39,9 @@ public class FilmmakerController {
 
 	@Autowired
 	PrivacyRequestService privacyRequestService;
+	
+	@Autowired
+	SubscriptionService subscriptionService;
 
 	@Autowired
 	ShortFilmService shortFilmService;
@@ -82,31 +84,34 @@ public class FilmmakerController {
 	}
 
 	@RequestMapping("/profile/{filmmmakerId}")
-	public String getProfileView(@PathVariable Long filmmmakerId, Map<String, Object> model,@ModelAttribute FilmmakerProfileData filmmakerProfileData) {
-
+	public String getProfileView(@PathVariable Long filmmmakerId, Map<String, Object> model, @ModelAttribute FilmmakerProfileData filmmakerProfileData) {
 		User user = userService.getUserById(filmmmakerId).orElse(null);
 		if (user == null || user.getType() != UserType.Filmmaker) {
 			return "redirect:/";
 		}
 
 		Filmmaker filmmaker = (Filmmaker) user;
-		filmmakerProfileData.updateFromFilmmaker(filmmaker);
-		filmmakerProfileData.setTotalShortFilms(shortFilmService.getShortFilmsCountByUploader(filmmaker));
-		filmmakerProfileData.getUploadedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountByUploader(filmmaker));
+		filmmakerProfileData.setFilmmaker(filmmaker);
+		
+		Integer shortFilmCount = shortFilmService.getShortFilmsCountByUploader(filmmaker);
+		filmmakerProfileData.setTotalShortFilms(shortFilmCount);
+		
+		filmmakerProfileData.getUploadedShortFilmPagination().setTotalElements(shortFilmCount);
 		filmmakerProfileData.setUploadedShortFilms(shortFilmService
 				.getShortFilmsByUploader(filmmaker,
 						filmmakerProfileData.getUploadedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
 				.getContent());
 		
-		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements(shortFilmService.getShortFilmsCountAttachedShortFilmByFilmmaker(filmmaker.getId()));
+		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements(shortFilmService.getAttachedShortFilmsCountByFilmmaker(filmmaker.getId()));
 		filmmakerProfileData.setAttachedShortFilms(shortFilmService
-				.getAttachedShortFilmByFilmmaker(filmmaker.getId(), 
+				.getAttachedShortFilmsByFilmmaker(filmmaker.getId(), 
 						filmmakerProfileData.getAttachedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
 				.getContent());
 		
+		filmmakerProfileData.setFollowerCount(subscriptionService.getFollowerCount(filmmaker));
+		filmmakerProfileData.setFollowedCount(subscriptionService.getFollowedCount(filmmaker));
 		
 		model.put("filmmakerProfileData", filmmakerProfileData);
-
 		model.put("followButton", true);
 
 		User viewer = userService.getLoggedUser().orElse(null);
@@ -136,62 +141,11 @@ public class FilmmakerController {
 			}
 		}
 
-		if (filmmaker.getFilmmakerSubscribers().stream().anyMatch(x -> x.getName() == viewer.getName())) {
+		if (subscriptionService.isAlreadySubscribedTo(viewer, filmmaker)) {
 			model.put("alreadyFollowed", true);
 		}
 
 		return "filmmakerProfile";
-	}
-
-	@PostMapping("/profile/{userId}/subscription")
-	public String sucribesToFilmmaker(@PathVariable Long userId) {
-		User follower = userService.getLoggedUser().orElse(null);
-		if (follower == null) {
-			return "redirect:/login";
-		}
-
-		User user = userService.getUserById(userId).orElse(null);
-		if (user.getType() != UserType.Filmmaker) {
-			return String.format("redirect:/profile/%d", userId);
-		}
-
-		Filmmaker followed = (Filmmaker) user;
-		if (followed.getFilmmakerSubscribers().stream().anyMatch(x -> x.getName() == follower.getName())) {
-			return String.format("redirect:/profile/%d", userId);
-		}
-
-		if (followed.getName().equals(follower.getName())) {
-			return String.format("redirect:/profile/%d", userId);
-		}
-
-		userService.subscribesTo(follower, followed);
-		return String.format("redirect:/profile/%d", userId);
-	}
-
-	@PostMapping("/profile/{userId}/unsubscription")
-	public String unsucribesToFilmmaker(@PathVariable Long userId) {
-		User follower = userService.getLoggedUser().orElse(null);
-		
-		if (follower == null) {
-			return "redirect:/login";
-		}
-
-		User user = userService.getUserById(userId).orElse(null);
-		if (user.getType() != UserType.Filmmaker) {
-			return String.format("redirect:/profile/%d", userId);
-		}
-
-		Filmmaker followed = (Filmmaker) user;
-		if (!followed.getFilmmakerSubscribers().stream().anyMatch(x -> x.getName() == follower.getName())) {
-			return String.format("redirect:/profile/%d", userId);
-		}
-
-		if (followed.getName().equals(follower.getName())) {
-			return String.format("redirect:/profile/%d", userId);
-		}
-
-		userService.unsubscribesTo(follower, followed);
-		return String.format("redirect:/profile/%d", userId);
 	}
 
 	@PostMapping("/profile/{filmmakerId}/privacyrequest")
@@ -200,6 +154,7 @@ public class FilmmakerController {
 		if (sender == null) {
 			return "redirect:/login";
 		}
+		
 		if (sender.getType() != UserType.Company) {
 			return String.format("redirect:/profile/%d", filmmakerId);
 		}
@@ -270,6 +225,5 @@ public class FilmmakerController {
 		model.put("photoUrl", user.getPhotoUrl());
 		model.put("success", "Configuration has been saved successfully!");
 		return "manageFilmmakerAccount";
-	}
-	
+	}	
 }

@@ -2,6 +2,7 @@ package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,15 +18,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,6 +45,7 @@ import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.service.FilmmakerService;
 import io.github.fourfantastics.standby.service.PrivacyRequestService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
+import io.github.fourfantastics.standby.service.SubscriptionService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
 import io.github.fourfantastics.standby.service.exception.NotUniqueException;
@@ -63,6 +67,9 @@ public class FilmmakerControllerTest {
 
 	@MockBean
 	ShortFilmService shortFilmService;
+	
+	@MockBean
+	SubscriptionService subscriptionService;
 
 	@MockBean
 	PrivacyRequestService privacyRequestService;
@@ -425,10 +432,18 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
-		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
+		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
+		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
 
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
+		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
+		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
+		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
@@ -441,16 +456,22 @@ public class FilmmakerControllerTest {
 
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
-		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
+		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
+		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
+				any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 
+	@Test
 	void getProfileViewAsSubscribedCompanyTest() throws Exception {
 		final User subscriptor = new User();
 		subscriptor.setName("user1");
-		Set<User> followers = new HashSet<User>();
-		followers.add(subscriptor);
+
 		final Company mockViewerCompany = new Company();
+		mockViewerCompany.setId(2L);
 		mockViewerCompany.setName("user1");
 		mockViewerCompany.setBusinessPhone("675849765");
 		mockViewerCompany.setCompanyName("Company1");
@@ -466,25 +487,40 @@ public class FilmmakerControllerTest {
 		mockViewed.setCity("Seville");
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
-		mockViewed.setFilmmakerSubscribers(followers);
+
+		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
+		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
-		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
+		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
+		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
+		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
+		when(subscriptionService.isAlreadySubscribedTo(mockViewerCompany, mockViewed)).thenReturn(true);
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
+					.andExpect(model().attribute("followButton", true))
 					.andExpect(model().attribute("alreadyFollowed", true))
 					.andExpect(model().attribute("privacyRequestButton", true))
 					.andExpect(model().attributeDoesNotExist("personalInformation", "disablePrivacyRequestButton",
-							"accountButton", "followButton"))
+							"accountButton"))
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
-		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
+		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
+		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
+				any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 
 	@Test
@@ -510,34 +546,50 @@ public class FilmmakerControllerTest {
 		mockViewerCompany.setConfiguration(new NotificationConfiguration());
 		mockViewerCompany.getSentRequests().add(request);
 
+		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
+		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
+
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
-		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
+		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
+		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
+		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
 					.andExpect(model().attribute("followButton", true))
+					.andExpect(model().attribute("privacyRequestButton", true))
 					.andExpect(model().attribute("disablePrivacyRequestButton", true))
 					.andExpect(
-							model().attributeDoesNotExist("accountButton", "alreadyFollowed", "PrivacyRequestButton"))
+							model().attributeDoesNotExist("accountButton", "alreadyFollowed"))
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
-		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
+		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
+		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
+				any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 
 	@Test
 	void getProfileViewAsNotSubscribedFilmmakerTest() throws Exception {
-		final Filmmaker mockFollower = new Filmmaker();
-		mockFollower.setName("user1");
-		mockFollower.setFullname("Filmmaker1");
-		mockFollower.setCountry("Spain");
-		mockFollower.setCity("Seville");
-		mockFollower.setPhone("678543167");
-		mockFollower.setConfiguration(new NotificationConfiguration());
+		final Filmmaker mockViewerFilmmaker = new Filmmaker();
+		mockViewerFilmmaker.setId(2L);
+		mockViewerFilmmaker.setName("user1");
+		mockViewerFilmmaker.setFullname("Filmmaker1");
+		mockViewerFilmmaker.setCountry("Spain");
+		mockViewerFilmmaker.setCity("Seville");
+		mockViewerFilmmaker.setPhone("678543167");
+		mockViewerFilmmaker.setConfiguration(new NotificationConfiguration());
 
 		final Filmmaker mockViewed = new Filmmaker();
 		mockViewed.setId(1L);
@@ -548,22 +600,36 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
-		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
+		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
+		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerFilmmaker));
+		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
+		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
+		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
 					.andExpect(model().attribute("followButton", true))
 					.andExpect(model().attributeDoesNotExist("personalInformation", "disablePrivacyRequestButton",
-							"accountButton", "alreadyFollowed", "PrivacyRequestButton"))
+							"accountButton", "alreadyFollowed", "privacyRequestButton"))
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
-		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
+		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
+		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
+				any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 
 	@Test
@@ -572,6 +638,7 @@ public class FilmmakerControllerTest {
 		subscriptor.setName("user1");
 
 		final Filmmaker mockFollower = new Filmmaker();
+		mockFollower.setId(2L);
 		mockFollower.setName("user1");
 		mockFollower.setFullname("Filmmaker1");
 		mockFollower.setCountry("Spain");
@@ -587,25 +654,39 @@ public class FilmmakerControllerTest {
 		mockViewed.setCity("Seville");
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
-		mockViewed.getFilmmakerSubscribers().add(subscriptor);
+
+		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
+		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
-		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
+		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
+		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
+		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
+		when(subscriptionService.isAlreadySubscribedTo(mockFollower, mockViewed)).thenReturn(true);
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
 					.andExpect(model().attribute("alreadyFollowed", true))
 					.andExpect(model().attribute("followButton", true))
 					.andExpect(model().attributeDoesNotExist("personalInformation", "disablePrivacyRequestButton",
-							"accountButton", "PrivacyRequestButton"))
+							"accountButton", "privacyRequestButton"))
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
-		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
+		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
+		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
+				any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 
 	@Test
@@ -619,23 +700,37 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
+		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
+		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
+
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewed));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
-		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
+		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
+		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
+		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
 					.andExpect(model().attribute("accountButton", true))
 					.andExpect(model().attribute("personalInformation", true))
 					.andExpect(model().attributeDoesNotExist("disablePrivacyRequestButton", "alreadyFollowed",
-							"followButton", "PrivacyRequestButton"))
+							"followButton", "privacyRequestButton"))
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
-		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
+		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
+		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
+				any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 
 	@Test
@@ -649,33 +744,49 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
+		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
+		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
+
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockViewed));
-		when(shortFilmService.getShortFilmByFilmmaker(any(Filmmaker.class))).thenReturn(new HashSet<ShortFilm>());
+		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
+		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
+		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
 					.andExpect(model().attribute("followButton", true))
 					.andExpect(model().attributeDoesNotExist("personalInformation", "disablePrivacyRequestButton",
-							"accountButton", "alreadyFollowed", "PrivacyRequestButton"))
+							"accountButton", "alreadyFollowed", "privacyRequestButton"))
 					.andExpect(view().name("filmmakerProfile"));
 		});
 
 		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verify(shortFilmService, only()).getShortFilmByFilmmaker(mockViewed);
+		verify(userService, times(1)).getUserById(1L);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
+		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
+		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
+				any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 
 	@Test
 	void getNonExistentProfileViewTest() throws Exception {
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.empty());
+		final Long filmmakerId = 1L;
+		
+		when(userService.getUserById(filmmakerId)).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(get("/profile/1")).andExpect(status().isFound()).andExpect(redirectedUrl("/"));
+			mockMvc.perform(get(String.format("/profile/%d", filmmakerId))).andExpect(status().isFound()).andExpect(redirectedUrl("/"));
 		});
 
-		verify(userService, only()).getUserById(1L);
+		verify(userService, only()).getUserById(filmmakerId);
 	}
 
 	@Test
@@ -697,358 +808,7 @@ public class FilmmakerControllerTest {
 		verify(userService, only()).getUserById(1L);
 	}
 
-	@Test
-	void filmmakerSubscribesToFilmmakerTest() throws Exception {
-		final Filmmaker mockFollower = new Filmmaker();
-		mockFollower.setName("user1");
-		mockFollower.setFullname("Filmmaker1");
-		mockFollower.setCountry("Spain");
-		mockFollower.setCity("Seville");
-		mockFollower.setPhone("678543167");
-		mockFollower.setConfiguration(new NotificationConfiguration());
-
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		mockFilmmakerFollowed.setId(1L);
-		mockFilmmakerFollowed.setName("filmmaker1");
-		mockFilmmakerFollowed.setFullname("Filmmaker1");
-		mockFilmmakerFollowed.setCountry("Spain");
-		mockFilmmakerFollowed.setCity("Seville");
-		mockFilmmakerFollowed.setPhone("678543167");
-		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/subscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verify(userService, times(1)).subscribesTo(mockFollower, mockFilmmakerFollowed);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void companySubscribesToFilmmakerTest() throws Exception {
-		final Company mockFollowerCompany = new Company();
-		mockFollowerCompany.setName("user1");
-		mockFollowerCompany.setBusinessPhone("675849765");
-		mockFollowerCompany.setCompanyName("Company1");
-		mockFollowerCompany.setOfficeAddress("Calle Manzanita 3");
-		mockFollowerCompany.setTaxIDNumber("123-78-1234567");
-		mockFollowerCompany.setConfiguration(new NotificationConfiguration());
-
-		final Filmmaker mockFollowed = new Filmmaker();
-		mockFollowed.setId(1L);
-		mockFollowed.setName("filmmaker1");
-		mockFollowed.setFullname("Filmmaker1");
-		mockFollowed.setCountry("Spain");
-		mockFollowed.setCity("Seville");
-		mockFollowed.setPhone("678543167");
-		mockFollowed.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollowerCompany));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFollowed));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/subscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verify(userService, times(1)).subscribesTo(mockFollowerCompany, mockFollowed);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void unregisterUserSubscribesToFilmmakerTest() throws Exception {
-		final Filmmaker mockFollowed = new Filmmaker();
-		mockFollowed.setId(1L);
-		mockFollowed.setName("filmmaker1");
-		mockFollowed.setFullname("Filmmaker1");
-		mockFollowed.setCountry("Spain");
-		mockFollowed.setCity("Seville");
-		mockFollowed.setPhone("678543167");
-		mockFollowed.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.empty());
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/subscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/login"));
-		});
-
-		verify(userService, only()).getLoggedUser();
-	}
-
-	@Test
-	void userSubscribesToCompanyTest() throws Exception {
-		final Filmmaker mockFollower = new Filmmaker();
-		mockFollower.setName("user1");
-		mockFollower.setFullname("Filmmaker1");
-		mockFollower.setCountry("Spain");
-		mockFollower.setCity("Seville");
-		mockFollower.setPhone("678543167");
-		mockFollower.setConfiguration(new NotificationConfiguration());
-
-		final Company mockFollowedCompany = new Company();
-		mockFollowedCompany.setId(1l);
-		mockFollowedCompany.setName("user1");
-		mockFollowedCompany.setBusinessPhone("675849765");
-		mockFollowedCompany.setCompanyName("Company1");
-		mockFollowedCompany.setOfficeAddress("Calle Manzanita 3");
-		mockFollowedCompany.setTaxIDNumber("123-78-1234567");
-		mockFollowedCompany.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFollowedCompany));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/subscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void filmmakerSubscribesToItselfTest() throws Exception {
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		mockFilmmakerFollowed.setId(1L);
-		mockFilmmakerFollowed.setName("filmmaker1");
-		mockFilmmakerFollowed.setFullname("Filmmaker1");
-		mockFilmmakerFollowed.setCountry("Spain");
-		mockFilmmakerFollowed.setCity("Seville");
-		mockFilmmakerFollowed.setPhone("678543167");
-		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmakerFollowed));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/subscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void alreadySubscribedUserSubscribesToFilmmakerTest() throws Exception {
-		final Filmmaker mockFollower = new Filmmaker();
-		mockFollower.setName("user1");
-		mockFollower.setFullname("Filmmaker1");
-		mockFollower.setCountry("Spain");
-		mockFollower.setCity("Seville");
-		mockFollower.setPhone("678543167");
-		mockFollower.setConfiguration(new NotificationConfiguration());
-
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		mockFilmmakerFollowed.setId(1L);
-		mockFilmmakerFollowed.setName("filmmaker1");
-		mockFilmmakerFollowed.setFullname("Filmmaker1");
-		mockFilmmakerFollowed.setCountry("Spain");
-		mockFilmmakerFollowed.setCity("Seville");
-		mockFilmmakerFollowed.setPhone("678543167");
-		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
-		mockFilmmakerFollowed.getFilmmakerSubscribers().add(mockFollower);
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/subscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void filmmakerUnsubscribesToFilmmakerTest() throws Exception {
-		final Filmmaker mockFollower = new Filmmaker();
-		mockFollower.setName("user1");
-		mockFollower.setFullname("Filmmaker1");
-		mockFollower.setCountry("Spain");
-		mockFollower.setCity("Seville");
-		mockFollower.setPhone("678543167");
-		mockFollower.setConfiguration(new NotificationConfiguration());
-
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		mockFilmmakerFollowed.setId(1L);
-		mockFilmmakerFollowed.setName("filmmaker1");
-		mockFilmmakerFollowed.setFullname("Filmmaker2");
-		mockFilmmakerFollowed.setCountry("Spain");
-		mockFilmmakerFollowed.setCity("Seville");
-		mockFilmmakerFollowed.setPhone("678543167");
-		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
-		mockFilmmakerFollowed.getFilmmakerSubscribers().add(mockFollower);
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/unsubscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verify(userService, times(1)).unsubscribesTo(mockFollower, mockFilmmakerFollowed);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void companyUnsubscribesToFilmmakerTest() throws Exception {
-		final Company mockFollowerCompany = new Company();
-		mockFollowerCompany.setName("user1");
-		mockFollowerCompany.setBusinessPhone("675849765");
-		mockFollowerCompany.setCompanyName("Company1");
-		mockFollowerCompany.setOfficeAddress("Calle Manzanita 3");
-		mockFollowerCompany.setTaxIDNumber("123-78-1234567");
-		mockFollowerCompany.setConfiguration(new NotificationConfiguration());
-
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		mockFilmmakerFollowed.setId(1L);
-		mockFilmmakerFollowed.setName("filmmaker1");
-		mockFilmmakerFollowed.setFullname("Filmmaker2");
-		mockFilmmakerFollowed.setCountry("Spain");
-		mockFilmmakerFollowed.setCity("Seville");
-		mockFilmmakerFollowed.setPhone("678543167");
-		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
-		mockFilmmakerFollowed.getFilmmakerSubscribers().add(mockFollowerCompany);
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollowerCompany));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/unsubscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verify(userService, times(1)).unsubscribesTo(mockFollowerCompany, mockFilmmakerFollowed);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void filmmakerUnsubscribesToItselfTest() throws Exception {
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		mockFilmmakerFollowed.setId(1L);
-		mockFilmmakerFollowed.setName("filmmaker1");
-		mockFilmmakerFollowed.setFullname("Filmmaker1");
-		mockFilmmakerFollowed.setCountry("Spain");
-		mockFilmmakerFollowed.setCity("Seville");
-		mockFilmmakerFollowed.setPhone("678543167");
-		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmakerFollowed));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/unsubscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void userUnsubscribesToCompanyTest() throws Exception {
-		final Filmmaker mockFollower = new Filmmaker();
-		mockFollower.setName("user1");
-		mockFollower.setFullname("Filmmaker1");
-		mockFollower.setCountry("Spain");
-		mockFollower.setCity("Seville");
-		mockFollower.setPhone("678543167");
-		mockFollower.setConfiguration(new NotificationConfiguration());
-
-		final Company mockFollowedCompany = new Company();
-		mockFollowedCompany.setId(1l);
-		mockFollowedCompany.setName("user1");
-		mockFollowedCompany.setBusinessPhone("675849765");
-		mockFollowedCompany.setCompanyName("Company1");
-		mockFollowedCompany.setOfficeAddress("Calle Manzanita 3");
-		mockFollowedCompany.setTaxIDNumber("123-78-1234567");
-		mockFollowedCompany.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFollowedCompany));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/unsubscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void notSubscribedUserUnsubscribesToFilmmakerTest() throws Exception {
-		final Filmmaker mockFollower = new Filmmaker();
-		mockFollower.setName("user1");
-		mockFollower.setFullname("Filmmaker1");
-		mockFollower.setCountry("Spain");
-		mockFollower.setCity("Seville");
-		mockFollower.setPhone("678543167");
-		mockFollower.setConfiguration(new NotificationConfiguration());
-
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		mockFilmmakerFollowed.setId(1L);
-		mockFilmmakerFollowed.setName("filmmaker1");
-		mockFilmmakerFollowed.setFullname("Filmmaker1");
-		mockFilmmakerFollowed.setCountry("Spain");
-		mockFilmmakerFollowed.setCity("Seville");
-		mockFilmmakerFollowed.setPhone("678543167");
-		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerFollowed));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/unsubscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, times(1)).getLoggedUser();
-		verify(userService, times(1)).getUserById(1l);
-		verifyNoMoreInteractions(userService);
-	}
-
-	@Test
-	void unregisterUserUnsubscribesToFilmmakerTest() throws Exception {
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		mockFilmmakerFollowed.setId(1L);
-		mockFilmmakerFollowed.setName("filmmaker1");
-		mockFilmmakerFollowed.setFullname("Filmmaker1");
-		mockFilmmakerFollowed.setCountry("Spain");
-		mockFilmmakerFollowed.setCity("Seville");
-		mockFilmmakerFollowed.setPhone("678543167");
-		mockFilmmakerFollowed.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.empty());
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/unsubscription").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/login"));
-		});
-
-		verify(userService, only()).getLoggedUser();
-	}
+	
 
 	@Test
 	void companySendsPrivacyRequestToFilmmakerTest() throws Exception {

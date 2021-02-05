@@ -1,17 +1,12 @@
 package io.github.fourfantastic.standby.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -25,10 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import io.github.fourfantastics.standby.StandbyApplication;
-import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.Notification;
-import io.github.fourfantastics.standby.model.NotificationConfiguration;
-import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.repository.FileRepository;
@@ -57,7 +48,7 @@ public class UserServiceTest {
 
 	@BeforeEach
 	public void setup() {
-		userService = new UserService(userRepository, notificationService, fileRepository, shortFilmService);
+		userService = new UserService(userRepository, fileRepository, shortFilmService);
 
 		when(userRepository.save(any(User.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 	}
@@ -179,65 +170,4 @@ public class UserServiceTest {
 	 * verify(session, times(1)).removeAttribute("userId"); verify(session,
 	 * times(1)).removeAttribute("userType"); verifyNoMoreInteractions(session); }
 	 */
-	@Test
-	void subscribesWithNotificationToTest() {
-		final User mockUserFollower = new User();
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		final NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
-		notificationConfiguration.setBySubscriptions(true);
-		mockFilmmakerFollowed.setConfiguration(notificationConfiguration);
-
-		userService.subscribesTo(mockUserFollower, mockFilmmakerFollowed);
-
-		verify(notificationService, only()).sendNotification(eq(mockFilmmakerFollowed),
-				eq(NotificationType.SUBSCRIPTION), any(String.class));
-		verify(userRepository, only()).save(mockUserFollower);
-	}
-
-	@Test
-	void subscribesWithoutNotificationToTest() {
-		final User mockUserFollower = new User();
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-		final NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
-		notificationConfiguration.setBySubscriptions(false);
-		mockFilmmakerFollowed.setConfiguration(notificationConfiguration);
-
-		userService.subscribesTo(mockUserFollower, mockFilmmakerFollowed);
-
-		verifyNoInteractions(notificationService);
-		verify(userRepository, only()).save(mockUserFollower);
-	}
-
-	@Test
-	void unsubscribesWithNotificationEliminationToTest() {
-		final User mockUserFollower = new User();
-		mockUserFollower.setName("Filmmaker1");
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-
-		mockUserFollower.getFilmmakersSubscribedTo().add(mockFilmmakerFollowed);
-		mockFilmmakerFollowed.getFilmmakerSubscribers().add(mockUserFollower);
-
-		Notification notification = new Notification();
-		notification.setText("Filmmaker1 has subscribed to your profile.");
-		mockFilmmakerFollowed.getNotifications().add(notification);
-
-		userService.unsubscribesTo(mockUserFollower, mockFilmmakerFollowed);
-
-		verify(notificationService, only()).deleteNotification(notification);
-		verify(userRepository, only()).save(mockUserFollower);
-	}
-
-	@Test
-	void unsubscribesWithoutNotificationEliminationToTest() {
-		final User mockUserFollower = new User();
-		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
-
-		mockUserFollower.getFilmmakersSubscribedTo().add(mockFilmmakerFollowed);
-		mockFilmmakerFollowed.getFilmmakerSubscribers().add(mockUserFollower);
-
-		userService.unsubscribesTo(mockUserFollower, mockFilmmakerFollowed);
-
-		verify(userRepository, only()).save(mockUserFollower);
-		verifyNoInteractions(notificationService);
-	}
 }
