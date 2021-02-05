@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
+import io.github.fourfantastics.standby.model.User;
 
 public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
 	public Optional<ShortFilm> findByTitle(String title);
@@ -30,4 +31,5 @@ public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
 			countQuery = "SELECT count(shortfilm) FROM Subscription subscription JOIN subscription.subscriber subscriber JOIN subscription.filmmaker filmmaker JOIN filmmaker.uploadedShortFilms shortfilm WHERE subscriber.id = :userId", 
 			nativeQuery = false)
 	public Page<ShortFilm> followedShortFilms(@Param("userId") Long userId, Pageable pageable);
+	
 }

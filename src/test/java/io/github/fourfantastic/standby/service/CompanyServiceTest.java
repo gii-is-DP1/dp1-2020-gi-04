@@ -76,7 +76,6 @@ public class CompanyServiceTest {
 			assertThat(company.getTaxIDNumber()).isEqualTo(companyRegisterData.getTaxIDNumber());
 
 			assertTrue(company.getComments().isEmpty());
-			assertTrue(company.getFavouriteShortFilms().isEmpty());
 			assertTrue(company.getNotifications().isEmpty());
 			
 			verify(userService, times(1)).register(companyRegisterData.toCompany());

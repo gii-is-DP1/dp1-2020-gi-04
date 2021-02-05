@@ -30,6 +30,7 @@ import io.github.fourfantastics.standby.model.validator.ShortFilmEditDataValidat
 import io.github.fourfantastics.standby.model.validator.ShortFilmUploadDataValidator;
 import io.github.fourfantastics.standby.model.validator.ShortFilmViewDataValidator;
 import io.github.fourfantastics.standby.service.CommentService;
+import io.github.fourfantastics.standby.service.FavouriteService;
 import io.github.fourfantastics.standby.service.RatingService;
 import io.github.fourfantastics.standby.service.RoleService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
@@ -61,6 +62,9 @@ public class ShortFilmController {
 	
 	@Autowired
 	SubscriptionService subscriptionService;
+	
+	@Autowired
+	FavouriteService favouriteService;
 
 	@Autowired
 	ShortFilmUploadDataValidator shortFilmUploadDataValidator;
@@ -154,7 +158,7 @@ public class ShortFilmController {
 
 		User loggedUser = userService.getLoggedUser().orElse(null);
 		if (loggedUser != null) {
-			shortFilmViewData.setHasFavourite(userService.hasFavouriteShortFilm(shortFilm, loggedUser));
+			shortFilmViewData.setHasFavourite(favouriteService.hasFavouriteShortFilm(shortFilm, loggedUser));
 			shortFilmViewData.setWatcherId(loggedUser.getId());
 			shortFilmViewData.setWatcherName(loggedUser.getName());
 			shortFilmViewData.setWatcherPhotoUrl(loggedUser.getPhotoUrl());

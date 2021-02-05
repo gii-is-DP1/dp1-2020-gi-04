@@ -48,7 +48,7 @@ public class UserServiceTest {
 
 	@BeforeEach
 	public void setup() {
-		userService = new UserService(userRepository, fileRepository, shortFilmService);
+		userService = new UserService(userRepository, fileRepository);
 
 		when(userRepository.save(any(User.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 	}

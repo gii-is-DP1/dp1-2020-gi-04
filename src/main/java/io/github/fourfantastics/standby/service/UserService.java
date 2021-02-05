@@ -1,6 +1,7 @@
 package io.github.fourfantastics.standby.service;
 
 import java.nio.file.Path;
+
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Optional;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.model.Account;
-import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.UserRepository;
@@ -32,15 +32,12 @@ public class UserService {
 	final Set<String> allowedImageFileExtensions = Utils.hashSet(".bmp", ".png", ".jpg", ".jpeg", ".webp");
 
 	UserRepository userRepository;
-	ShortFilmService shortFilmService;
 	FileRepository fileRepository;
 
 	@Autowired
-	public UserService(UserRepository userRepository,
-			FileRepository fileRepository, ShortFilmService shortFilmService) {
+	public UserService(UserRepository userRepository,FileRepository fileRepository) {
 		this.userRepository = userRepository;
 		this.fileRepository = fileRepository;
-		this.shortFilmService = shortFilmService;
 	}
 
 	public Optional<User> getUserById(Long id) {
@@ -100,19 +97,5 @@ public class UserService {
 
 		user.setPhotoUrl(filePath);
 		userRepository.save(user);
-	}
-
-	public void favouriteShortFilm(ShortFilm shortFilm, User user) {
-		user.getFavouriteShortFilms().add(shortFilm);
-		userRepository.save(user);
-	}
-
-	public void removeFavouriteShortFilm(ShortFilm shortFilm, User user) {
-		user.getFavouriteShortFilms().remove(shortFilm);	
-		userRepository.save(user);
-	}
-
-	public Boolean hasFavouriteShortFilm(ShortFilm shortFilm, User user) {
-		return user.getFavouriteShortFilms().contains(shortFilm);
 	}
 }

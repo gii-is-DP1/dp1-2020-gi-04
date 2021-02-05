@@ -3,9 +3,9 @@ package io.github.fourfantastics.standby.web;
 import java.util.Map;
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.data.domain.Sort;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,6 +19,7 @@ import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.ShortFilmViewData;
 import io.github.fourfantastics.standby.model.form.UserFavouriteShortFilmsData;
+import io.github.fourfantastics.standby.service.FavouriteService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 
@@ -29,6 +30,9 @@ public class FavouriteShortfilmController {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	FavouriteService favouriteService;
 
 	@PostMapping(path = "/shortfilm/{shortFilmId}", params = { "favouriteShortfilm" })
 	public String favouriteShortFilm(@RequestParam Integer favouriteShortfilm, @PathVariable Long shortFilmId,
@@ -46,7 +50,7 @@ public class FavouriteShortfilmController {
 
 		redirections.addFlashAttribute(shortFilmViewData);
 
-		userService.favouriteShortFilm(shortFilm, loggedUser);
+		favouriteService.favouriteShortFilm(shortFilm, loggedUser);
 		return String.format("redirect:/shortfilm/%d", shortFilmId);
 	}
 
@@ -66,7 +70,7 @@ public class FavouriteShortfilmController {
 
 		redirections.addFlashAttribute(shortFilmViewData);
 
-		userService.removeFavouriteShortFilm(shortFilm, loggedUser);
+		favouriteService.removeFavouriteShortFilm(shortFilm, loggedUser);
 		return String.format("redirect:/shortfilm/%d", shortFilmId);
 	}
 	
@@ -77,14 +81,11 @@ public class FavouriteShortfilmController {
 			return "redirect:/login";
 		}
 		userFavouriteShortFilmsData.getFavouriteShortFilmPagination().setPageElements(1);
-		userFavouriteShortFilmsData.getFavouriteShortFilmPagination().setTotalElements(shortFilmService.getCountFavouriteShortFilmsByUser(user));
-		userFavouriteShortFilmsData.setFavouriteShortFilms(shortFilmService
-				.getFavouriteShortFilmsByUser(user, userFavouriteShortFilmsData.getFavouriteShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
+		userFavouriteShortFilmsData.getFavouriteShortFilmPagination().setTotalElements(favouriteService.getFavouriteShortFilmsCount(user));
+		userFavouriteShortFilmsData.setFavouriteShortFilms(favouriteService
+				.getFavouriteShortFilmsByUser(user, userFavouriteShortFilmsData.getFavouriteShortFilmPagination().getPageRequest())
 				.getContent());
-		System.out.println(userFavouriteShortFilmsData.getFavouriteShortFilmPagination().getTotalElements());
-		System.out.println(user.getFavouriteShortFilms());
 		model.put("userFavouriteShortFilmsData", userFavouriteShortFilmsData);
-		System.out.println(userFavouriteShortFilmsData.getFavouriteShortFilms());
-		return "favouriteShortFilmsFilmmaker";
+		return "favouriteShortFilmsUser";
 	}
 }

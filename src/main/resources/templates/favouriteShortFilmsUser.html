@@ -6,7 +6,7 @@
             data-th-with="favouriteShortFilms = ${userFavouriteShortFilmsData.getFavouriteShortFilms()}">
                     <th-block data-th-switch="${favouriteShortFilms} != null and ${!favouriteShortFilms.isEmpty()}">
                         <th-block data-th-case="true">
-                            <th-block data-th-each="shortFilm : ${favouriteShortFilms}">
+                            <th-block data-th-each="shortFilm : ${favouriteShortFilms.get().getFavouriteShortFilm()}">
                                 <div
                                     data-th-replace="~{@{fragments/shortFilmItem}(
                                     id=${shortFilm.getId()},
