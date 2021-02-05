@@ -23,11 +23,10 @@ public class Favourite {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	User user;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	ShortFilm favouriteShortfilm;
-
 }

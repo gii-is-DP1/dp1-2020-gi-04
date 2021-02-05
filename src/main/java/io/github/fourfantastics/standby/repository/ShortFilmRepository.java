@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
-import io.github.fourfantastics.standby.model.User;
 
 public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
 	public Optional<ShortFilm> findByTitle(String title);

@@ -1,11 +1,9 @@
 package io.github.fourfantastics.standby.web;
 
 import java.util.Map;
-
-
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,7 +28,7 @@ public class FavouriteShortfilmController {
 
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	FavouriteService favouriteService;
 
@@ -73,18 +71,22 @@ public class FavouriteShortfilmController {
 		favouriteService.removeFavouriteShortFilm(shortFilm, loggedUser);
 		return String.format("redirect:/shortfilm/%d", shortFilmId);
 	}
-	
+
 	@RequestMapping("/favourites")
-	public String getFavouritesView(Map<String, Object> model,@ModelAttribute UserFavouriteShortFilmsData userFavouriteShortFilmsData) {
+	public String getFavouritesView(Map<String, Object> model,
+			@ModelAttribute UserFavouriteShortFilmsData userFavouriteShortFilmsData) {
 		User user = userService.getLoggedUser().orElse(null);
 		if (user == null) {
 			return "redirect:/login";
 		}
-		userFavouriteShortFilmsData.getFavouriteShortFilmPagination().setPageElements(1);
-		userFavouriteShortFilmsData.getFavouriteShortFilmPagination().setTotalElements(favouriteService.getFavouriteShortFilmsCount(user));
+
+		userFavouriteShortFilmsData.getFavouriteShortFilmPagination()
+				.setTotalElements(favouriteService.getFavouriteShortFilmsCount(user));
 		userFavouriteShortFilmsData.setFavouriteShortFilms(favouriteService
-				.getFavouriteShortFilmsByUser(user, userFavouriteShortFilmsData.getFavouriteShortFilmPagination().getPageRequest())
-				.getContent());
+				.getFavouriteShortFilmsByUser(user,
+						userFavouriteShortFilmsData.getFavouriteShortFilmPagination().getPageRequest())
+				.getContent().stream().map(x -> x.getFavouriteShortfilm()).collect(Collectors.toList()));
+
 		model.put("userFavouriteShortFilmsData", userFavouriteShortFilmsData);
 		return "favouriteShortFilmsUser";
 	}

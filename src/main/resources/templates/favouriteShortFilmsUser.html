@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-   <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
-        <title data-th-text="|Standby|"></title>
-        <section>
-            <form data-th-action="@{/favourites}" method="POST" data-th-object="${userFavouriteShortFilmsData}" 
-            data-th-with="favouriteShortFilms = ${userFavouriteShortFilmsData.getFavouriteShortFilms()}">
-                    <th-block data-th-switch="${favouriteShortFilms} != null and ${!favouriteShortFilms.isEmpty()}">
-                        <th-block data-th-case="true">
-                            <th-block data-th-each="shortFilm : ${favouriteShortFilms.get().getFavouriteShortFilm()}">
-                                <div
-                                    data-th-replace="~{@{fragments/shortFilmItem}(
+<html
+	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+<title data-th-text="|Standby|"></title>
+<section>
+	<form data-th-action="@{/favourites}" method="POST"
+		data-th-object="${userFavouriteShortFilmsData}"
+		data-th-with="favouriteShortFilms = ${userFavouriteShortFilmsData.getFavouriteShortFilms()}">
+		<th-block
+			data-th-switch="${favouriteShortFilms} != null and ${!favouriteShortFilms.isEmpty()}">
+		<th-block data-th-case="true"> <th-block
+			data-th-each="shortFilm : ${favouriteShortFilms}">
+		<div
+			data-th-replace="~{@{fragments/shortFilmItem}(
                                     id=${shortFilm.getId()},
                                     title=${shortFilm.getTitle()},
                                     description=${shortFilm.getDescription()},
@@ -16,14 +19,15 @@
                                     viewCount=${shortFilm.getViewCount()},
                                     uploadDate=${shortFilm.getFormattedUploadDate()},
                                     editable=(${accountButton} != null),
-                                )}"
-                                ></div>
-                            </th-block>
-                            <nav data-th-replace="~{@{fragments/form/pagination}('favouriteShortFilmPagination')}"></nav>
-                        </th-block>
-                        <div data-th-case="false" class="alert alert-dark mt-3">There are no shortfilms to show</div>
-                    </th-block>
-               </form> 
-            </section>
-    </html>
+                                )}"></div>
+		</th-block>
+		<nav
+			data-th-replace="~{@{fragments/form/pagination}('favouriteShortFilmPagination')}"></nav>
+		</th-block>
+		<div data-th-case="false" class="alert alert-dark mt-3">There
+			are no shortfilms to show</div>
+		</th-block>
+	</form>
+</section>
+</html>
 </th-block>
