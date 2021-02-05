@@ -4,7 +4,7 @@
         <div class="row mt-5 mb-5">
             <div class="col-4 col-md-5"></div>
             <div class="col">
-                <img data-th-src="@{/static/exclamation.svg}">
+                <img data-th-src="@{/static/exclamation.svg}" />
             </div>
             <div class="col-4 col-md-5"></div>
         </div>
@@ -12,16 +12,25 @@
             <h3 data-th-text="|Error ${statusCode}|"></h3>
             <h5 data-th-text="${#strings.isEmpty(message)} ? 'Something went wrong :(' : ${message}">Something went wrong :(</h5>
             <div class="mt-4">
-	            <a href="/" class="btn btn-primary">Go back home</a>
-	            <a class="btn btn-secondary" data-toggle="collapse" data-target="#details">Technical details</a>
+                <a href="/" class="btn btn-primary">Go back home</a>
+                <a class="btn btn-secondary" data-toggle="collapse" data-target="#details">Technical details</a>
             </div>
         </div>
         <div class="alert alert-warning collapse mt-4" id="details">
-            <h4 class="alert-heading text-center" data-th-text="|${throwable.getClass().getName()}|"></h4>
-            <p data-th-text="${throwable.getMessage()}"></p>
-            <span>Stack trace:</span>
-            <th-block data-th-each="trace : ${throwable.getStackTrace()}">
-                <span data-th-text="${trace}"></span>
+            <th-block data-th-switch="${throwable != null}">
+                <th-block data-th-case="true">
+                    <h4 class="alert-heading text-center" data-th-text="|${throwable.getClass().getName()}|"></h4>
+                    <p data-th-text="${throwable.getMessage()}"></p>
+                    <span>Stack trace:</span>
+                    <div class="d-flex flex-column">
+	                    <th-block data-th-each="trace : ${throwable.getStackTrace()}">
+	                        <span class="pb-1" data-th-text="${trace}"></span>
+	                    </th-block>
+                    </div>
+                </th-block>
+                <th-block data-th-case="false">
+                    <span>There is no more information about the error</span>
+                </th-block>
             </th-block>
         </div>
     </section>

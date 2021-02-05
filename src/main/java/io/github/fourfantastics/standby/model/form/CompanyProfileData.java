@@ -21,7 +21,6 @@ public class CompanyProfileData {
 		CompanyProfileData companyProfileData = new CompanyProfileData();
 		companyProfileData.setPhotoUrl(company.getPhotoUrl());
 		companyProfileData.setCompanyName(company.getCompanyName());
-		companyProfileData.setFilmmakersSubscribedTo(company.getFilmmakersSubscribedTo());
 		return companyProfileData;
 	}
 }

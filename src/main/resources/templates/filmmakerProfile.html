@@ -25,11 +25,11 @@
                         </div>
                         <div class="d-flex flex-column">
                             <h6>Followers</h6>
-                            <span class="badge badge-secondary align-self-center" data-th-text="${#lists.size(filmmakerProfileData.getFilmmakerSubscribers())}"></span>
+                            <span class="badge badge-secondary align-self-center" data-th-text="${filmmakerProfileData.getFollowerCount()}"></span>
                         </div>
                         <div class="d-flex flex-column">
                             <h6>Followed</h6>
-                            <span class="badge badge-secondary align-self-center" data-th-text="${#lists.size(filmmakerProfileData.getFilmmakersSubscribedTo())}"></span>
+                            <span class="badge badge-secondary align-self-center" data-th-text="${filmmakerProfileData.getFollowedCount()}"></span>
                         </div>
                     </div>
                     <div data-th-if="${privacyRequestButton} or ${followButton}" class="d-flex flex-wrap flex-md-nowrap mt-3 mt-md-5 align-items-stretch">

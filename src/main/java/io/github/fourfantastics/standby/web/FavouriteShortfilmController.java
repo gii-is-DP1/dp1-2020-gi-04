@@ -24,7 +24,6 @@ import io.github.fourfantastics.standby.service.UserService;
 
 @Controller
 public class FavouriteShortfilmController {
-
 	@Autowired
 	ShortFilmService shortFilmService;
 
@@ -88,5 +87,4 @@ public class FavouriteShortfilmController {
 		System.out.println(userFavouriteShortFilmsData.getFavouriteShortFilms());
 		return "favouriteShortFilmsFilmmaker";
 	}
-
 }

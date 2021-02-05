@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
@@ -109,12 +107,6 @@ public class ShortFilmService {
 		shortFilm.setDescription(description);
 		shortFilmRepository.save(shortFilm);
 	}
-
-	public Set<ShortFilm> getShortFilmByFilmmaker(Filmmaker filmmaker) {
-		Set<Role> roles = filmmaker.getParticipateAs();
-		return roles.stream().map(x -> x.getShortfilm()).collect(Collectors.toSet());
-	}
-
 	public void updateViewCount(ShortFilm shortFilm, Integer sum) {
 		shortFilm.setViewCount(shortFilm.getViewCount() + sum);
 		shortFilmRepository.save(shortFilm);
@@ -128,17 +120,16 @@ public class ShortFilmService {
 		return shortFilmRepository.findByUploader(uploader, pageable);
 	}
 
-	public Integer getShortFilmsCountAttachedShortFilmByFilmmaker(Long filmmakerID) {
-		return shortFilmRepository.countAttachedShortFilmByFilmmaker(filmmakerID);
+	public Integer getAttachedShortFilmsCountByFilmmaker(Long filmmakerId) {
+		return shortFilmRepository.countAttachedShortFilmByFilmmaker(filmmakerId);
+	}
+	
+	public Page<ShortFilm> getAttachedShortFilmsByFilmmaker(Long filmmakerId, Pageable pageable) {
+		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmakerId, pageable);
 	}
 
-	public Page<ShortFilm> getAttachedShortFilmByFilmmaker(Long filmmakerID, Pageable pageable) {
-		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmakerID, pageable);
-	}
-
-	public Page<ShortFilm> getFollowedShortFilms(Long userID, Pageable pageable) {
-		return shortFilmRepository.followedShortFilms(userID, pageable);
-
+	public Page<ShortFilm> getFollowedShortFilms(Long userId, Pageable pageable) {
+		return shortFilmRepository.followedShortFilms(userId, pageable);
 	}
 	
 	public Integer getCountFavouriteShortFilmsByUser(User user) {
@@ -152,5 +143,4 @@ public class ShortFilmService {
 		int end = (start+pageable.getPageSize())>favouriteShortFilms.size()?favouriteShortFilms.size():(start+pageable.getPageSize());
 		return new PageImpl<ShortFilm>(favouriteShortFilms.subList(start, end),pageable,favouriteShortFilms.size());
 	}
-
 }

@@ -77,7 +77,6 @@ public class CompanyServiceTest {
 
 			assertTrue(company.getComments().isEmpty());
 			assertTrue(company.getFavouriteShortFilms().isEmpty());
-			assertTrue(company.getFilmmakersSubscribedTo().isEmpty());
 			assertTrue(company.getNotifications().isEmpty());
 			
 			verify(userService, times(1)).register(companyRegisterData.toCompany());
