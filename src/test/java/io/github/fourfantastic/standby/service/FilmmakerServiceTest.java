@@ -80,7 +80,6 @@ public class FilmmakerServiceTest {
 			assertThat(filmmaker.getPhone()).isEqualTo(filmmakerRegisterData.getPhone());
 
 			assertTrue(filmmaker.getComments().isEmpty());
-			assertTrue(filmmaker.getFavouriteShortFilms().isEmpty());
 			assertTrue(filmmaker.getNotifications().isEmpty());
 			
 			verify(userService, times(1)).register(filmmaker);
