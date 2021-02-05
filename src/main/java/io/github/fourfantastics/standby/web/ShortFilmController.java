@@ -33,6 +33,7 @@ import io.github.fourfantastics.standby.service.CommentService;
 import io.github.fourfantastics.standby.service.RatingService;
 import io.github.fourfantastics.standby.service.RoleService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
+import io.github.fourfantastics.standby.service.SubscriptionService;
 import io.github.fourfantastics.standby.service.TagService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
@@ -57,6 +58,9 @@ public class ShortFilmController {
 
 	@Autowired
 	CommentService commentService;
+	
+	@Autowired
+	SubscriptionService subscriptionService;
 
 	@Autowired
 	ShortFilmUploadDataValidator shortFilmUploadDataValidator;
@@ -162,6 +166,8 @@ public class ShortFilmController {
 		shortFilmViewData.setMeanRating(meanRating);
 		shortFilmViewData.setTotalRatings(ratingService.getRatingCount(shortFilm));
 		shortFilmViewData.setUserRating(ratingService.getRatingByUserAndShortFilm(loggedUser, shortFilm));
+		
+		shortFilmViewData.setFollowerCount(subscriptionService.getFollowerCount(shortFilm.getUploader()));
 
 		model.put("shortFilmViewData", shortFilmViewData);
 		if (model.containsKey("errors")) {
