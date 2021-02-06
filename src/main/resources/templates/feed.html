@@ -1,0 +1,37 @@
+<html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+    <title>Your feed - Standby</title>
+    <section>
+        <h3>Your feed</h3>
+        <hr />
+        <div class="d-flex flex-column">
+            <th-block data-th-switch="${!feedData.getFollowedShortFilms().isEmpty()}">
+                <th-block data-th-case="true">
+                    <th-block data-th-each="shortFilm : ${feedData.getFollowedShortFilms()}">
+                        <th-block data-th-with="uploader = ${shortFilm.getUploader()}">
+                            <div
+                                data-th-replace="~{@{fragments/feedItem}(
+                                userName=${uploader.getName()},
+                                profileId=${uploader.getId()},
+                                photoUrl=${uploader.getPhotoUrl()},
+                                date=${shortFilm.getFormattedRelativeUploadTime()},
+                                shortFilm=${shortFilm}
+                                )}"
+                            ></div>
+                        </th-block>
+                    </th-block>
+                </th-block>
+                <div data-th-case="false" class="text-center">
+                    <div class="row mt-5 mb-5">
+                        <div class="col-4 col-md-5"></div>
+                        <div class="col-4 col-md-2">
+                            <img data-th-src="@{/static/check.svg}" />
+                        </div>
+                        <div class="col-4 col-md-5"></div>
+                    </div>
+                    <h3>Nothing to show here</h3>
+                    <p>You should start following some filmmakers so you can see their recent activity here!</p>
+                </div>
+            </th-block>
+        </div>
+    </section>
+</html>
