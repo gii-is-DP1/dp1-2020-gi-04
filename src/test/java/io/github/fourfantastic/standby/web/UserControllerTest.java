@@ -1,9 +1,12 @@
 package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,6 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -19,14 +24,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.NotificationConfiguration;
+import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.Credentials;
+import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 
 @ActiveProfiles("test")
@@ -38,6 +48,9 @@ public class UserControllerTest {
 
 	@MockBean
 	UserService userService;
+	
+	@MockBean
+	ShortFilmService shortFilmService;
 
 	@Test
 	void loginViewTest() {
@@ -149,7 +162,7 @@ public class UserControllerTest {
 	 * verify(userService, only()).getLoggedUser(); }
 	 */
 	@Test
-	void manageAccountUserFilmmaker() {
+	void manageAccountUserFilmmakerTest() {
 		when(userService.getLoggedUser()).thenReturn(Optional.of(new Filmmaker()));
 
 		assertDoesNotThrow(() -> {
@@ -161,7 +174,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	void manageAccountUserCompany() {
+	void manageAccountUserCompanyTest() {
 		when(userService.getLoggedUser()).thenReturn(Optional.of(new Company()));
 
 		assertDoesNotThrow(() -> {
@@ -172,7 +185,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	void manageAccountUserIsNotLoggedView() {
+	void manageAccountUserIsNotLoggedViewTest() {
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
@@ -183,7 +196,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	void getProfileViewCompany() {
+	void getProfileViewCompanyTest() {
 		when(userService.getLoggedUser()).thenReturn(Optional.of(new Company()));
 
 		assertDoesNotThrow(() -> {
@@ -194,7 +207,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	void getProfileViewFilmmaker() {
+	void getProfileViewFilmmakerTest() {
 		Filmmaker filmmaker = new Filmmaker();
 		filmmaker.setId(1L);
 		when(userService.getLoggedUser()).thenReturn(Optional.of(filmmaker));
@@ -207,11 +220,72 @@ public class UserControllerTest {
 	}
 
 	@Test
-	void getProfileViewIsNotLogged() {
+	void getProfileViewIsNotLoggedTest() {
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile")).andExpect(status().isFound()).andExpect(redirectedUrl("/login"));
+		});
+
+		verify(userService, only()).getLoggedUser();
+	}
+	
+	@Test
+	void getFeedViewFilmmakerTest() {
+		final Filmmaker filmmaker = new Filmmaker();
+		filmmaker.setId(1L);
+		filmmaker.setName("filmmaker1");
+		filmmaker.setFullname("Filmmaker1");
+		filmmaker.setCountry("Spain");
+		filmmaker.setCity("Seville");
+		filmmaker.setPhone("678543167");
+		filmmaker.setConfiguration(new NotificationConfiguration());
+		
+		final List<ShortFilm> followedShortFilms = new ArrayList<ShortFilm>();
+		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(filmmaker));
+		when(shortFilmService.getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class)))
+		.thenReturn(new PageImpl<ShortFilm>(followedShortFilms));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/")).andExpect(status().isOk()).andExpect(view().name("feed"));
+		});
+		
+		verify(userService, times(1)).getLoggedUser();
+		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(2)).getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class));
+	}
+	
+	void getFeedViewCompanyTest() {
+		final Company company = new Company();
+		company.setName("user1");
+		company.setBusinessPhone("675849765");
+		company.setCompanyName("Company1");
+		company.setOfficeAddress("Calle Manzanita 3");
+		company.setTaxIDNumber("123-78-1234567");
+		company.setConfiguration(new NotificationConfiguration());
+		
+		final List<ShortFilm> followedShortFilms = new ArrayList<ShortFilm>();
+		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(company));
+		when(shortFilmService.getFollowedShortFilms(eq(company.getId()), any(PageRequest.class)))
+		.thenReturn(new PageImpl<ShortFilm>(followedShortFilms));
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/")).andExpect(status().isOk()).andExpect(view().name("feed"));
+		});
+		
+		verify(userService, times(1)).getLoggedUser();
+		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(2)).getFollowedShortFilms(eq(company.getId()), any(PageRequest.class));
+	}
+	
+	@Test
+	void getFeedViewIsNotLoggedTest() {
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/")).andExpect(status().isFound()).andExpect(redirectedUrl("/login"));
 		});
 
 		verify(userService, only()).getLoggedUser();
