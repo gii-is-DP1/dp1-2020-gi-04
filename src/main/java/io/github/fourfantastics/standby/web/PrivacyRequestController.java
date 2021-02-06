@@ -70,4 +70,34 @@ public class PrivacyRequestController {
 		return String.format("redirect:/profile/%d", filmmakerId);
 	}
 
+	@PostMapping("/requests/{requestId}/Accept")
+	public String acceptPrivactRequest(@PathVariable Long requestId) {
+		User sender = userService.getLoggedUser().orElse(null);
+		if (sender == null) {
+			return "redirect:/login";
+		}
+		try {
+			privacyRequestService.acceptPrivacyRequest(sender, requestId);
+		} catch (Exception e) {
+			return String.format("redirect:/requests");
+		}
+
+		return "requests";
+	}
+
+	@PostMapping("/requests/{requestId}/decline")
+	public String declinePrivactRequest(@PathVariable Long requestId) {
+		User sender = userService.getLoggedUser().orElse(null);
+		if (sender == null) {
+			return "redirect:/login";
+		}
+		try {
+			privacyRequestService.declinePrivacyRequest(sender, requestId);
+		} catch (Exception e) {
+			return String.format("redirect:/requests");
+		}
+
+		return "requests";
+	}
+
 }
