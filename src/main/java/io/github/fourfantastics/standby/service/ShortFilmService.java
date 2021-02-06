@@ -127,12 +127,15 @@ public class ShortFilmService {
 		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmakerId, pageable);
 	}
 
+	public Integer getFollowedShortFilmsCount(Long userId) {
+		return shortFilmRepository.countFollowedShortFilms(userId);
+	}
+	
 	public Page<ShortFilm> getFollowedShortFilms(Long userId, Pageable pageable) {
 		return shortFilmRepository.followedShortFilms(userId, pageable);
 	}
-	
+
 	public List<ShortFilm> getShortFilmsByTitle(String title) {
 		return shortFilmRepository.findAll(ShortFilmSpecifications.hasTitle(title));
 	}
-	
 }

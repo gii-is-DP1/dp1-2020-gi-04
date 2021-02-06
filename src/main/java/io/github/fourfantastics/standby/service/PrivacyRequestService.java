@@ -1,7 +1,6 @@
 package io.github.fourfantastics.standby.service;
 
 import java.util.Date;
-import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

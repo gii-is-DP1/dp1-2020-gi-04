@@ -2,6 +2,7 @@ package io.github.fourfantastics.standby.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -11,14 +12,18 @@ import io.github.fourfantastics.standby.service.UserService;
 
 @Controller
 public class PrivacyRequestController {
-
 	@Autowired
 	UserService userService;
 
 	@Autowired
 	PrivacyRequestService privacyRequestService;
 
-	@PostMapping("/profile/{filmmakerId}/privacyrequest")
+	@GetMapping("/requests")
+	public String getPrivacyRequestView() {
+		return "requests";
+	}
+	
+	@PostMapping("/profile/{filmmakerId}/request")
 	public String sendPrivacyRequest(@PathVariable Long filmmakerId) {
 		User sender = userService.getLoggedUser().orElse(null);
 		if (sender == null) {
