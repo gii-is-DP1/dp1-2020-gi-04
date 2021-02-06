@@ -1,12 +1,19 @@
 package io.github.fourfantastics.standby.web;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.model.form.RequestData;
 import io.github.fourfantastics.standby.service.PrivacyRequestService;
 import io.github.fourfantastics.standby.service.UserService;
 
@@ -18,11 +25,29 @@ public class PrivacyRequestController {
 	@Autowired
 	PrivacyRequestService privacyRequestService;
 
-	@GetMapping("/requests")
-	public String getPrivacyRequestView() {
+	@RequestMapping("/requests")
+	public String getPrivacyRequestView(Map<String, Object> model, @ModelAttribute RequestData requestData) {
+		User user = userService.getLoggedUser().orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
+		if (user.getType() != UserType.Filmmaker) {
+			return "redirect:/";
+		}
+		Filmmaker filmmaker = (Filmmaker) user;
+		requestData.setFilmmaker(filmmaker);
+		requestData.getPrivacyRequestPagination()
+				.setTotalElements(privacyRequestService.getCountPrivacyRequestByFilmmaker(filmmaker.getId()));
+		requestData
+				.setRequest(privacyRequestService
+						.getPrivacyRequestByFilmmaker(filmmaker.getId(),
+								requestData.getPrivacyRequestPagination()
+										.getPageRequest(Sort.by("privacyRequest.requestDate").descending()))
+						.getContent());
+		model.put("requestData", requestData);
 		return "requests";
 	}
-	
+
 	@PostMapping("/profile/{filmmakerId}/request")
 	public String sendPrivacyRequest(@PathVariable Long filmmakerId) {
 		User sender = userService.getLoggedUser().orElse(null);
