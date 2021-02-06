@@ -106,7 +106,6 @@ public class ShortFilmService {
 		shortFilm.setDescription(description);
 		shortFilmRepository.save(shortFilm);
 	}
-  
 	public void updateViewCount(ShortFilm shortFilm, Integer sum) {
 		shortFilm.setViewCount(shortFilm.getViewCount() + sum);
 		shortFilmRepository.save(shortFilm);
