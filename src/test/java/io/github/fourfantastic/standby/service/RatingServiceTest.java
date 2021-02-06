@@ -23,6 +23,7 @@ import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.repository.RatingRepository;
 import io.github.fourfantastics.standby.service.RatingService;
+import io.github.fourfantastics.standby.service.ShortFilmService;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
@@ -31,10 +32,13 @@ public class RatingServiceTest {
 
 	@Mock
 	RatingRepository ratingRepository;
+	
+	@Mock
+	ShortFilmService shortFilmService;
 
 	@BeforeEach
 	public void setup() {
-		ratingService = new RatingService(ratingRepository);
+		ratingService = new RatingService(ratingRepository, shortFilmService);
 		
 		when(ratingRepository.save(any(Rating.class))).then(AdditionalAnswers.returnsFirstArg());
 	}
@@ -56,6 +60,8 @@ public class RatingServiceTest {
 
 		verify(ratingRepository, times(1)).findByUserAndShortFilm(mockUser, mockShortFilm);
 		verify(ratingRepository, times(1)).save(rating);
+		verify(ratingRepository, times(1)).averageShortFilmRating(mockShortFilm.getId());
+	
 		verifyNoMoreInteractions(ratingRepository);
 	}
 
@@ -80,6 +86,8 @@ public class RatingServiceTest {
 
 		verify(ratingRepository, times(1)).findByUserAndShortFilm(mockUser, mockShortFilm);
 		verify(ratingRepository, times(1)).save(rating);
+		verify(ratingRepository, times(1)).averageShortFilmRating(mockShortFilm.getId());
+		
 		verifyNoMoreInteractions(ratingRepository);
 	}
 }
