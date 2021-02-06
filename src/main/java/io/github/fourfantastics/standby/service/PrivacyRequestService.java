@@ -3,6 +3,8 @@ package io.github.fourfantastics.standby.service;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import io.github.fourfantastics.standby.model.Company;
@@ -71,5 +73,13 @@ public class PrivacyRequestService {
 			Filmmaker sender = request.getFilmmaker();
 			notificationService.sendPrivacyRequestResponseNotification(sender.getName(), (User) receiver, false);
 		}
+	}
+	
+	public Integer getCountPrivacyRequestByFilmmaker(Long filmmakerId) {
+		return privacyRequestRepository.getCountPrivacyRequestOfFilmmaker(filmmakerId);
+	}
+	
+	public Page<PrivacyRequest> getPrivacyRequestByFilmmaker(Long filmmakerId, Pageable pageable){
+		return privacyRequestRepository.getPrivacyRequestOfFilmmaker(filmmakerId, pageable);
 	}
 }
