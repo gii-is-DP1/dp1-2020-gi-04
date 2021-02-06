@@ -23,7 +23,6 @@ import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
-import io.github.fourfantastics.standby.service.PrivacyRequestService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.SubscriptionService;
 import io.github.fourfantastics.standby.service.UserService;
@@ -36,9 +35,6 @@ public class FilmmakerController {
 
 	@Autowired
 	UserService userService;
-
-	@Autowired
-	PrivacyRequestService privacyRequestService;
 	
 	@Autowired
 	SubscriptionService subscriptionService;
@@ -146,32 +142,6 @@ public class FilmmakerController {
 		}
 
 		return "filmmakerProfile";
-	}
-
-	@PostMapping("/profile/{filmmakerId}/privacyrequest")
-	public String sendPrivacyRequest(@PathVariable Long filmmakerId) {
-		User sender = userService.getLoggedUser().orElse(null);
-		if (sender == null) {
-			return "redirect:/login";
-		}
-		
-		if (sender.getType() != UserType.Company) {
-			return String.format("redirect:/profile/%d", filmmakerId);
-		}
-
-		User receiver = userService.getUserById(filmmakerId).orElse(null);
-		if (receiver.getType() != UserType.Filmmaker) {
-			return String.format("redirect:/profile/%d", filmmakerId);
-		}
-
-		Company company = (Company) sender;
-		if (company.getSentRequests().stream().anyMatch(x -> x.getFilmmaker().getName().equals(receiver.getName()))) {
-			return String.format("redirect:/profile/%d", filmmakerId);
-		}
-
-		Filmmaker filmmaker = (Filmmaker) receiver;
-		privacyRequestService.sendPrivacyRequest(company, filmmaker);
-		return String.format("redirect:/profile/%d", filmmakerId);
 	}
 
 	@GetMapping("/account/filmmaker")

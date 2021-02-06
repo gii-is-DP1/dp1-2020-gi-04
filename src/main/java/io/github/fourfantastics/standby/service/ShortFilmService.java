@@ -4,6 +4,7 @@ import java.nio.file.Path;
 
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.github.fourfantastics.standby.filters.ShortFilmSpecifications;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
@@ -104,7 +106,6 @@ public class ShortFilmService {
 		shortFilm.setDescription(description);
 		shortFilmRepository.save(shortFilm);
 	}
-  
 	public void updateViewCount(ShortFilm shortFilm, Integer sum) {
 		shortFilm.setViewCount(shortFilm.getViewCount() + sum);
 		shortFilmRepository.save(shortFilm);
@@ -128,6 +129,10 @@ public class ShortFilmService {
 
 	public Page<ShortFilm> getFollowedShortFilms(Long userId, Pageable pageable) {
 		return shortFilmRepository.followedShortFilms(userId, pageable);
+	}
+	
+	public List<ShortFilm> getShortFilmsByTitle(String title) {
+		return shortFilmRepository.findAll(ShortFilmSpecifications.hasTitle(title));
 	}
 	
 }
