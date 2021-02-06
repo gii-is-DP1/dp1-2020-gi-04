@@ -1,5 +1,7 @@
 package io.github.fourfantastics.standby.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -14,10 +16,16 @@ public class CustomErrorController implements ErrorController  {
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, Map<String, Object> model) {
 		model.put("statusCode", request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE));
-		model.put("servletName", request.getAttribute(RequestDispatcher.ERROR_SERVLET_NAME));
-		model.put("throwable", request.getAttribute(RequestDispatcher.ERROR_EXCEPTION));
-		model.put("requestUri", request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI));
 		model.put("message", request.getAttribute(RequestDispatcher.ERROR_MESSAGE));
+		
+		List<Throwable> throwables = new ArrayList<Throwable>();
+		Throwable throwable = (Throwable) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
+		while (throwable != null) {
+			throwables.add(throwable);
+			throwable = throwable.getCause();
+		}
+		model.put("throwables", throwables);
+		
         return "error";
     }
 

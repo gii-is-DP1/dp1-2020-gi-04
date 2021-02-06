@@ -11,13 +11,19 @@
     </div>
     <div class="flex-grow-1 pl-3 d-flex flex-column">
         <div class="d-flex justify-content-between">
-            <th-block data-th-switch="${profileId} != null">
-                <div data-th-case="true" class="d-flex align-items-baseline">
-                    <a class="font-weight-bold text-decoration-none" data-th-classappend="${isUploader} ? 'badge badge-dark' : 'text-dark'" data-th-href="${profileId} ? '/profile/' + ${profileId} : null" data-th-text="${userName}"></a>
-                    <label class="text-muted ml-2 mb-0" data-th-text="${date}"></label>
-                </div>
-                <span data-th-case="false" class="font-weight-bold" data-th-classappend="${isUploader} ? 'badge badge-dark' : 'text-dark'" data-th-text="${userName}"></span>
-            </th-block>
+            <div class="d-flex align-items-baseline">
+                <th-block data-th-switch="${profileId} != null">
+                    <a
+                        data-th-case="true"
+                        class="font-weight-bold text-decoration-none"
+                        data-th-classappend="${isUploader} ? 'badge badge-dark' : 'text-dark'"
+                        data-th-href="${profileId} ? '/profile/' + ${profileId} : null"
+                        data-th-text="${userName}"
+                    ></a>
+                    <span data-th-case="false" class="font-weight-bold" data-th-classappend="${isUploader} ? 'badge badge-dark' : 'text-dark'" data-th-text="${userName}"></span>
+                </th-block>
+                <label class="text-muted ml-2 mb-0" data-th-text="${date}"></label>
+            </div>
             <button data-th-if="${deleteable}" name="deleteComment" data-th-value="${commentId}" type="submit" class="close" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>

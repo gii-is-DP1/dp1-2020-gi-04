@@ -16,9 +16,8 @@ import lombok.ToString;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, of = {})
 @ToString(exclude = "sentRequests")
-
 @AllArgsConstructor
 public class Company extends User {
 	@NotNull

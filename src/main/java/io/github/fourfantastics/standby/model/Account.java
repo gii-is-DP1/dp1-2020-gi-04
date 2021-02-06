@@ -20,7 +20,6 @@ public class Account implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
 		authorities.add(new SimpleGrantedAuthority(user.getType().toString()));
-		System.out.println(authorities);
 		return authorities;
 	}
 
