@@ -70,6 +70,11 @@ public class ShortFilm {
 	@Range(min = 0)
 	Long viewCount;
 
+	@NotNull
+	@Column(nullable = false)
+	@Range(min = 0, max = 10)
+	Double ratingAverage = 0d;
+
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shortFilm")
 	Set<Rating> ratings = new HashSet<Rating>();
 

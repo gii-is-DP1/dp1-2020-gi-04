@@ -912,36 +912,6 @@ public class FilmmakerControllerTest {
 	}
 
 	@Test
-	void filmmakerSendsPrivacyRequestTest() throws Exception {
-		final Filmmaker mockSenderFilmmaker = new Filmmaker();
-		mockSenderFilmmaker.setName("user1");
-		mockSenderFilmmaker.setFullname("Filmmaker1");
-		mockSenderFilmmaker.setCountry("Spain");
-		mockSenderFilmmaker.setCity("Seville");
-		mockSenderFilmmaker.setPhone("678543167");
-		mockSenderFilmmaker.setConfiguration(new NotificationConfiguration());
-
-		final Filmmaker mockFilmmakerReceiver = new Filmmaker();
-		mockFilmmakerReceiver.setId(1L);
-		mockFilmmakerReceiver.setName("filmmaker1");
-		mockFilmmakerReceiver.setFullname("Filmmaker1");
-		mockFilmmakerReceiver.setCountry("Spain");
-		mockFilmmakerReceiver.setCity("Seville");
-		mockFilmmakerReceiver.setPhone("678543167");
-		mockFilmmakerReceiver.setConfiguration(new NotificationConfiguration());
-
-		when(userService.getLoggedUser()).thenReturn(Optional.of(mockSenderFilmmaker));
-		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerReceiver));
-
-		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/privacyrequest").with(csrf())).andExpect(status().isFound())
-					.andExpect(redirectedUrl("/profile/1"));
-		});
-
-		verify(userService, only()).getLoggedUser();
-	}
-
-	@Test
 	void unregisterSendsPrivacyRequestToFilmmakerTest() throws Exception {
 		final Filmmaker mockFilmmakerReceiver = new Filmmaker();
 		mockFilmmakerReceiver.setId(1L);
