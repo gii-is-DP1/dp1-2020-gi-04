@@ -1,6 +1,5 @@
 package io.github.fourfantastics.standby.filters;
 
-import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.criteria.SetJoin;
@@ -8,12 +7,11 @@ import javax.persistence.criteria.SetJoin;
 import org.springframework.data.jpa.domain.Specification;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
-import io.github.fourfantastics.standby.model.Rating;
 
 public class ShortFilmSpecifications {
-
 	public static Specification<ShortFilm> hasTitle(String title) {
 		return (root, query, cb) -> {
 			return cb.like(root.get("title"), title);

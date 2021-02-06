@@ -14,11 +14,15 @@
                                 profileId=${uploader.getId()},
                                 photoUrl=${uploader.getPhotoUrl()},
                                 date=${shortFilm.getFormattedRelativeUploadTime()},
-                                shortFilm=${shortFilm}
+                                shortFilm=${shortFilm},
+                                class='mb-4'
                                 )}"
                             ></div>
                         </th-block>
                     </th-block>
+                    <form method="POST" data-th-action="@{/}" data-th-object="${feedData}">
+                        <nav data-th-replace="~{@{fragments/form/pagination}('followedShortFilmsPagination')}"></nav>
+                    </form>
                 </th-block>
                 <div data-th-case="false" class="text-center">
                     <div class="row mt-5 mb-5">

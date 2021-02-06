@@ -88,6 +88,6 @@ public class FavouriteShortfilmController {
 				.getContent().stream().map(x -> x.getFavouriteShortfilm()).collect(Collectors.toList()));
 
 		model.put("userFavouriteShortFilmsData", userFavouriteShortFilmsData);
-		return "favouriteShortFilmsUser";
+		return "favourites";
 	}
 }

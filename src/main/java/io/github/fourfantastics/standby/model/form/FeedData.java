@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class FeedData {
 	User user;
 	
-	Pagination followedShortFilmsPag = Pagination.empty();
+	Pagination followedShortFilmsPagination = Pagination.empty();
 	
 	List<ShortFilm> followedShortFilms;
 }
