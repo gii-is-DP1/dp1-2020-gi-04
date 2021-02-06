@@ -12,18 +12,22 @@ import io.github.fourfantastics.standby.repository.RatingRepository;
 
 @Service
 public class RatingService {
+
 	RatingRepository ratingRepository;
 
+	ShortFilmService shortFilmService;
+
 	@Autowired
-	public RatingService(RatingRepository ratingRepository) {
+	public RatingService(RatingRepository ratingRepository, ShortFilmService shortFilmService) {
 		this.ratingRepository = ratingRepository;
+		this.shortFilmService = shortFilmService;
 	}
 
 	public Long getRatingCount(ShortFilm shortFilm) {
 		return ratingRepository.countByShortFilm(shortFilm);
 	}
 
-	public Double getAverageRating(ShortFilm shortFilm) {
+	private Double getAverageRating(ShortFilm shortFilm) {
 		Double rating = ratingRepository.averageShortFilmRating(shortFilm.getId());
 		return rating == null ? 0 : rating;
 	}
@@ -38,8 +42,14 @@ public class RatingService {
 
 		rating.setDate(Instant.now().toEpochMilli());
 		rating.setGrade(rate);
-		
-		return ratingRepository.save(rating);
+
+		Rating savedRating = ratingRepository.save(rating);
+
+		Double avgRating = getAverageRating(shortFilm);
+		shortFilm.setRatingAverage(avgRating);
+
+		shortFilmService.save(shortFilm);
+		return savedRating;
 	}
 
 	public Rating getRatingByUserAndShortFilm(User user, ShortFilm shortFilm) {
