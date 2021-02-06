@@ -1,6 +1,7 @@
 package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,11 +22,14 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,13 +37,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.RoleType;
 import io.github.fourfantastics.standby.model.ShortFilm;
+import io.github.fourfantastics.standby.model.User;
+import io.github.fourfantastics.standby.model.form.Pagination;
 import io.github.fourfantastics.standby.model.form.RoleData;
 import io.github.fourfantastics.standby.model.form.ShortFilmEditData;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
+import io.github.fourfantastics.standby.model.form.ShortFilmViewData;
+import io.github.fourfantastics.standby.service.CommentService;
+import io.github.fourfantastics.standby.service.FavouriteService;
+import io.github.fourfantastics.standby.service.RatingService;
 import io.github.fourfantastics.standby.service.RoleService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
+import io.github.fourfantastics.standby.service.SubscriptionService;
 import io.github.fourfantastics.standby.service.TagService;
 import io.github.fourfantastics.standby.service.UserService;
 import io.github.fourfantastics.standby.service.exception.InvalidExtensionException;
@@ -64,6 +76,18 @@ public class ShortFilmControllerTest {
 
 	@MockBean
 	RoleService roleService;
+
+	@MockBean
+	CommentService commentService;
+
+	@MockBean
+	RatingService ratingService;
+
+	@MockBean
+	SubscriptionService subscriptionService;
+	
+	@MockBean
+	FavouriteService favouriteService;
 
 	@Test
 	public void uploadViewTest() {
@@ -689,5 +713,124 @@ public class ShortFilmControllerTest {
 		verify(shortFilmService, only()).getShortFilmById(mockShortFilm.getId());
 		verifyNoInteractions(tagService);
 		verifyNoInteractions(roleService);
+	}
+
+	@Test
+	public void getShortfilmViewAsLoggedUser() {
+		final User mockUser = new User();
+		mockUser.setName("user1");
+		mockUser.setId(234L);
+		mockUser.setPhotoUrl("profile.jpg");
+		final ShortFilm mockShortFilm = new ShortFilm();
+		mockShortFilm.setId(999L);
+		mockShortFilm.setUploadDate(1L);
+		mockShortFilm.setUploader(new Filmmaker());
+		mockShortFilm.setTitle("Example title");
+		mockShortFilm.setDescription("Example description");
+		final Rating userRate = new Rating();
+		userRate.setGrade(1);
+		userRate.setUser(mockUser);
+		final ShortFilmViewData mockShortFilmViewData = new ShortFilmViewData();
+		mockShortFilmViewData.setCommentPagination(Pagination.empty());
+
+		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
+		when(commentService.getCommentCountByShortFilm(mockShortFilm)).thenReturn(1);
+		when(commentService.getCommentsByShortFilm(mockShortFilm,
+				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending())))
+						.thenReturn(Page.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockUser));
+		when(favouriteService.hasFavouriteShortFilm(mockShortFilm, mockUser)).thenReturn(true);
+		when(ratingService.getAverageRating(mockShortFilm)).thenReturn(2D);
+		when(ratingService.getRatingCount(mockShortFilm)).thenReturn(3L);
+		when(ratingService.getRatingByUserAndShortFilm(mockUser, mockShortFilm)).thenReturn(userRate);
+		when(subscriptionService.getFollowedCount(any(Filmmaker.class))).thenReturn(1);
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/shortfilm/999"))
+					.andExpect(model().attribute("shortFilmViewData",
+							Matchers.hasProperty("hasFavourite", Matchers.equalTo(true))))
+					.andExpect(model().attribute("shortFilmViewData", Matchers.hasProperty("watcherId")))
+					.andExpect(model().attribute("shortFilmViewData", Matchers.hasProperty("watcherName")))
+					.andExpect(model().attribute("shortFilmViewData", Matchers.hasProperty("watcherPhotoUrl")))
+					.andExpect(view().name("viewShortFilm"));
+		});
+
+		verify(shortFilmService, times(1)).getShortFilmById(mockShortFilm.getId());
+		verify(shortFilmService, times(1)).updateViewCount(any(ShortFilm.class), any(Integer.class));
+		verifyNoMoreInteractions(shortFilmService);
+		verify(commentService, times(1)).getCommentCountByShortFilm(mockShortFilm);
+		verify(commentService, times(1)).getCommentsByShortFilm(mockShortFilm,
+				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()));
+		verifyNoMoreInteractions(commentService);
+		verify(userService, times(1)).getLoggedUser();
+		verifyNoMoreInteractions(userService);
+		verify(favouriteService, only()).hasFavouriteShortFilm(mockShortFilm, mockUser);
+		verify(ratingService, times(1)).getAverageRating(mockShortFilm);
+		verify(ratingService, times(1)).getRatingCount(mockShortFilm);
+		verify(ratingService, times(1)).getRatingByUserAndShortFilm(mockUser, mockShortFilm);
+		verifyNoMoreInteractions(ratingService);
+		verify(subscriptionService, only()).getFollowerCount(any(Filmmaker.class));
+	}
+
+	@Test
+	public void getShortfilmViewAsNotLoggedUser() {
+		final ShortFilm mockShortFilm = new ShortFilm();
+		mockShortFilm.setId(999L);
+		mockShortFilm.setUploadDate(1L);
+		mockShortFilm.setUploader(new Filmmaker());
+		mockShortFilm.setTitle("Example title");
+		mockShortFilm.setDescription("Example description");
+		final ShortFilmViewData mockShortFilmViewData = new ShortFilmViewData();
+		mockShortFilmViewData.setCommentPagination(Pagination.empty());
+
+		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
+		when(commentService.getCommentCountByShortFilm(mockShortFilm)).thenReturn(1);
+		when(commentService.getCommentsByShortFilm(mockShortFilm,
+				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending())))
+						.thenReturn(Page.empty());
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+		when(ratingService.getAverageRating(mockShortFilm)).thenReturn(2D);
+		when(ratingService.getRatingCount(mockShortFilm)).thenReturn(3L);
+		when(ratingService.getRatingByUserAndShortFilm(null, mockShortFilm)).thenReturn(null);
+		when(subscriptionService.getFollowedCount(any(Filmmaker.class))).thenReturn(1);
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/shortfilm/999"))
+					.andExpect(model().attribute("shortFilmViewData",
+							Matchers.hasProperty("hasFavourite", Matchers.equalTo(false))))
+					.andExpect(view().name("viewShortFilm"));
+		});
+
+		verify(shortFilmService, times(1)).getShortFilmById(mockShortFilm.getId());
+		verify(shortFilmService, times(1)).updateViewCount(any(ShortFilm.class), any(Integer.class));
+		verifyNoMoreInteractions(shortFilmService);
+		verify(commentService, times(1)).getCommentCountByShortFilm(mockShortFilm);
+		verify(commentService, times(1)).getCommentsByShortFilm(mockShortFilm,
+				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()));
+		verifyNoMoreInteractions(commentService);
+		verify(userService, times(1)).getLoggedUser();
+		verifyNoMoreInteractions(userService);
+		verify(ratingService, times(1)).getAverageRating(mockShortFilm);
+		verify(ratingService, times(1)).getRatingCount(mockShortFilm);
+		verify(ratingService, times(1)).getRatingByUserAndShortFilm(null, mockShortFilm);
+		verifyNoMoreInteractions(ratingService);
+		verify(subscriptionService, only()).getFollowerCount(any(Filmmaker.class));
+
+	}
+
+	@Test
+	public void getNonexistanceShortFilmView() {
+		when(shortFilmService.getShortFilmById(any(Long.class))).thenReturn(Optional.empty());
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/shortfilm/999")).andExpect(status().isFound()).andExpect(redirectedUrl("/"));
+		});
+
+		verify(shortFilmService, only()).getShortFilmById(any(Long.class));
+		verifyNoInteractions(commentService);
+		verifyNoInteractions(userService);
+		verifyNoInteractions(ratingService);
+		verifyNoInteractions(favouriteService);
+		verifyNoInteractions(subscriptionService);
 	}
 }

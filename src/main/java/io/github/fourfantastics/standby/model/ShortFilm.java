@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
+import io.github.fourfantastics.standby.utils.RelativeTimeFormatter;
 import io.github.fourfantastics.standby.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -87,6 +88,10 @@ public class ShortFilm {
 	public String getFormattedUploadDate() {
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy", Locale.UK);
 		return dateFormatter.format(new Date(getUploadDate()));
+	}
+	
+	public String getFormattedRelativeUploadTime() {
+		return RelativeTimeFormatter.toRelative(new Date().getTime() - getUploadDate(), 1);
 	}
 	
 	public Boolean isCollapsable() {

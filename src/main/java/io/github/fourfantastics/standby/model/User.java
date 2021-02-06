@@ -72,6 +72,4 @@ public class User {
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	Set<Comment> comments = new HashSet<Comment>();
-
-
 }

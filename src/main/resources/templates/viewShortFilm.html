@@ -3,44 +3,40 @@
     <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
         <title data-th-text="|Watching ${shortFilm.getTitle()} - Standby|"></title>
         <section>
-         <form method="POST" data-th-action="@{${shortFilm.getId()}}" data-th-object="${shortFilmViewData}">
-            <div class="bg-light embed-responsive embed-responsive-16by9 mb-2">
-                <video controls data-th-poster="@{'/uploads/' + (${shortFilm.getThumbnailUrl()})?: '/static/no-thumbnail.svg'}">
-                    <source data-th-src="@{'/uploads/' + ${shortFilm.getVideoUrl()}}" />
-                    <span>Your browser does not support HTML5 video tag.</span>
-                </video>
-            </div>
-            <div class="mb-2">
-                <th-block data-th-each="tag : ${shortFilm.getTags()}"> <span data-th-replace="~{@{fragments/tag}(text='#__${tag.getName()}__', type='light')}"></span> </th-block>
-            </div>
-            <div id="film-info">
-                <div class="d-flex justify-content-between">
-                    <h4 data-th-text="${shortFilm.getTitle()}"></h4>
+            <form method="POST" data-th-action="@{${shortFilm.getId()}}" data-th-object="${shortFilmViewData}">
+                <div class="bg-light embed-responsive embed-responsive-16by9 mb-2">
+                    <video controls data-th-poster="@{'/uploads/' + (${shortFilm.getThumbnailUrl()})?: '/static/no-thumbnail.svg'}">
+                        <source data-th-src="@{'/uploads/' + ${shortFilm.getVideoUrl()}}" />
+                        <span>Your browser does not support HTML5 video tag.</span>
+                    </video>
+                </div>
+                <div class="mb-2">
+                    <th-block data-th-each="tag : ${shortFilm.getTags()}"> <span data-th-replace="~{@{fragments/tag}(text='#__${tag.getName()}__', type='light')}"></span> </th-block>
+                </div>
+                <div id="film-info">
                     <div class="d-flex justify-content-between">
-                    <th-block data-th-switch="${shortFilmViewData.getHasFavourite()}">
-                        <th-block data-th-case="true">  
-                        	<button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/full_heart.png}, type='submit', name='deleteFavourite')}"></button>
-                        </th-block>
-                        <th-block data-th-case="false">
-                        	<button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/empty_heart.png}, type='submit', name='favouriteShortfilm')}"></button>
-                        </th-block> 
-                    </th-block>
-                
-           
-                   
-                
-                    <th-block data-th-if="${shortFilm.getUploader().getId()} == ${shortFilmViewData.getWatcherId()}">
-                        <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/' + ${shortFilm.getId()} + '/edit'})}"></button>
-                    </th-block>
+                        <h4 data-th-text="${shortFilm.getTitle()}"></h4>
+                        <div class="d-flex justify-content-between">
+                            <th-block data-th-switch="${shortFilmViewData.getHasFavourite()}">
+                                <th-block data-th-case="true">
+                                    <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/full_heart.png}, type='submit', name='deleteFavourite')}"></button>
+                                </th-block>
+                                <th-block data-th-case="false">
+                                    <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/empty_heart.png}, type='submit', name='favouriteShortfilm')}"></button>
+                                </th-block>
+                            </th-block>
+                            <th-block data-th-if="${shortFilm.getUploader().getId()} == ${shortFilmViewData.getWatcherId()}">
+                                <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/' + ${shortFilm.getId()} + '/edit'})}"></button>
+                            </th-block>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <label class="text-muted" data-th-text="|${shortFilm.getViewCount()} views|"></label>
+                        <label class="text-muted mx-2">-</label>
+                        <label class="text-muted" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></label>
                     </div>
                 </div>
-                <div class="d-flex">
-                    <label class="text-muted" data-th-text="|${shortFilm.getViewCount()} views|"></label>
-                    <label class="text-muted mx-2">-</label>
-                    <label class="text-muted" data-th-text="|Uploaded ${shortFilm.getFormattedUploadDate()}|"></label>
-                </div>
-            </div>
-           
+
                 <div
                     class="d-flex flex-column mt-2"
                     data-th-with="userRating = ${shortFilmViewData.getUserRating()},
@@ -91,7 +87,7 @@
                 </th-block>
 
                 <hr class="mt-3" />
-
+                
                 <span data-th-text="|${comments.size()} comments|"></span>
                 <div class="d-flex" data-th-classappend="${shortFilmViewData.getWatcherId()} != null ? 'my-4' : 'mt-2 mb-5'">
                     <th-block data-th-switch="${shortFilmViewData.getWatcherId()} != null">

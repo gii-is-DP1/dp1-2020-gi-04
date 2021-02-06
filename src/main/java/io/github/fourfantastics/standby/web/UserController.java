@@ -14,11 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
@@ -58,12 +55,10 @@ public class UserController {
 		return "login";
 	}
 
-
 	@PostMapping("/login/success")
 	public String redirectLoginSuccess() {
 		return "redirect:/";
 	}
-
 
 	@GetMapping("/logout")
 	public String doLogout(HttpServletRequest request, HttpServletResponse response) {
@@ -102,7 +97,7 @@ public class UserController {
 		}
 	}
 
-	@RequestMapping("/feed")
+	@RequestMapping("/")
 	public String getFeedView(Map<String, Object> model, @ModelAttribute FeedData feedData) {
 		User user = userService.getLoggedUser().orElse(null);
 		if (user == null) {
@@ -111,9 +106,9 @@ public class UserController {
 		feedData.setUser(user);
 		feedData.getFollowedShortFilmsPag().setTotalElements(shortFilmService
 				.getFollowedShortFilms(user.getId(),
-						feedData.getFollowedShortFilmsPag().getPageRequest(Sort.by("uploadDate").descending())).getSize());
+						feedData.getFollowedShortFilmsPag().getPageRequest(Sort.by("shortfilm.uploadDate").descending())).getSize());
 		feedData.setFollowedShortFilms(shortFilmService.getFollowedShortFilms(user.getId(),
-						feedData.getFollowedShortFilmsPag().getPageRequest(Sort.by("uploadDate").descending())).getContent());
+						feedData.getFollowedShortFilmsPag().getPageRequest(Sort.by("shortfilm.uploadDate").descending())).getContent());
 		
 		model.put("feedData", feedData);
 		
