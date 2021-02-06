@@ -17,6 +17,7 @@
                     <div class="d-flex justify-content-between">
                         <h4 data-th-text="${shortFilm.getTitle()}"></h4>
                         <div class="d-flex justify-content-between">
+                        <th-block sec:authorize="isAuthenticated()">
                             <th-block data-th-switch="${shortFilmViewData.getHasFavourite()}">
                                 <th-block data-th-case="true">
                                     <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/full_heart.png}, type='submit', name='deleteFavourite')}"></button>
@@ -25,6 +26,7 @@
                                     <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/empty_heart.png}, type='submit', name='favouriteShortfilm')}"></button>
                                 </th-block>
                             </th-block>
+                        </th-block>
                             <th-block data-th-if="${shortFilm.getUploader().getId()} == ${shortFilmViewData.getWatcherId()}">
                                 <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/' + ${shortFilm.getId()} + '/edit'})}"></button>
                             </th-block>
