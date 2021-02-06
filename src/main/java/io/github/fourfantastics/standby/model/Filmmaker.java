@@ -21,7 +21,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Filmmaker extends User {
 	@NotNull
-	@Column(unique = true, nullable = false)
+	@Column(unique = false, nullable = false)
 	String fullname;
 
 	@Column(nullable = true)

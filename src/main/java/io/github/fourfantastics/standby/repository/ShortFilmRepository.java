@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 
-public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long> {
+public interface ShortFilmRepository extends CrudRepository<ShortFilm, Long>, JpaSpecificationExecutor<ShortFilm> {
 	public Optional<ShortFilm> findByTitle(String title);
 
 	public Integer countByUploader(Filmmaker uploader);
