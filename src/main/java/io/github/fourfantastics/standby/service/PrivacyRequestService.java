@@ -14,6 +14,7 @@ import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
+import io.github.fourfantastics.standby.service.exception.NotFoundException;
 import io.github.fourfantastics.standby.service.exception.UnauthorizedException;
 import io.github.fourfantastics.standby.utils.Utils;
 
@@ -29,6 +30,7 @@ public class PrivacyRequestService {
 		this.notificationService = notificationService;
 	}
 
+	
 	public void sendPrivacyRequest(User sender, User receiver) throws UnauthorizedException {
 		if (sender.getType() != UserType.Company) {
 			throw new UnauthorizedException("You must be logged as a Company to perform this action",
@@ -55,7 +57,24 @@ public class PrivacyRequestService {
 		notificationService.sendPrivacyRequestNotification(sender.getName(), (User) receiver);
 	}
 
-	public void acceptPrivacyRequest(PrivacyRequest request) {
+	public void acceptPrivacyRequest(User user, Long requestId) throws Exception {
+		PrivacyRequest request = privacyRequestRepository.findById(requestId).orElse(null);
+		if(request == null) {
+			throw new NotFoundException("Privact request not found",
+					Utils.hashSet("notFoundRequest"));
+		}
+		if(user.getType()!=UserType.Filmmaker) {
+			throw new UnauthorizedException("You must be a Filmmaker in order to accept a request",
+					Utils.hashSet("notFilmmaker"));
+		}
+		if(request.getRequestState() != RequestStateType.PENDING) {
+			throw new UnauthorizedException("Request already answered",
+					Utils.hashSet("alreadyAccepted"));
+		}
+		if(request.getFilmmaker() != (Filmmaker) user) {
+			throw new UnauthorizedException("This request does not belong to you",
+					Utils.hashSet("notReceiverOfRequest"));
+		}
 		request.setRequestState(RequestStateType.ACCEPTED);
 		privacyRequestRepository.save(request);
 		if (request.getCompany().getConfiguration().getByPrivacyRequests()) {
@@ -65,7 +84,24 @@ public class PrivacyRequestService {
 		}
 	}
 
-	public void declinePrivacyRequest(PrivacyRequest request) {
+	public void declinePrivacyRequest(User user, Long requestId) throws Exception {
+		PrivacyRequest request = privacyRequestRepository.findById(requestId).orElse(null);
+		if(request == null) {
+			throw new NotFoundException("Privact request not found",
+					Utils.hashSet("notFoundRequest"));
+		}
+		if(user.getType()!=UserType.Filmmaker) {
+			throw new UnauthorizedException("You must be a Filmmaker in order to accept a request",
+					Utils.hashSet("notFilmmaker"));
+		}
+		if(request.getRequestState() != RequestStateType.PENDING) {
+			throw new UnauthorizedException("Request already answered",
+					Utils.hashSet("alreadyAccepted"));
+		}
+		if(request.getFilmmaker() != (Filmmaker) user) {
+			throw new UnauthorizedException("This request does not belong to you",
+					Utils.hashSet("notReceiverOfRequest"));
+		}
 		request.setRequestState(RequestStateType.DECLINED);
 		privacyRequestRepository.save(request);
 		if (request.getCompany().getConfiguration().getByPrivacyRequests()) {
@@ -74,6 +110,7 @@ public class PrivacyRequestService {
 			notificationService.sendPrivacyRequestResponseNotification(sender.getName(), (User) receiver, false);
 		}
 	}
+
 	
 	public Integer getCountPrivacyRequestByFilmmaker(Long filmmakerId) {
 		return privacyRequestRepository.getCountPrivacyRequestOfFilmmaker(filmmakerId);
