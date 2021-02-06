@@ -189,8 +189,10 @@ public class ShortFilmController {
 			return "redirect:/login";
 		}
 
+		loggedUser.hashCode();
+		
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
-		if (shortFilm == null || !shortFilm.getUploader().equals((Filmmaker) loggedUser)) {
+		if (shortFilm == null || !shortFilm.getUploader().equals(loggedUser)) {
 			return "redirect:/";
 		}
 
