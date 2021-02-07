@@ -148,7 +148,10 @@ public class ShortFilmController {
 			return "redirect:/";
 		}
 
-		shortFilmService.updateViewCount(shortFilm, 1);
+		if (shortFilmViewData.getLoaded() == null) {
+			shortFilmService.updateViewCount(shortFilm, 1);
+		}
+		
 		shortFilmViewData.setShortFilm(shortFilm);
 		shortFilmViewData.getCommentPagination().setTotalElements(commentService.getCommentCountByShortFilm(shortFilm));
 		shortFilmViewData.setComments(commentService
