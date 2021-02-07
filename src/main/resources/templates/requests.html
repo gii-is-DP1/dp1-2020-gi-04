@@ -4,7 +4,9 @@
     <section>
         <h3>Privacy requests</h3>
         <hr />
-        <form method="POST" data-th-action="@{notifications}" data-th-object="${notificationData}">
+        
+        <!--
+        <form method="POST" data-th-action="@{requests}" data-th-object="${privacyRequestsData}">
             <th-block data-th-with="notifications = *{getNotifications()}" data-th-switch="${!notifications.isEmpty()}">
                 <th-block data-th-case="true">
                     <div class="list-group mb-3">
@@ -19,9 +21,10 @@
                     <div data-th-replace="~{@{fragments/form/pagination}(name = 'pagination')}"></div>
                 </th-block>
                 <th-block data-th-case="false">
-                    <div class="alert alert-dark">You don't have any notification yet!</div>
+                    <div class="alert alert-dark">You don't have any privacy requests yet!</div>
                 </th-block>
             </th-block>
         </form>
+         -->
     </section>
 </html>
