@@ -31,9 +31,11 @@ public class PrivacyRequestController {
 		if (user == null) {
 			return "redirect:/login";
 		}
+		
 		if (user.getType() != UserType.Filmmaker) {
 			return "redirect:/";
 		}
+		
 		Filmmaker filmmaker = (Filmmaker) user;
 		requestData.setFilmmaker(filmmaker);
 		requestData.getPrivacyRequestPagination()
@@ -70,12 +72,13 @@ public class PrivacyRequestController {
 		return String.format("redirect:/profile/%d", filmmakerId);
 	}
 
-	@PostMapping("/requests/{requestId}/Accept")
+	@PostMapping("/requests/{requestId}/accept")
 	public String acceptPrivactRequest(@PathVariable Long requestId) {
 		User sender = userService.getLoggedUser().orElse(null);
 		if (sender == null) {
 			return "redirect:/login";
 		}
+		
 		try {
 			privacyRequestService.acceptPrivacyRequest(sender, requestId);
 		} catch (Exception e) {
@@ -91,6 +94,7 @@ public class PrivacyRequestController {
 		if (sender == null) {
 			return "redirect:/login";
 		}
+		
 		try {
 			privacyRequestService.declinePrivacyRequest(sender, requestId);
 		} catch (Exception e) {
@@ -99,5 +103,4 @@ public class PrivacyRequestController {
 
 		return "requests";
 	}
-
 }

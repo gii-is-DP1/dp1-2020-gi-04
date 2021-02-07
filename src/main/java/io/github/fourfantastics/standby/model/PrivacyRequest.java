@@ -1,5 +1,7 @@
 package io.github.fourfantastics.standby.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 
 import javax.persistence.Entity;
@@ -10,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import io.github.fourfantastics.standby.utils.RelativeTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,4 +41,8 @@ public class PrivacyRequest {
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false) // send
 	Company company;
+	
+	public String getFormattedRelativeRequestTime() {
+		return RelativeTimeFormatter.toRelative(new Date().getTime() - getRequestDate(), 1);
+	}
 }
