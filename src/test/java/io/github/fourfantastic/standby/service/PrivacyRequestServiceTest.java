@@ -8,8 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.Date;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
@@ -22,7 +20,6 @@ import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
-import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
 import io.github.fourfantastics.standby.service.NotificationService;
