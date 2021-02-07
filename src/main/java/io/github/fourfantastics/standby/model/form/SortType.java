@@ -1,9 +1,9 @@
 package io.github.fourfantastics.standby.model.form;
 
 public enum SortType {
-	UPLOAD_DATE("Today"),
-	RATINGS("This week"),
-	VIEWS("This month");
+	UPLOAD_DATE("Upload date"),
+	RATINGS("Rating"),
+	VIEWS("Views");
 	
 	private String name;
 	   

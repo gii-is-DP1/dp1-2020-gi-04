@@ -165,44 +165,46 @@ public class ShortFilmService {
 		Long now = Instant.now().toEpochMilli();
 		Long day = 24L * 60L * 60L * 1000L;
 
-		switch (dateFilter) {
-		case TODAY:
-			Specification<ShortFilm> fromToday = ShortFilmSpecifications.betweenDates(now - day, now);
-			filters = filters.and(fromToday);
-			break;
-		case WEEK:
-			Long week = day * 7L;
-			Specification<ShortFilm> fromWeek = ShortFilmSpecifications.betweenDates(now - week, now);
-			filters = filters.and(fromWeek);
-			break;
-		case MONTH:
-			Long month = day * 30;
-			Specification<ShortFilm> fromMonth = ShortFilmSpecifications.betweenDates(now - month, now);
-			filters = filters.and(fromMonth);
-			break;
-		case YEAR:
-			Long year = day * 365;
-			Specification<ShortFilm> fromYear = ShortFilmSpecifications.betweenDates(now - year, now);
-			filters = filters.and(fromYear);
-			break;
+		if (dateFilter != null) {
+			switch (dateFilter) {
+			case TODAY:
+				Specification<ShortFilm> fromToday = ShortFilmSpecifications.betweenDates(now - day, now);
+				filters = filters.and(fromToday);
+				break;
+			case WEEK:
+				Long week = day * 7L;
+				Specification<ShortFilm> fromWeek = ShortFilmSpecifications.betweenDates(now - week, now);
+				filters = filters.and(fromWeek);
+				break;
+			case MONTH:
+				Long month = day * 30;
+				Specification<ShortFilm> fromMonth = ShortFilmSpecifications.betweenDates(now - month, now);
+				filters = filters.and(fromMonth);
+				break;
+			case YEAR:
+				Long year = day * 365;
+				Specification<ShortFilm> fromYear = ShortFilmSpecifications.betweenDates(now - year, now);
+				filters = filters.and(fromYear);
+				break;
+			}
 		}
-
-		switch (sortType) {
-		case RATINGS:
-			Specification<ShortFilm> sortByRating = ShortFilmSpecifications.sortByRating(false);
-			filters = filters.and(sortByRating);
-			break;
-		case UPLOAD_DATE:
-			Specification<ShortFilm> sortByUploadDate = ShortFilmSpecifications.sortByUploadDate(false);
-			filters = filters.and(sortByUploadDate);
-			break;
-		case VIEWS:
-			Specification<ShortFilm> sortByViews = ShortFilmSpecifications.sortByViews(false);
-			filters = filters.and(sortByViews);
-			break;
+		if (sortType != null) {
+			switch (sortType) {
+			case RATINGS:
+				Specification<ShortFilm> sortByRating = ShortFilmSpecifications.sortByRating(false);
+				filters = filters.and(sortByRating);
+				break;
+			case UPLOAD_DATE:
+				Specification<ShortFilm> sortByUploadDate = ShortFilmSpecifications.sortByUploadDate(false);
+				filters = filters.and(sortByUploadDate);
+				break;
+			case VIEWS:
+				Specification<ShortFilm> sortByViews = ShortFilmSpecifications.sortByViews(false);
+				filters = filters.and(sortByViews);
+				break;
+			}
 		}
-
-		pagination.setTotalElements((int)shortFilmRepository.count(filters));
+		pagination.setTotalElements((int) shortFilmRepository.count(filters));
 		pagination.setPageElements(5);
 		Pageable pageable = pagination.getPageRequest();
 		return shortFilmRepository.findAll(filters, pageable);
