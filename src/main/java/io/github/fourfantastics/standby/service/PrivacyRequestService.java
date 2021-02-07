@@ -30,7 +30,6 @@ public class PrivacyRequestService {
 		this.notificationService = notificationService;
 	}
 
-	
 	public void sendPrivacyRequest(User sender, User receiver) throws UnauthorizedException {
 		if (sender.getType() != UserType.Company) {
 			throw new UnauthorizedException("You must be logged as a Company to perform this action",
