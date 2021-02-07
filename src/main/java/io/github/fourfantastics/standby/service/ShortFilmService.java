@@ -2,9 +2,9 @@ package io.github.fourfantastics.standby.service;
 
 import java.nio.file.Path;
 
+
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -135,7 +135,32 @@ public class ShortFilmService {
 		return shortFilmRepository.followedShortFilms(userId, pageable);
 	}
 
-	public List<ShortFilm> getShortFilmsByTitle(String title) {
-		return shortFilmRepository.findAll(ShortFilmSpecifications.hasTitle(title));
+	public Page<ShortFilm> getShortFilmsByTitle(String title,Pageable pageable) {
+		return shortFilmRepository.findAll(ShortFilmSpecifications.hasTitle(title),pageable);
+	}
+	
+	public Page<ShortFilm> getShortFilmsByFilmmaker(Filmmaker filmmaker,Pageable pageable) {
+		return shortFilmRepository.findAll(ShortFilmSpecifications.hasUploader(filmmaker),pageable);
+	}
+	
+	public Page<ShortFilm> getShortFilmsByTags(Set<String> tags,Pageable pageable) {
+		return shortFilmRepository.findAll(ShortFilmSpecifications.hasTags(tags),pageable);
+	}
+	
+	public Page<ShortFilm> getShortFilmsBetweenDates(Long from, Long to,Pageable pageable) {
+		return shortFilmRepository.findAll(ShortFilmSpecifications.betweenDates(from, to),pageable);
+	}
+	
+	public Page<ShortFilm> getShortFilmsSortByRating(Boolean asc,Pageable pageable) {
+		return shortFilmRepository.findAll(ShortFilmSpecifications.sortByRating(asc),pageable);
+	}
+	
+	public Page<ShortFilm> getShortFilmsSortByViews(Boolean asc,Pageable pageable) {
+		return shortFilmRepository.findAll(ShortFilmSpecifications.sortByViews(asc),pageable);
+	}
+	
+	public Page<ShortFilm> getShortFilmsByTitleAndSortByViews(String title,Boolean asc,Pageable pageable) {
+		return shortFilmRepository.findAll(ShortFilmSpecifications.hasTitle(title)
+				.and(ShortFilmSpecifications.sortByViews(asc)),pageable);
 	}
 }
