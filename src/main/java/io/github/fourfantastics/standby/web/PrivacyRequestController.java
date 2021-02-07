@@ -41,7 +41,7 @@ public class PrivacyRequestController {
 		requestData.getPrivacyRequestPagination()
 				.setTotalElements(privacyRequestService.getCountPrivacyRequestByFilmmaker(filmmaker.getId()));
 		requestData
-				.setRequest(privacyRequestService
+				.setRequests(privacyRequestService
 						.getPrivacyRequestByFilmmaker(filmmaker.getId(),
 								requestData.getPrivacyRequestPagination()
 										.getPageRequest(Sort.by("privacyRequest.requestDate").descending()))
@@ -85,7 +85,7 @@ public class PrivacyRequestController {
 			return String.format("redirect:/requests");
 		}
 
-		return "requests";
+		return "redirect:/requests";
 	}
 
 	@PostMapping("/requests/{requestId}/decline")
@@ -101,6 +101,6 @@ public class PrivacyRequestController {
 			return String.format("redirect:/requests");
 		}
 
-		return "requests";
+		return "redirect:/requests";
 	}
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
+import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
@@ -23,6 +24,7 @@ import io.github.fourfantastics.standby.model.form.FilmmakerRegisterData;
 import io.github.fourfantastics.standby.model.validator.FilmmakerConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.FilmmakerRegisterDataValidator;
 import io.github.fourfantastics.standby.service.FilmmakerService;
+import io.github.fourfantastics.standby.service.PrivacyRequestService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.SubscriptionService;
 import io.github.fourfantastics.standby.service.UserService;
@@ -41,6 +43,9 @@ public class FilmmakerController {
 
 	@Autowired
 	ShortFilmService shortFilmService;
+	
+	@Autowired
+	PrivacyRequestService privacyRequestService;
 
 	@Autowired
 	FilmmakerRegisterDataValidator filmmakerRegisterDataValidator;
@@ -119,14 +124,12 @@ public class FilmmakerController {
 			model.put("privacyRequestButton", true);
 
 			Company viewerCompany = (Company) viewer;
-			PrivacyRequest sentRequest = viewerCompany.getSentRequests().stream()
-					.filter((x -> x.getFilmmaker().getName().equals(filmmaker.getName()))).findFirst().orElse(null);
+			PrivacyRequest sentRequest = privacyRequestService.getPrivacyRequestByFilmmakerAndCompany(filmmaker, viewerCompany).orElse(null);
 			if (sentRequest != null) {
 				model.put("disablePrivacyRequestButton", true);
-				// [TO-DO] Allow to accept privacy requests!!
-				// if (sentRequest.getRequestState() == RequestStateType.ACCEPTED) {
-				model.put("personalInformation", true);
-				// }
+				if (sentRequest.getRequestState() == RequestStateType.ACCEPTED) {
+					model.put("personalInformation", true);
+				}
 			}
 		} else {
 			Filmmaker viewerFilmmaker = (Filmmaker) viewer;

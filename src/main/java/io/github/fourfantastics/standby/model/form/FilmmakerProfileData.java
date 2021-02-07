@@ -27,6 +27,8 @@ public class FilmmakerProfileData {
 	
 	Pagination attachedShortFilmPagination = Pagination.empty();
 
+	Integer openTab = 0;
+	
 	public static FilmmakerProfileData fromFilmmaker(Filmmaker filmmaker) {
 		FilmmakerProfileData filmmakerProfileData = new FilmmakerProfileData();
 		filmmakerProfileData.setFilmmaker(filmmaker);

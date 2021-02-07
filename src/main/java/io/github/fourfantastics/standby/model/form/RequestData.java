@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class RequestData {
-	
 	Filmmaker filmmaker;
 	
 	Pagination privacyRequestPagination = Pagination.empty();
 	
-	List<PrivacyRequest> request;
+	List<PrivacyRequest> requests;
 }

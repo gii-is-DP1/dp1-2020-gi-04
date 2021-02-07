@@ -32,4 +32,6 @@ public class ShortFilmViewData {
 	Boolean hasFavourite;
 	
 	Integer followerCount;
+	
+	Integer loaded;
 }

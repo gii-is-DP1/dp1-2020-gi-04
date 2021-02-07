@@ -21,7 +21,7 @@
                 <th-block data-th-case="true">
                     <th-block data-th-each="throwable, stat : ${throwables}">
                         <h5 data-th-if="${stat.index} != 0" class="text-center mt-4">Caused by:</h5>
-	                    <h4 class="alert-heading text-center" data-th-text="|${throwable.getClass().getName()}|"></h4>
+	                    <h4 class="alert-heading text-center text-break" data-th-text="|${throwable.getClass().getName()}|"></h4>
 	                    <p data-th-text="${throwable.getMessage()}"></p>
 	                    <button class="btn btn-secondary btn-block btn-collapse-text collapsed" type="button" data-toggle="collapse" data-th-attr="data-target='.stbstacktrace-' + ${stat.index}">
                             <span>Show stack trace</span><span>Hide stack trace</span>
