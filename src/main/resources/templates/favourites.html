@@ -3,6 +3,8 @@
 	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
 <title data-th-text="|Standby|"></title>
 <section>
+    <h3>Your favourite short films</h3>
+    <hr />
 	<form data-th-action="@{/favourites}" method="POST"
 		data-th-object="${userFavouriteShortFilmsData}"
 		data-th-with="favouriteShortFilms = ${userFavouriteShortFilmsData.getFavouriteShortFilms()}">

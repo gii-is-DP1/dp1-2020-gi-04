@@ -3,17 +3,21 @@
     <html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
         <title data-th-text="|${filmmaker.getName()} profile - Standby|"></title>
         <section>
-            <h3 data-th-text="|${filmmaker.getName()} profile|"></h3>
-            <hr />
-
-            <div class="d-flex justify-content-end">
+            <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center">
+                <div class="flex-grow-1">
+                    <h3 class="text-break" data-th-text="|${filmmaker.getName()} profile|"></h3>
+                </div>
                 <th-block data-th-if="${accountButton}">
-                <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/saved-icon.svg}, href=@{/favourites})}"></button>
-                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
+                    <div class="d-flex flex-md-shrink-0 justify-content-between justify-content-md-start mt-2 mt-md-0">
+	                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/spy-icon.svg}, href=@{/requests})}"></button>
+	                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/saved-icon.svg}, href=@{/favourites})}"></button>
+	                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/settings-icon.svg}, href=@{/account})}"></button>
+                    </div>
                 </th-block>
             </div>
+            <hr />
 
-            <div class="row" data-th-classappend="!${accountButton} ? 'mt-4' : null">
+            <div class="row mt-5">
                 <div class="col-12 col-md-4 text-center mb-3 mb-md-0">
                     <img data-th-replace="~{@{fragments/profilePicture}(src=${filmmaker.getPhotoUrl()}, class='img-fluid', style='max-height: 150px; max-width: 150px')}" />
                 </div>

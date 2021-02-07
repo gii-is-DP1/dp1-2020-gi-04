@@ -1,6 +1,5 @@
 package io.github.fourfantastic.standby.service;
 
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,7 +23,6 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
 import io.github.fourfantastics.standby.model.RequestStateType;
-import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
 import io.github.fourfantastics.standby.service.NotificationService;
@@ -120,105 +118,6 @@ public class PrivacyRequestServiceTest {
 		assertThrows(UnauthorizedException.class , () -> privacyRequestService.sendPrivacyRequest(mockSenderCompany, mockFilmmakerReceiver));
 
 		verifyNoInteractions(privacyRequestRepository);
-		verifyNoInteractions(notificationService);
-	}
-
-	
-	@Test
-	void acceptPrivacyRequestWithNotificationTest() {
-		final NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
-		notificationConfiguration.setByPrivacyRequests(true);
-
-		final Company mockCompanyReceiver = new Company();
-		mockCompanyReceiver.setCompanyName("CompanyName");
-		mockCompanyReceiver.setConfiguration(notificationConfiguration);
-
-		final Filmmaker mockFilmmakerSender = new Filmmaker();
-		mockFilmmakerSender.setName("Filomena");
-
-		final PrivacyRequest mockRequest = new PrivacyRequest();
-		mockRequest.setCompany(mockCompanyReceiver);
-		mockRequest.setFilmmaker(mockFilmmakerSender);
-		mockRequest.setRequestDate(new Date().getTime());
-		mockRequest.setRequestState(RequestStateType.PENDING);
-
-		privacyRequestService.acceptPrivacyRequest(mockRequest);
-
-		verify(privacyRequestRepository, only()).save(any(PrivacyRequest.class));
-		verify(notificationService, only()).sendPrivacyRequestResponseNotification(mockFilmmakerSender.getName(),
-				mockCompanyReceiver, true);
-	}
-
-	@Test
-	void acceptPrivacyRequestWithoutNotificationTest() {
-		final NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
-		notificationConfiguration.setByPrivacyRequests(false);
-
-		final Company mockCompanyReceiver = new Company();
-		mockCompanyReceiver.setCompanyName("CompanyName");
-		mockCompanyReceiver.setConfiguration(notificationConfiguration);
-
-		final Filmmaker mockFilmmakerSender = new Filmmaker();
-		mockFilmmakerSender.setName("Filomena");
-
-		final PrivacyRequest mockRequest = new PrivacyRequest();
-		mockRequest.setCompany(mockCompanyReceiver);
-		mockRequest.setFilmmaker(mockFilmmakerSender);
-		mockRequest.setRequestDate(new Date().getTime());
-		mockRequest.setRequestState(RequestStateType.PENDING);
-
-		privacyRequestService.acceptPrivacyRequest(mockRequest);
-
-		verify(privacyRequestRepository, only()).save(any(PrivacyRequest.class));
-		verifyNoInteractions(notificationService);
-	}
-
-	@Test
-	void declinePrivacyRequestWithNotificationTest() {
-		final NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
-		notificationConfiguration.setByPrivacyRequests(true);
-
-		final Company mockCompanyReceiver = new Company();
-		mockCompanyReceiver.setCompanyName("CompanyName");
-		mockCompanyReceiver.setConfiguration(notificationConfiguration);
-
-		final Filmmaker mockFilmmakerSender = new Filmmaker();
-		mockFilmmakerSender.setName("Filomena");
-
-		final PrivacyRequest mockRequest = new PrivacyRequest();
-		mockRequest.setCompany(mockCompanyReceiver);
-		mockRequest.setFilmmaker(mockFilmmakerSender);
-		mockRequest.setRequestDate(new Date().getTime());
-		mockRequest.setRequestState(RequestStateType.PENDING);
-
-		privacyRequestService.declinePrivacyRequest(mockRequest);
-
-		verify(privacyRequestRepository, only()).save(any(PrivacyRequest.class));
-		verify(notificationService, only()).sendPrivacyRequestResponseNotification(mockFilmmakerSender.getName(),
-				mockCompanyReceiver, false);
-	}
-
-	@Test
-	void declinePrivacyRequestWithoutNotificationTest() {
-		final NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
-		notificationConfiguration.setByPrivacyRequests(false);
-
-		final Company mockCompanyReceiver = new Company();
-		mockCompanyReceiver.setCompanyName("CompanyName");
-		mockCompanyReceiver.setConfiguration(notificationConfiguration);
-
-		final Filmmaker mockFilmmakerSender = new Filmmaker();
-		mockFilmmakerSender.setName("Filomena");
-
-		final PrivacyRequest mockRequest = new PrivacyRequest();
-		mockRequest.setCompany(mockCompanyReceiver);
-		mockRequest.setFilmmaker(mockFilmmakerSender);
-		mockRequest.setRequestDate(new Date().getTime());
-		mockRequest.setRequestState(RequestStateType.PENDING);
-
-		privacyRequestService.declinePrivacyRequest(mockRequest);
-
-		verify(privacyRequestRepository, only()).save(any(PrivacyRequest.class));
 		verifyNoInteractions(notificationService);
 	}
 }

@@ -104,11 +104,9 @@ public class UserController {
 			return "redirect:/login";
 		}
 		feedData.setUser(user);
-		feedData.getFollowedShortFilmsPag().setTotalElements(shortFilmService
-				.getFollowedShortFilms(user.getId(),
-						feedData.getFollowedShortFilmsPag().getPageRequest(Sort.by("shortfilm.uploadDate").descending())).getSize());
+		feedData.getFollowedShortFilmsPagination().setTotalElements(shortFilmService.getFollowedShortFilmsCount(user.getId()));
 		feedData.setFollowedShortFilms(shortFilmService.getFollowedShortFilms(user.getId(),
-						feedData.getFollowedShortFilmsPag().getPageRequest(Sort.by("shortfilm.uploadDate").descending())).getContent());
+						feedData.getFollowedShortFilmsPagination().getPageRequest(Sort.by("shortfilm.uploadDate").descending())).getContent());
 		
 		model.put("feedData", feedData);
 		

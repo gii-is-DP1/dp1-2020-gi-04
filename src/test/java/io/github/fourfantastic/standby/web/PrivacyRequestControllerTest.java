@@ -44,7 +44,6 @@ public class PrivacyRequestControllerTest {
 	
 	@MockBean
 	UserService userService;
-	
 
 	@Test
 	void companySendsPrivacyRequestToFilmmakerTest() throws Exception {
@@ -55,7 +54,6 @@ public class PrivacyRequestControllerTest {
 		mockSenderCompany.setOfficeAddress("Calle Manzanita 3");
 		mockSenderCompany.setTaxIDNumber("123-78-1234567");
 
-
 		final Filmmaker mockFilmmakerReceiver = new Filmmaker();
 		mockFilmmakerReceiver.setId(1L);
 		mockFilmmakerReceiver.setName("filmmaker1");
@@ -64,12 +62,11 @@ public class PrivacyRequestControllerTest {
 		mockFilmmakerReceiver.setCity("Seville");
 		mockFilmmakerReceiver.setPhone("678543167");
 
-
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockSenderCompany));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerReceiver));
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/privacyrequest").with(csrf())).andExpect(status().isFound())
+			mockMvc.perform(post("/profile/1/request").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
@@ -102,7 +99,7 @@ public class PrivacyRequestControllerTest {
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockReceiverCompany));
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/privacyrequest").with(csrf())).andExpect(status().isFound())
+			mockMvc.perform(post("/profile/1/request").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
@@ -139,7 +136,7 @@ public class PrivacyRequestControllerTest {
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerReceiver));
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/privacyrequest").with(csrf())).andExpect(status().isFound())
+			mockMvc.perform(post("/profile/1/request").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
@@ -170,7 +167,7 @@ public class PrivacyRequestControllerTest {
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerReceiver));
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/privacyrequest").with(csrf())).andExpect(status().isFound())
+			mockMvc.perform(post("/profile/1/request").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/profile/1"));
 		});
 
@@ -192,7 +189,7 @@ public class PrivacyRequestControllerTest {
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/privacyrequest").with(csrf())).andExpect(status().isFound())
+			mockMvc.perform(post("/profile/1/request").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/login"));
 		});
 
@@ -212,7 +209,7 @@ public class PrivacyRequestControllerTest {
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> {
-			mockMvc.perform(post("/profile/1/privacyrequest").with(csrf())).andExpect(status().isFound())
+			mockMvc.perform(post("/profile/1/request").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/"));
 		});
 

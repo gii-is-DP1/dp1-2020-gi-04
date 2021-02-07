@@ -18,11 +18,14 @@ import java.util.List;
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.filters.ShortFilmSpecifications;
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
+import io.github.fourfantastics.standby.repository.RatingRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.repository.TagRepository;
+import io.github.fourfantastics.standby.service.RatingService;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = StandbyApplication.class)
@@ -37,6 +40,10 @@ public class ShortFilmRepositoryTest {
 
 	@Autowired
 	TagRepository tagRepository;
+	
+	@Autowired
+	RatingService ratingService;
+
 
 	@Test
 	void getShortFilmsByName() {
@@ -116,24 +123,39 @@ public class ShortFilmRepositoryTest {
 		tags.add("eed");
 
 		Specification<ShortFilm> thatHasTags = ShortFilmSpecifications.hasTags(tags);
-		Specification<ShortFilm> byUploadDate = ShortFilmSpecifications.byUploadDate(5L, 11L);
+		Specification<ShortFilm> betweenDates = ShortFilmSpecifications.betweenDates(5L, 11L);
 
 		assertEquals(2, shortFilmRepository.findAll(thatHasTags).size());
-		assertEquals(2, shortFilmRepository.findAll(byUploadDate).size());
+		assertEquals(2, shortFilmRepository.findAll(betweenDates).size());
 		
-		Specification<ShortFilm> sortByViews = ShortFilmSpecifications.sortByViews();
+		Specification<ShortFilm> sortByViews = ShortFilmSpecifications.sortByViews(false);
 
 		
 		
 		List<ShortFilm> shortFilms = shortFilmRepository.findAll(Specification
 				.where(thatHasTags)
 				.and(sortByViews)
-				.and(byUploadDate));
+				.and(betweenDates));
 		
 		assertEquals(2, shortFilms.size());
 		assertEquals(shortFilm2, shortFilms.get(0));
 		assertEquals(shortFilm, shortFilms.get(1));
 		
+	
+      
+        ratingService.rateShortFilm(shortFilm, filmmaker, 3);
+        ratingService.rateShortFilm(shortFilm, filmmaker2, 5);
+        
+        ratingService.rateShortFilm(shortFilm2, filmmaker, 6);
+        ratingService.rateShortFilm(shortFilm2, filmmaker2, 8);
+       
+        
+        List<ShortFilm> shortFilms2 = shortFilmRepository.findAll(ShortFilmSpecifications.sortByRating(false));
+        
+        assertEquals(3, shortFilms2.size());
+		assertEquals(shortFilm2, shortFilms2.get(0));
+		assertEquals(shortFilm, shortFilms2.get(1));
+		assertEquals(shortFilm3, shortFilms2.get(2));
 	}
 
 }

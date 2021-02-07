@@ -166,7 +166,7 @@ public class ShortFilmController {
 			shortFilmViewData.setHasFavourite(false);
 		}
 
-		Double meanRating = ratingService.getAverageRating(shortFilm);
+		Double meanRating = shortFilm.getRatingAverage();
 		shortFilmViewData.setMeanRating(meanRating);
 		shortFilmViewData.setTotalRatings(ratingService.getRatingCount(shortFilm));
 		shortFilmViewData.setUserRating(ratingService.getRatingByUserAndShortFilm(loggedUser, shortFilm));

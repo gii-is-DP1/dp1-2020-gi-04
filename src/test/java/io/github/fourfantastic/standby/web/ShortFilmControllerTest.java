@@ -740,7 +740,6 @@ public class ShortFilmControllerTest {
 						.thenReturn(Page.empty());
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockUser));
 		when(favouriteService.hasFavouriteShortFilm(mockShortFilm, mockUser)).thenReturn(true);
-		when(ratingService.getAverageRating(mockShortFilm)).thenReturn(2D);
 		when(ratingService.getRatingCount(mockShortFilm)).thenReturn(3L);
 		when(ratingService.getRatingByUserAndShortFilm(mockUser, mockShortFilm)).thenReturn(userRate);
 		when(subscriptionService.getFollowedCount(any(Filmmaker.class))).thenReturn(1);
@@ -765,7 +764,6 @@ public class ShortFilmControllerTest {
 		verify(userService, times(1)).getLoggedUser();
 		verifyNoMoreInteractions(userService);
 		verify(favouriteService, only()).hasFavouriteShortFilm(mockShortFilm, mockUser);
-		verify(ratingService, times(1)).getAverageRating(mockShortFilm);
 		verify(ratingService, times(1)).getRatingCount(mockShortFilm);
 		verify(ratingService, times(1)).getRatingByUserAndShortFilm(mockUser, mockShortFilm);
 		verifyNoMoreInteractions(ratingService);
@@ -789,7 +787,6 @@ public class ShortFilmControllerTest {
 				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending())))
 						.thenReturn(Page.empty());
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
-		when(ratingService.getAverageRating(mockShortFilm)).thenReturn(2D);
 		when(ratingService.getRatingCount(mockShortFilm)).thenReturn(3L);
 		when(ratingService.getRatingByUserAndShortFilm(null, mockShortFilm)).thenReturn(null);
 		when(subscriptionService.getFollowedCount(any(Filmmaker.class))).thenReturn(1);
@@ -810,7 +807,6 @@ public class ShortFilmControllerTest {
 		verifyNoMoreInteractions(commentService);
 		verify(userService, times(1)).getLoggedUser();
 		verifyNoMoreInteractions(userService);
-		verify(ratingService, times(1)).getAverageRating(mockShortFilm);
 		verify(ratingService, times(1)).getRatingCount(mockShortFilm);
 		verify(ratingService, times(1)).getRatingByUserAndShortFilm(null, mockShortFilm);
 		verifyNoMoreInteractions(ratingService);

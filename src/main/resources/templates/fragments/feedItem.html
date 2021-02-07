@@ -9,15 +9,13 @@
             </th-block>
         </th-block>
     </div>
-    <div class="flex-grow-1 pl-3 d-flex flex-column">
-        <div class="d-flex mb-3">
-            <div class="d-flex align-items-baseline justify-content-between">
-                <th-block data-th-switch="${profileId} != null">
-                    <a data-th-case="true" class="font-weight-bold text-decoration-none text-dark" data-th-href="${profileId} ? '/profile/' + ${profileId} : null" data-th-text="${userName}"></a>
-                    <span data-th-case="false" class="font-weight-bold text-dark" data-th-text="${userName}"></span>
-                </th-block>
-                <label class="text-muted ml-2 mb-0" data-th-text="|uploaded this ${date}.|"></label>
-            </div>
+    <div class="d-flex flex-column flex-grow-1 pl-3">
+        <div class="d-flex align-items-baseline mb-3">
+            <th-block data-th-switch="${profileId} != null">
+                <a data-th-case="true" class="font-weight-bold text-decoration-none text-dark" data-th-href="${profileId} ? '/profile/' + ${profileId} : null" data-th-text="${userName}"></a>
+                <span data-th-case="false" class="font-weight-bold text-dark" data-th-text="${userName}"></span>
+            </th-block>
+            <label class="text-muted ml-2 mb-0" data-th-text="|uploaded this ${date}.|"></label>
         </div>
         <div
             data-th-replace="~{@{fragments/shortFilmItem}(

@@ -253,9 +253,12 @@ public class UserControllerTest {
 		
 		verify(userService, times(1)).getLoggedUser();
 		verifyNoMoreInteractions(userService);
-		verify(shortFilmService, times(2)).getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getFollowedShortFilmsCount(filmmaker.getId());
+		verify(shortFilmService, times(1)).getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 	
+	@Test
 	void getFeedViewCompanyTest() {
 		final Company company = new Company();
 		company.setName("user1");
@@ -277,7 +280,9 @@ public class UserControllerTest {
 		
 		verify(userService, times(1)).getLoggedUser();
 		verifyNoMoreInteractions(userService);
-		verify(shortFilmService, times(2)).getFollowedShortFilms(eq(company.getId()), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getFollowedShortFilmsCount(company.getId());
+		verify(shortFilmService, times(1)).getFollowedShortFilms(eq(company.getId()), any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 	
 	@Test
