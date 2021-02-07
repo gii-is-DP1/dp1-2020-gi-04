@@ -14,7 +14,6 @@ import io.github.fourfantastics.standby.repository.UserRepository;
 
 @Service
 public class AccountService implements UserDetailsService {
-
 	@Autowired
 	private UserRepository userRepository;
 
