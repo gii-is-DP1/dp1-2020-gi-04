@@ -2,6 +2,7 @@ package io.github.fourfantastic.standby.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,11 +19,9 @@ import java.util.List;
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.filters.ShortFilmSpecifications;
 import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
-import io.github.fourfantastics.standby.repository.RatingRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
 import io.github.fourfantastics.standby.repository.TagRepository;
 import io.github.fourfantastics.standby.service.RatingService;
