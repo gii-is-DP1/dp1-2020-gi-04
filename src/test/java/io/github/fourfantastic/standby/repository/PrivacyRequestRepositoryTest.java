@@ -68,7 +68,6 @@ public class PrivacyRequestRepositoryTest {
 		request.setCompany(company);
 		request.setRequestDate(3L);
 		request.setRequestState(RequestStateType.PENDING);
-
 		this.privacyRequestRepository.save(request);
 
 		assertEquals(this.privacyRequestService.getCountPrivacyRequestByFilmmaker(filmmaker.getId()), 1);
@@ -103,11 +102,11 @@ public class PrivacyRequestRepositoryTest {
 		request.setCompany(company);
 		request.setRequestDate(3L);
 		request.setRequestState(RequestStateType.PENDING);
+		this.privacyRequestRepository.save(request);
 
 		List<PrivacyRequest> requests = new ArrayList<>();
 		requests.add(request);
 
-		this.privacyRequestRepository.save(request);
 
 		assertEquals(this.privacyRequestService
 				.getPrivacyRequestByFilmmaker(filmmaker.getId(), Pagination.empty().getPageRequest()).getContent(),
