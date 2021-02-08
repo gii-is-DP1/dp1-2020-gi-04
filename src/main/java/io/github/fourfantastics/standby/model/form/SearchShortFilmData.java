@@ -13,5 +13,4 @@ public class SearchShortFilmData {
 	List<ShortFilm> searchShortFilms = new ArrayList<ShortFilm>();
 
 	Pagination searchShortFilmPagination = Pagination.empty();
-
 }
