@@ -121,6 +121,10 @@ public class PrivacyRequestService {
 		}
 	}
 
+	public Integer getCountPrivacyRequestByFilmmaker(Long filmmakerId) {
+		return privacyRequestRepository.getCountPrivacyRequestOfFilmmaker(filmmakerId);
+	}
+
 	public Page<PrivacyRequest> getPrivacyRequestByFilmmaker(Long filmmakerId, Pageable pageable) {
 		return privacyRequestRepository.getPrivacyRequestOfFilmmaker(filmmakerId, pageable);
 	}

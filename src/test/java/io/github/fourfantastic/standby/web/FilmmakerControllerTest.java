@@ -477,8 +477,11 @@ public class FilmmakerControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
 		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
 		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 		when(privacyRequestService.getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany)).thenReturn(Optional.empty());
@@ -496,7 +499,9 @@ public class FilmmakerControllerTest {
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
 		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
@@ -536,8 +541,11 @@ public class FilmmakerControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
 		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
 		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 		when(privacyRequestService.getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany)).thenReturn(Optional.empty());
@@ -556,7 +564,9 @@ public class FilmmakerControllerTest {
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
 		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
@@ -599,8 +609,11 @@ public class FilmmakerControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
 		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
 		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 		when(privacyRequestService.getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany)).thenReturn(Optional.of(mockPrivacyRequest));
@@ -619,7 +632,9 @@ public class FilmmakerControllerTest {
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
 		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
@@ -656,8 +671,11 @@ public class FilmmakerControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerFilmmaker));
 		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
 		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 		when(subscriptionService.isAlreadySubscribedTo(mockViewerFilmmaker, mockViewed)).thenReturn(false);
@@ -673,7 +691,9 @@ public class FilmmakerControllerTest {
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
 		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
@@ -713,8 +733,11 @@ public class FilmmakerControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
 		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
 		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 		when(subscriptionService.isAlreadySubscribedTo(mockFollower, mockViewed)).thenReturn(true);
@@ -731,7 +754,9 @@ public class FilmmakerControllerTest {
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
 		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
@@ -759,8 +784,11 @@ public class FilmmakerControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewed));
 		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
 		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 		when(subscriptionService.isAlreadySubscribedTo(mockViewed, mockViewed)).thenReturn(false);
@@ -777,7 +805,9 @@ public class FilmmakerControllerTest {
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
 		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
@@ -805,8 +835,11 @@ public class FilmmakerControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
 		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
 		when(subscriptionService.isAlreadySubscribedTo(mockViewed, mockViewed)).thenReturn(false);
@@ -822,7 +855,9 @@ public class FilmmakerControllerTest {
 		verify(userService, times(1)).getLoggedUser();
 		verify(userService, times(1)).getUserById(1L);
 		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
 		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);

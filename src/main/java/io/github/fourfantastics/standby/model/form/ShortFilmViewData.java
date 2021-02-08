@@ -18,6 +18,7 @@ public class ShortFilmViewData {
 
 	Double meanRating;
 	Double maxRating = 10.0;
+	Long totalRatings;
 
 	Long watcherId;
 	String watcherName;

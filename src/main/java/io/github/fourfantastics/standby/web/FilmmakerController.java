@@ -3,7 +3,6 @@ package io.github.fourfantastics.standby.web;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -17,7 +16,6 @@ import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
 import io.github.fourfantastics.standby.model.RequestStateType;
-import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
@@ -39,13 +37,13 @@ public class FilmmakerController {
 
 	@Autowired
 	UserService userService;
-
+	
 	@Autowired
 	SubscriptionService subscriptionService;
 
 	@Autowired
 	ShortFilmService shortFilmService;
-
+	
 	@Autowired
 	PrivacyRequestService privacyRequestService;
 
@@ -96,18 +94,20 @@ public class FilmmakerController {
 		Filmmaker filmmaker = (Filmmaker) user;
 		filmmakerProfileData.setFilmmaker(filmmaker);
 		
-		Page<ShortFilm> uploadedPage = shortFilmService
-				.getShortFilmsByUploader(filmmaker,
-						filmmakerProfileData.getUploadedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()));
-		filmmakerProfileData.setTotalShortFilms((int) uploadedPage.getTotalElements());
-		filmmakerProfileData.getUploadedShortFilmPagination().setTotalElements((int) uploadedPage.getTotalElements());
-		filmmakerProfileData.setUploadedShortFilms(uploadedPage.getContent());
+		Integer shortFilmCount = shortFilmService.getShortFilmsCountByUploader(filmmaker);
+		filmmakerProfileData.setTotalShortFilms(shortFilmCount);
 		
-		Page<ShortFilm> attachedPage = shortFilmService
+		filmmakerProfileData.getUploadedShortFilmPagination().setTotalElements(shortFilmCount);
+		filmmakerProfileData.setUploadedShortFilms(shortFilmService
+				.getShortFilmsByUploader(filmmaker,
+						filmmakerProfileData.getUploadedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
+				.getContent());
+		
+		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements(shortFilmService.getAttachedShortFilmsCountByFilmmaker(filmmaker.getId()));
+		filmmakerProfileData.setAttachedShortFilms(shortFilmService
 				.getAttachedShortFilmsByFilmmaker(filmmaker.getId(), 
-						filmmakerProfileData.getAttachedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()));
-		filmmakerProfileData.getAttachedShortFilmPagination().setTotalElements((int) attachedPage.getTotalElements());
-		filmmakerProfileData.setAttachedShortFilms(attachedPage.getContent());
+						filmmakerProfileData.getAttachedShortFilmPagination().getPageRequest(Sort.by("uploadDate").descending()))
+				.getContent());
 		
 		filmmakerProfileData.setFollowerCount(subscriptionService.getFollowerCount(filmmaker));
 		filmmakerProfileData.setFollowedCount(subscriptionService.getFollowedCount(filmmaker));
@@ -198,5 +198,5 @@ public class FilmmakerController {
 		model.put("photoUrl", user.getPhotoUrl());
 		model.put("success", "Configuration has been saved successfully!");
 		return "manageFilmmakerAccount";
-	}
+	}	
 }

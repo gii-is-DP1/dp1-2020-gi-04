@@ -43,7 +43,8 @@
                     class="d-flex flex-column mt-2"
                     data-th-with="userRating = ${shortFilmViewData.getUserRating()},
                                   maxRating = ${#numbers.formatDecimal(shortFilmViewData.getMaxRating(), 1, 1, 'POINT')},
-                                  filmRating = ${#numbers.formatDecimal(shortFilmViewData.getMeanRating(), 1, 1, 'POINT')}"
+                                  filmRating = ${#numbers.formatDecimal(shortFilmViewData.getMeanRating(), 1, 1, 'POINT')},
+                                  totalRatings = ${shortFilmViewData.getTotalRatings()}"
                 >
                     <div class="d-flex mb-3">
                         <div class="star-container d-flex">

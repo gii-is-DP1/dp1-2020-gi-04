@@ -13,6 +13,7 @@ import io.github.fourfantastics.standby.repository.UserRepository;
 
 @Service
 public class FavouriteService {
+
 	FavouriteRepository favouriteRepository;
 	UserRepository userRepository;
 
@@ -46,7 +47,12 @@ public class FavouriteService {
 		return favouriteRepository.findByUserAndFavouriteShortfilm(user, shortFilm).isPresent();
 	}
 
+	public Integer getFavouriteShortFilmsCount(User user) {
+		return favouriteRepository.countByUser(user);
+	}
+
 	public Page<Favourite> getFavouriteShortFilmsByUser(User user, Pageable pageable) {
 		return favouriteRepository.findFavouriteShortfilmByUser(user, pageable);
 	}
+
 }
