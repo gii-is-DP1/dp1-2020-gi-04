@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import io.github.fourfantastics.standby.model.Comment;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
@@ -153,11 +155,12 @@ public class ShortFilmController {
 		}
 		
 		shortFilmViewData.setShortFilm(shortFilm);
-		shortFilmViewData.getCommentPagination().setTotalElements(commentService.getCommentCountByShortFilm(shortFilm));
-		shortFilmViewData.setComments(commentService
+		
+		Page<Comment> page = commentService
 				.getCommentsByShortFilm(shortFilm,
-						shortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()))
-				.getContent());
+						shortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()));
+		shortFilmViewData.getCommentPagination().setTotalElements((int) page.getTotalElements());
+		shortFilmViewData.setComments(page.getContent());
 
 		User loggedUser = userService.getLoggedUser().orElse(null);
 		if (loggedUser != null) {
@@ -171,7 +174,6 @@ public class ShortFilmController {
 
 		Double meanRating = shortFilm.getRatingAverage();
 		shortFilmViewData.setMeanRating(meanRating);
-		shortFilmViewData.setTotalRatings(ratingService.getRatingCount(shortFilm));
 		shortFilmViewData.setUserRating(ratingService.getRatingByUserAndShortFilm(loggedUser, shortFilm));
 		
 		shortFilmViewData.setFollowerCount(subscriptionService.getFollowerCount(shortFilm.getUploader()));
@@ -192,8 +194,6 @@ public class ShortFilmController {
 			return "redirect:/login";
 		}
 
-		loggedUser.hashCode();
-		
 		ShortFilm shortFilm = shortFilmService.getShortFilmById(shortFilmId).orElse(null);
 		if (shortFilm == null || !shortFilm.getUploader().equals(loggedUser)) {
 			return "redirect:/";

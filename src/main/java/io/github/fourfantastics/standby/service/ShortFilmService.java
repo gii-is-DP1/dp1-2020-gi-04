@@ -118,26 +118,14 @@ public class ShortFilmService {
 		shortFilmRepository.save(shortFilm);
 	}
 
-	public Integer getShortFilmsCountByUploader(Filmmaker uploader) {
-		return shortFilmRepository.countByUploader(uploader);
-	}
-
 	public Page<ShortFilm> getShortFilmsByUploader(Filmmaker uploader, Pageable pageable) {
 		return shortFilmRepository.findByUploader(uploader, pageable);
-	}
-
-	public Integer getAttachedShortFilmsCountByFilmmaker(Long filmmakerId) {
-		return shortFilmRepository.countAttachedShortFilmByFilmmaker(filmmakerId);
 	}
 
 	public Page<ShortFilm> getAttachedShortFilmsByFilmmaker(Long filmmakerId, Pageable pageable) {
 		return shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmakerId, pageable);
 	}
-
-	public Integer getFollowedShortFilmsCount(Long userId) {
-		return shortFilmRepository.countFollowedShortFilms(userId);
-	}
-
+	
 	public Page<ShortFilm> getFollowedShortFilms(Long userId, Pageable pageable) {
 		return shortFilmRepository.followedShortFilms(userId, pageable);
 	}
