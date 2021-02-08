@@ -252,8 +252,7 @@ public class UserControllerTest {
 			mockMvc.perform(get("/")).andExpect(status().isOk()).andExpect(view().name("feed"));
 		});
 		
-		verify(userService, times(1)).getLoggedUser();
-		verifyNoMoreInteractions(userService);
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, times(1)).getFollowedShortFilmsCount(filmmaker.getId());
 		verify(shortFilmService, times(1)).getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
@@ -280,8 +279,7 @@ public class UserControllerTest {
 			mockMvc.perform(get("/")).andExpect(status().isOk()).andExpect(view().name("feed"));
 		});
 		
-		verify(userService, times(1)).getLoggedUser();
-		verifyNoMoreInteractions(userService);
+		verify(userService, only()).getLoggedUser();
 		verify(shortFilmService, times(1)).getFollowedShortFilmsCount(company.getId());
 		verify(shortFilmService, times(1)).getFollowedShortFilms(eq(company.getId()), any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);

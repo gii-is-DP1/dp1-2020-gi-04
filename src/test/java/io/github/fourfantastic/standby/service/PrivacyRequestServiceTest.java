@@ -2,6 +2,7 @@ package io.github.fourfantastic.standby.service;
 
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,13 +12,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
-
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -29,6 +30,8 @@ import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
 import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.model.UserType;
+import io.github.fourfantastics.standby.repository.CompanyRepository;
+import io.github.fourfantastics.standby.repository.FilmmakerRepository;
 import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
 import io.github.fourfantastics.standby.service.NotificationService;
 import io.github.fourfantastics.standby.service.PrivacyRequestService;
@@ -39,6 +42,12 @@ import io.github.fourfantastics.standby.service.exception.UnauthorizedException;
 @SpringBootTest(classes = StandbyApplication.class)
 public class PrivacyRequestServiceTest {
 	PrivacyRequestService privacyRequestService;
+	
+	@Autowired
+	FilmmakerRepository filmmakerRepository;
+	
+	@Autowired
+	CompanyRepository companyRepository;
 
 	@Mock
 	PrivacyRequestRepository privacyRequestRepository;
@@ -397,5 +406,4 @@ public class PrivacyRequestServiceTest {
 		verify(privacyRequestRepository,only()).findById(request.getId());
 		verifyNoInteractions(notificationService);
 	}
-	
 }
