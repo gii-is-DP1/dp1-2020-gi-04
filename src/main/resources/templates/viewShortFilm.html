@@ -90,7 +90,7 @@
 
                 <hr class="mt-3" />
 
-                <span data-th-text="|${comments.size()} comments|"></span>
+                <span data-th-text="|${shortFilmViewData.getCommentCount()} comments|"></span>
                 <div class="d-flex" data-th-classappend="${shortFilmViewData.getWatcherId()} != null ? 'my-4' : 'mt-2 mb-5'">
                     <th-block data-th-switch="${shortFilmViewData.getWatcherId()} != null">
                         <th-block data-th-case="true">
