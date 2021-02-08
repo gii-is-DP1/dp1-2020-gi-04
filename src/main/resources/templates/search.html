@@ -22,6 +22,14 @@
 
     <hr />
      <div class="d-flex flex-column">
+      <th-block data-th-each="filmmaker : ${filmmakers}">
+      <div data-th-replace="~{@{fragments/filmmakerItem}(
+                                name=${filmmaker.getName()},
+                                id=${filmmaker.getId()},
+                                photoUrl=${filmmaker.getPhotoUrl()},
+                                class='mb-4'
+                                )}"></div>
+      </th-block>
             <th-block data-th-switch="${shortFilms.size() != 0}">
                 <th-block data-th-case="true">
                     <th-block data-th-each="shortFilm : ${shortFilms}">

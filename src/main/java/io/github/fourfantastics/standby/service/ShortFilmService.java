@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.CriteriaBuilder.Case;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -186,7 +188,13 @@ public class ShortFilmService {
 				Specification<ShortFilm> fromYear = ShortFilmSpecifications.betweenDates(now - year, now);
 				filters = filters.and(fromYear);
 				break;
+
+			case ALL:
+				Specification<ShortFilm> fromAllTime = ShortFilmSpecifications.betweenDates(0L, now);
+				filters = filters.and(fromAllTime);
+				break;
 			}
+
 		}
 		if (sortType != null) {
 			switch (sortType) {

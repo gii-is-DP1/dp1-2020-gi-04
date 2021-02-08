@@ -1,0 +1,20 @@
+<div data-th-fragment="filmmakerItem(id, name)" class="card mb-3">
+    <div class="row no-gutters">
+        <div class="col-md-4 d-flex flex-column justify-content-center">
+            <a data-th-href="@{'/profile/' + ${id}}" class="img-responsive-16by9">
+                <img data-th-replace="~{@{fragments/thumbnail}(src=${photoUrl})}" />
+            </a>
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <div class="d-flex flex-column-reverse flex-md-row align-items-stretch justify-content-md-between align-items-baseline">
+	                <h5 class="card-title m-0">
+	                    <a class="text-decoration-none text-dark" data-th-text="${name}" data-th-href="@{'/profile/' + ${id}}"></a>
+	                </h5>
+	             </div>
+                <p class="card-text text-collapse m-0" style="white-space: pre-line;" data-th-text="${description}"></p>
+               
+            </div>
+        </div>
+    </div>
+</div>
