@@ -19,7 +19,6 @@ import io.github.fourfantastics.standby.service.exception.BadRequestException;
 
 @Controller
 public class SearchController {
-	
 	@Autowired
 	ShortFilmService shortFilmService;
 	
@@ -28,7 +27,6 @@ public class SearchController {
 
 	@RequestMapping("/search")
 	public String search(@ModelAttribute SearchData searchData, BindingResult result, Map<String, Object> model) {
-
 		List<ShortFilm> shortFilms = new ArrayList<ShortFilm>();
 		List<Filmmaker> filmmakers = new ArrayList<Filmmaker>();
 		try {

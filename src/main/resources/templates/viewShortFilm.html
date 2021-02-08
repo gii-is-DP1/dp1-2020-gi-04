@@ -17,18 +17,18 @@
                     <div class="d-flex justify-content-between">
                         <h4 data-th-text="${shortFilm.getTitle()}"></h4>
                         <div class="d-flex justify-content-between">
-                        <th-block sec:authorize="isAuthenticated()">
-                            <th-block data-th-switch="${shortFilmViewData.getHasFavourite()}">
-                                <th-block data-th-case="true">
-                                    <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/full_heart.png}, type='submit', name='deleteFavourite')}"></button>
-                                </th-block>
-                                <th-block data-th-case="false">
-                                    <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/empty_heart.png}, type='submit', name='favouriteShortfilm')}"></button>
+                            <th-block sec:authorize="isAuthenticated()">
+                                <th-block data-th-switch="${shortFilmViewData.getHasFavourite()}">
+                                    <th-block data-th-case="true">
+                                        <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/full_heart.png}, type='submit', name='deleteFavourite')}"></button>
+                                    </th-block>
+                                    <th-block data-th-case="false">
+                                        <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(src=@{/static/empty_heart.png}, type='submit', name='favouriteShortfilm')}"></button>
+                                    </th-block>
                                 </th-block>
                             </th-block>
-                        </th-block>
                             <th-block data-th-if="${shortFilm.getUploader().getId()} == ${shortFilmViewData.getWatcherId()}">
-                                <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/' + ${shortFilm.getId()} + '/edit'})}"></button>
+                                <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/' + ${shortFilm.getId()} + '/edit'}, classes='btn-light ml-2 ml-md-0')}"></button>
                             </th-block>
                         </div>
                     </div>
@@ -89,13 +89,13 @@
                 </th-block>
 
                 <hr class="mt-3" />
-                
+
                 <span data-th-text="|${comments.size()} comments|"></span>
                 <div class="d-flex" data-th-classappend="${shortFilmViewData.getWatcherId()} != null ? 'my-4' : 'mt-2 mb-5'">
                     <th-block data-th-switch="${shortFilmViewData.getWatcherId()} != null">
                         <th-block data-th-case="true">
                             <div class="flex-grow-0">
-                                <img data-th-replace="~{@{fragments/profilePicture}(src=${shortFilmViewData.getWatcherPhotoUrl()}, class='img-fluid', style='max-width: 50px; max-height: 50px')}" />
+                                <img data-th-replace="~{@{fragments/profilePicture}(src=${shortFilmViewData.getWatcherPhotoUrl()}, class='img-fluid', style='width: 50px; height: 50px; object-fit: cover')}" />
                             </div>
                             <div class="flex-grow-1 pl-3 d-flex flex-column">
                                 <textarea data-th-replace="~{@{fragments/form/textarea}(name='newCommentText', placeholder='Add a comment...')}"></textarea>

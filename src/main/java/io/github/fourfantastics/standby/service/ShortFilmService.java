@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,11 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 import io.github.fourfantastics.standby.filters.ShortFilmSpecifications;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
-import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.model.form.DateFilter;
 import io.github.fourfantastics.standby.model.form.Pagination;
 import io.github.fourfantastics.standby.model.form.SearchData;
 import io.github.fourfantastics.standby.model.form.ShortFilmUploadData;
+import io.github.fourfantastics.standby.model.form.SortOrder;
 import io.github.fourfantastics.standby.model.form.SortType;
 import io.github.fourfantastics.standby.repository.FileRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
@@ -149,16 +148,12 @@ public class ShortFilmService {
 			throw new BadRequestException("Search query cannot be null");
 		}
 		DateFilter dateFilter = searchData.getDateFilter();
+		SortOrder sortOrder = searchData.getSortOrder();
 		SortType sortType = searchData.getSortType();
-		Set<Tag> tags = searchData.getTags();
 		Pagination pagination = searchData.getPagination();
-		Specification<ShortFilm> filters = ShortFilmSpecifications.hasTitle("%" + q + "%");
-
-		if (tags != null && tags.size() != 0) {
-			Specification<ShortFilm> hasTags = ShortFilmSpecifications
-					.hasTags(tags.stream().map(tag -> tag.getName()).collect(Collectors.toSet()));
-			filters = filters.and(hasTags);
-		}
+		Specification<ShortFilm> filters = (!q.startsWith("#"))
+				? ShortFilmSpecifications.hasTitle("%" + q + "%") :
+					ShortFilmSpecifications.hasTags(Utils.hashSet(q.substring(1)));
 
 		Long now = Instant.now().toEpochMilli();
 		Long day = 24L * 60L * 60L * 1000L;
@@ -184,34 +179,44 @@ public class ShortFilmService {
 				Specification<ShortFilm> fromYear = ShortFilmSpecifications.betweenDates(now - year, now);
 				filters = filters.and(fromYear);
 				break;
-
 			case ALL:
 				Specification<ShortFilm> fromAllTime = ShortFilmSpecifications.betweenDates(0L, now);
 				filters = filters.and(fromAllTime);
 				break;
 			}
-
+		} else {
+			Specification<ShortFilm> fromAllTime = ShortFilmSpecifications.betweenDates(0L, now);
+			filters = filters.and(fromAllTime);
 		}
+		
+		Boolean ascending = false;
+		if (sortOrder != null && sortOrder.equals(SortOrder.ASCENDING)) {
+			ascending = true;
+		}
+		
 		if (sortType != null) {
 			switch (sortType) {
 			case RATINGS:
-				Specification<ShortFilm> sortByRating = ShortFilmSpecifications.sortByRating(false);
+				Specification<ShortFilm> sortByRating = ShortFilmSpecifications.sortByRating(ascending);
 				filters = filters.and(sortByRating);
 				break;
 			case UPLOAD_DATE:
-				Specification<ShortFilm> sortByUploadDate = ShortFilmSpecifications.sortByUploadDate(false);
+				Specification<ShortFilm> sortByUploadDate = ShortFilmSpecifications.sortByUploadDate(ascending);
 				filters = filters.and(sortByUploadDate);
 				break;
 			case VIEWS:
-				Specification<ShortFilm> sortByViews = ShortFilmSpecifications.sortByViews(false);
+				Specification<ShortFilm> sortByViews = ShortFilmSpecifications.sortByViews(ascending);
 				filters = filters.and(sortByViews);
 				break;
 			}
+		} else {
+			Specification<ShortFilm> sortByUploadDate = ShortFilmSpecifications.sortByUploadDate(ascending);
+			filters = filters.and(sortByUploadDate);
 		}
+		
 		pagination.setTotalElements((int) shortFilmRepository.count(filters));
 		pagination.setPageElements(5);
 		Pageable pageable = pagination.getPageRequest();
 		return shortFilmRepository.findAll(filters, pageable);
-
 	}
 }
