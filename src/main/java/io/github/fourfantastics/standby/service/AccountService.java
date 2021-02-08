@@ -14,9 +14,12 @@ import io.github.fourfantastics.standby.repository.UserRepository;
 
 @Service
 public class AccountService implements UserDetailsService {
-	@Autowired
 	UserRepository userRepository;
-	
+
+	@Autowired
+	public AccountService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
