@@ -13,7 +13,7 @@ import io.github.fourfantastics.standby.model.Tag;
 public class ShortFilmSpecifications {
 	public static Specification<ShortFilm> hasTitle(String title) {
 		return (root, query, cb) -> {
-			return cb.like(root.get("title"), title);
+			return cb.like(cb.lower(root.get("title")), title.toLowerCase());
 		};
 	}
 

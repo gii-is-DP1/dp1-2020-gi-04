@@ -20,7 +20,7 @@
                 </div>
                 <div data-th-if="${showUploader}" data-th-with="uploader = ${shortFilm.getUploader()}" class="d-flex mt-3">
                     <a data-th-href="@{'/profile/' + ${uploader.getId()}}">
-                    <img data-th-replace="~{@{fragments/profilePicture}(src=${uploader.getPhotoUrl()}, width='24px', height='24px')}">
+                    <img data-th-replace="~{@{fragments/profilePicture}(src=${uploader.getPhotoUrl()}, width='30px', height='30px', style='border-radius: 50%; object-fit: cover')}">
                     </a>
                     <a class="text-muted text-decoration-none ml-2" data-th-href="@{'/profile/' + ${uploader.getId()}}" data-th-text="${uploader.getName()}"></a>
                 </div>

@@ -1,17 +1,13 @@
 package io.github.fourfantastics.standby.service;
 
 import java.nio.file.Path;
-
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import javax.persistence.criteria.CriteriaBuilder.Case;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
