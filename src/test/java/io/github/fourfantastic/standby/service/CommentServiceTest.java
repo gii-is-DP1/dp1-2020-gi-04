@@ -95,6 +95,30 @@ public class CommentServiceTest {
 	}
 	
 	@Test
+	public void commentYourOwnShortFilmWithoutNotificationTest() {
+		final ShortFilm mockShortFilm = new ShortFilm();
+		final Filmmaker mockUploader = new Filmmaker();
+		mockShortFilm.setUploader(mockUploader);
+		final NotificationConfiguration configuration = new NotificationConfiguration();
+		configuration.setByComments(false);
+		mockUploader.setConfiguration(configuration);
+		
+		
+		final String text = "Hey! this is an example comment\nWow, and multiline text";
+
+		assertDoesNotThrow(() -> {
+			Comment comment = commentService.commentShortFilm(text, mockShortFilm, mockUploader);
+			assertThat(comment.getText()).isEqualTo(text);
+			assertThat(comment.getUser()).isEqualTo(mockUploader);
+			assertThat(comment.getShortFilm()).isEqualTo(mockShortFilm);
+			assertNotNull(comment.getDate());
+		});
+
+		verify(commentRepository, only()).save(any(Comment.class));
+		verifyNoInteractions(notificationService);
+	}
+	
+	@Test
 	public void removeUserCommentTest() {
 		final Long commentId = 1L;
 		final User mockUser = new User();

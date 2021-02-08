@@ -4,9 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -74,7 +77,7 @@ public class UserControllerTest {
 		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(shortFilmService);
 	}
-
+	
 	@Test
 	void manageAccountUserFilmmakerTest() {
 		when(userService.getLoggedUser()).thenReturn(Optional.of(new Filmmaker()));
@@ -164,6 +167,7 @@ public class UserControllerTest {
 		final List<ShortFilm> followedShortFilms = new ArrayList<ShortFilm>();
 		
 		when(userService.getLoggedUser()).thenReturn(Optional.of(filmmaker));
+		when(shortFilmService.getFollowedShortFilmsCount(filmmaker.getId())).thenReturn(followedShortFilms.size());
 		when(shortFilmService.getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class)))
 		.thenReturn(new PageImpl<ShortFilm>(followedShortFilms));
 		
@@ -172,7 +176,9 @@ public class UserControllerTest {
 		});
 		
 		verify(userService, only()).getLoggedUser();
-		verify(shortFilmService, only()).getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getFollowedShortFilmsCount(filmmaker.getId());
+		verify(shortFilmService, times(1)).getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 	
 	@Test
@@ -188,6 +194,7 @@ public class UserControllerTest {
 		final List<ShortFilm> followedShortFilms = new ArrayList<ShortFilm>();
 		
 		when(userService.getLoggedUser()).thenReturn(Optional.of(company));
+		when(shortFilmService.getFollowedShortFilmsCount(company.getId())).thenReturn(followedShortFilms.size());
 		when(shortFilmService.getFollowedShortFilms(eq(company.getId()), any(PageRequest.class)))
 		.thenReturn(new PageImpl<ShortFilm>(followedShortFilms));
 		
@@ -196,7 +203,9 @@ public class UserControllerTest {
 		});
 		
 		verify(userService, only()).getLoggedUser();
-		verify(shortFilmService, only()).getFollowedShortFilms(eq(company.getId()), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getFollowedShortFilmsCount(company.getId());
+		verify(shortFilmService, times(1)).getFollowedShortFilms(eq(company.getId()), any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
 	}
 	
 	@Test
@@ -208,6 +217,5 @@ public class UserControllerTest {
 		});
 
 		verify(userService, only()).getLoggedUser();
-		verifyNoInteractions(shortFilmService);
 	}
 }

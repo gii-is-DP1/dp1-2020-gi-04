@@ -13,5 +13,10 @@ import io.github.fourfantastics.standby.model.User;
 public interface FavouriteRepository extends CrudRepository<Favourite, Long> {
 	public Optional<Favourite> findByUserAndFavouriteShortfilm(User user, ShortFilm favouriteShortfilm);
 
+	public Integer countByFavouriteShortfilm(ShortFilm favouriteShortfilm);
+
+	public Integer countByUser(User user);
+
 	public Page<Favourite> findFavouriteShortfilmByUser(User user, Pageable pageable);
+
 }
