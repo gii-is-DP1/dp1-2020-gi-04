@@ -3,6 +3,7 @@ package io.github.fourfantastics.standby.web;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.github.fourfantastics.standby.model.Filmmaker;
+import io.github.fourfantastics.standby.model.PrivacyRequest;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.RequestData;
@@ -31,21 +33,18 @@ public class PrivacyRequestController {
 		if (user == null) {
 			return "redirect:/login";
 		}
-		
+
 		if (user.getType() != UserType.Filmmaker) {
 			return "redirect:/";
 		}
-		
+
 		Filmmaker filmmaker = (Filmmaker) user;
 		requestData.setFilmmaker(filmmaker);
-		requestData.getPrivacyRequestPagination()
-				.setTotalElements(privacyRequestService.getCountPrivacyRequestByFilmmaker(filmmaker.getId()));
-		requestData
-				.setRequests(privacyRequestService
-						.getPrivacyRequestByFilmmaker(filmmaker.getId(),
-								requestData.getPrivacyRequestPagination()
-										.getPageRequest(Sort.by("privacyRequest.requestDate").descending()))
-						.getContent());
+		
+		Page<PrivacyRequest> page = privacyRequestService.getPrivacyRequestByFilmmaker(filmmaker.getId(), requestData
+				.getPrivacyRequestPagination().getPageRequest(Sort.by("privacyRequest.requestDate").descending()));
+		requestData.getPrivacyRequestPagination().setTotalElements((int) page.getTotalElements());
+		requestData.setRequests(page.getContent());
 		model.put("requestData", requestData);
 		return "requests";
 	}
@@ -78,7 +77,7 @@ public class PrivacyRequestController {
 		if (sender == null) {
 			return "redirect:/login";
 		}
-		
+
 		try {
 			privacyRequestService.acceptPrivacyRequest(sender, requestId);
 		} catch (Exception e) {
@@ -94,7 +93,7 @@ public class PrivacyRequestController {
 		if (sender == null) {
 			return "redirect:/login";
 		}
-		
+
 		try {
 			privacyRequestService.declinePrivacyRequest(sender, requestId);
 		} catch (Exception e) {

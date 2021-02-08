@@ -62,8 +62,6 @@ public class PrivacyRequestControllerTest {
 		final List<PrivacyRequest> privacyRequests = new ArrayList<PrivacyRequest>();
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(filmmaker));
-		when(privacyRequestService.getCountPrivacyRequestByFilmmaker(filmmaker.getId()))
-				.thenReturn(privacyRequests.size());
 		when(privacyRequestService.getPrivacyRequestByFilmmaker(eq(filmmaker.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<PrivacyRequest>(privacyRequests));
 
@@ -72,10 +70,8 @@ public class PrivacyRequestControllerTest {
 		});
 
 		verify(userService, only()).getLoggedUser();
-		verify(privacyRequestService, times(1)).getCountPrivacyRequestByFilmmaker(filmmaker.getId());
-		verify(privacyRequestService, times(1)).getPrivacyRequestByFilmmaker(eq(filmmaker.getId()),
+		verify(privacyRequestService, only()).getPrivacyRequestByFilmmaker(eq(filmmaker.getId()),
 				any(PageRequest.class));
-		verifyNoMoreInteractions(privacyRequestService);
 	}
 
 	@Test

@@ -2,66 +2,70 @@
     <title>Search - Standby</title>
     <section>
         <form method="POST" data-th-action="@{/search}" data-th-object="${searchData}">
-                <div class="input-group">
-                    <input data-th-replace="~{@{fragments/form/input}(name='q', required='true', placeholder='Search short films, filmmakers...' )}" />
-                    <div class="input-group-append">
-                        <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(classes='btn-light border-input', type='submit', src=@{/static/search-icon.svg})}"></button>
+            <div class="form-row">
+                <div class="form-group col-12 col-md-6 mx-auto">
+                    <div class="input-group">
+                        <input type="text" data-th-field="*{q}" required class="form-control" placeholder="Search short films, filmmakers, #tags..." />
+                        <div class="input-group-append">
+                            <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(classes='btn-light border-input', type='submit', src=@{/static/search-icon.svg})}"></button>
+                        </div>
                     </div>
                 </div>
-            <div class="row">
-                <div class="col-4">
+            </div>
+            <div class="form-row">
+                <div class="col">
                     <select data-th-replace="~{@{fragments/form/select}(name='dateFilter', values='${T(io.github.fourfantastics.standby.model.form.DateFilter).values()}', label='Upload date')}"></select>
                 </div>
-                <div class="col-4">
+                <div class="col">
                     <select data-th-replace="~{@{fragments/form/select}(name='sortType', values='${T(io.github.fourfantastics.standby.model.form.SortType).values()}', label='Order by')}"></select>
                 </div>
-                <div class="col-4">
-                    <input data-th-replace="~{@{fragments/form/input}(name='tags', prepend='#', label='Tags')}">
+                <div class="col d-flex align-items-end">
+                    <select data-th-replace="~{@{fragments/form/select}(name='sortOrder', values='${T(io.github.fourfantastics.standby.model.form.SortOrder).values()}', classes='flex-grow-1')}"></select>
                 </div>
             </div>
             <hr />
             <div class="d-flex flex-column">
+                <label data-th-if="${filmmakers.size() != 0}" class="text-muted mb-4">Filmmakers</label>
                 <div class="row">
-	                <th-block data-th-each="i : ${#numbers.sequence(0, 2)}">
-	                   <div class="col-4 px-5 px-md-0">
-	                       <th-block data-th-if="${i < filmmakers.size()}">
-	                           <div data-th-replace="~{@{fragments/filmmakerItem}(${filmmakers.get(i)})}"></div>
-	                        </th-block>
-                        </div>
-	                </th-block>
-                </div>
-                <th-block data-th-switch="${shortFilms.size() != 0}">
-                    <th-block data-th-case="true">
-                        <th-block data-th-each="shortFilm : ${shortFilms}">
-                            <th-block data-th-with="uploader = ${shortFilm.getUploader()}">
-                                <div
-                                    data-th-replace="~{@{fragments/shortFilmItem}(
-                                    id=${shortFilm.getId()},
-                                    title=${shortFilm.getTitle()},
-                                    description=${shortFilm.getDescription()},
-                                    thumbnailUrl=${shortFilm.getThumbnailUrl()},
-                                    viewCount=${shortFilm.getViewCount()},
-                                    uploadDate=${shortFilm.getFormattedUploadDate()},
-                                    editable=(${accountButton} != null),
-                                    showUploader=true
-                                )}"
-                                ></div>
+                    <th-block data-th-each="i : ${#numbers.sequence(0, 2)}">
+                        <div class="col-4 px-5 px-md-0">
+                            <th-block data-th-if="${i < filmmakers.size()}">
+                                <div data-th-replace="~{@{fragments/filmmakerItem}(${filmmakers.get(i)})}"></div>
                             </th-block>
-                        </th-block>
-                        <nav data-th-replace="~{@{fragments/form/pagination}('pagination')}"></nav>
-                    </th-block>
-                    <div data-th-case="false" class="text-center">
-                        <div class="row mt-5 mb-5">
-                            <div class="col-4 col-md-5"></div>
-                            <div class="col-4 col-md-2">
-                                <img data-th-src="@{/static/tumbleweed.svg}" class="img-fluid" />
-                            </div>
-                            <div class="col-4 col-md-5"></div>
                         </div>
-                        <h3>Nothing to show here...</h3>
-                        <p>You should try searching for other terms</p>
-                    </div>
+                    </th-block>
+                </div>
+
+                <label data-th-if="${shortFilms.size() != 0}" class="text-muted mb-4">Short films</label>
+                <th-block data-th-each="shortFilm : ${shortFilms}">
+                    <th-block data-th-with="uploader = ${shortFilm.getUploader()}">
+                        <div
+                            data-th-replace="~{@{fragments/shortFilmItem}(
+                            id=${shortFilm.getId()},
+                            title=${shortFilm.getTitle()},
+                            description=${shortFilm.getDescription()},
+                            thumbnailUrl=${shortFilm.getThumbnailUrl()},
+                            viewCount=${shortFilm.getViewCount()},
+                            uploadDate=${shortFilm.getFormattedUploadDate()},
+                            editable=(${accountButton} != null),
+                            showUploader=true
+                        )}"
+                        ></div>
+                    </th-block>
                 </th-block>
+                <nav data-th-replace="~{@{fragments/form/pagination}('pagination')}"></nav>
+
+                <div data-th-if="${shortFilms.size() == 0 and filmmakers.size() == 0}" class="text-center">
+                    <div class="row mt-5 mb-5">
+                        <div class="col-4 col-md-5"></div>
+                        <div class="col-4 col-md-2">
+                            <img data-th-src="@{/static/tumbleweed.svg}" class="img-fluid" />
+                        </div>
+                        <div class="col-4 col-md-5"></div>
+                    </div>
+                    <h3>Nothing to show here...</h3>
+                    <p>You should try searching for other terms</p>
+                </div>
             </div>
         </form>
     </section>

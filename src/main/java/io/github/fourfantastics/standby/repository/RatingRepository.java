@@ -19,8 +19,6 @@ public interface RatingRepository extends CrudRepository<Rating, Long> {
 
 	public Optional<Rating> findByUserAndShortFilm(User user, ShortFilm shortFilm);
 
-	public Long countByShortFilm(ShortFilm shortFilm);
-
 	@Query("SELECT avg(rating.grade) from Rating rating JOIN rating.shortFilm shortFilm WHERE shortFilm.id = :shortFilmId")
 	public Double averageShortFilmRating(@Param("shortFilmId") Long shortFilmId);
 

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,13 +18,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.model.form.Credentials;
 import io.github.fourfantastics.standby.model.form.FeedData;
 import io.github.fourfantastics.standby.model.validator.CompanyConfigurationDataValidator;
 import io.github.fourfantastics.standby.model.validator.CredentialsValidator;
-import io.github.fourfantastics.standby.service.AccountService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
 import io.github.fourfantastics.standby.service.UserService;
 
@@ -37,9 +38,6 @@ public class UserController {
 
 	@Autowired
 	CompanyConfigurationDataValidator companyConfigurationDataValidator;
-
-	@Autowired
-	AccountService accountService;
 
 	@Autowired
 	ShortFilmService shortFilmService;
@@ -104,12 +102,14 @@ public class UserController {
 			return "redirect:/login";
 		}
 		feedData.setUser(user);
-		feedData.getFollowedShortFilmsPagination().setTotalElements(shortFilmService.getFollowedShortFilmsCount(user.getId()));
-		feedData.setFollowedShortFilms(shortFilmService.getFollowedShortFilms(user.getId(),
-						feedData.getFollowedShortFilmsPagination().getPageRequest(Sort.by("shortfilm.uploadDate").descending())).getContent());
-		
+
+		Page<ShortFilm> page = shortFilmService.getFollowedShortFilms(user.getId(), feedData
+				.getFollowedShortFilmsPagination().getPageRequest(Sort.by("shortfilm.uploadDate").descending()));
+		feedData.getFollowedShortFilmsPagination().setTotalElements((int) page.getTotalElements());
+		feedData.setFollowedShortFilms(page.getContent());
+
 		model.put("feedData", feedData);
-		
+
 		return "feed";
 	}
 

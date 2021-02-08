@@ -5,6 +5,7 @@ import java.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
@@ -12,19 +13,15 @@ import io.github.fourfantastics.standby.repository.RatingRepository;
 
 @Service
 public class RatingService {
-
 	RatingRepository ratingRepository;
-
 	ShortFilmService shortFilmService;
+	NotificationService notificationService;
 
 	@Autowired
-	public RatingService(RatingRepository ratingRepository, ShortFilmService shortFilmService) {
+	public RatingService(RatingRepository ratingRepository, ShortFilmService shortFilmService, NotificationService notificationService) {
 		this.ratingRepository = ratingRepository;
 		this.shortFilmService = shortFilmService;
-	}
-
-	public Long getRatingCount(ShortFilm shortFilm) {
-		return ratingRepository.countByShortFilm(shortFilm);
+		this.notificationService = notificationService;
 	}
 
 	private Double getAverageRating(ShortFilm shortFilm) {
@@ -49,6 +46,12 @@ public class RatingService {
 		shortFilm.setRatingAverage(avgRating);
 
 		shortFilmService.save(shortFilm);
+		
+		if (shortFilm.getUploader().getConfiguration().getByRatings()) {
+			notificationService.sendNotification(shortFilm.getUploader(), NotificationType.RATING, 
+					String.format("%s has rated your shortfilm '%s' with %d", user.getName(), shortFilm.getTitle(), rating.getGrade()));
+		}
+		
 		return savedRating;
 	}
 
