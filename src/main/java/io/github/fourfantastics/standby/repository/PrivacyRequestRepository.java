@@ -19,4 +19,7 @@ public interface PrivacyRequestRepository extends CrudRepository<PrivacyRequest,
 			countQuery = "SELECT count(privacyRequest) FROM Filmmaker filmmaker JOIN filmmaker.receivedRequests privacyRequest WHERE filmmaker.id = :filmmakerId",
 			nativeQuery = false)
 	public Page<PrivacyRequest> getPrivacyRequestOfFilmmaker(@Param("filmmakerId") Long filmmakerId, Pageable pageable);
+	
+	@Query("SELECT count(privacyRequest) FROM Filmmaker filmmaker JOIN filmmaker.receivedRequests privacyRequest WHERE filmmaker.id = :filmmakerId")
+	public Integer getCountPrivacyRequestOfFilmmaker(@Param("filmmakerId") Long filmmakerId);
 }

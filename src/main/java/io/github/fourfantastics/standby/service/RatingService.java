@@ -24,6 +24,10 @@ public class RatingService {
 		this.notificationService = notificationService;
 	}
 
+	public Long getRatingCount(ShortFilm shortFilm) {
+		return ratingRepository.countByShortFilm(shortFilm);
+	}
+
 	private Double getAverageRating(ShortFilm shortFilm) {
 		Double rating = ratingRepository.averageShortFilmRating(shortFilm.getId());
 		return rating == null ? 0 : rating;
