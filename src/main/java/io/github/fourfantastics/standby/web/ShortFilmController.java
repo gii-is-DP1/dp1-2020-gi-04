@@ -153,7 +153,8 @@ public class ShortFilmController {
 		}
 		
 		shortFilmViewData.setShortFilm(shortFilm);
-		shortFilmViewData.getCommentPagination().setTotalElements(commentService.getCommentCountByShortFilm(shortFilm));
+		shortFilmViewData.setCommentCount(commentService.getCommentCountByShortFilm(shortFilm));
+		shortFilmViewData.getCommentPagination().setTotalElements(shortFilmViewData.getCommentCount());
 		shortFilmViewData.setComments(commentService
 				.getCommentsByShortFilm(shortFilm,
 						shortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()))

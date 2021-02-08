@@ -15,7 +15,8 @@ public class ShortFilmViewData {
 	ShortFilm shortFilm;
 
 	List<Comment> comments = new ArrayList<Comment>();
-
+	Integer commentCount;
+	
 	Double meanRating;
 	Double maxRating = 10.0;
 	Long totalRatings;
