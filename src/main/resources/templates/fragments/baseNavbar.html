@@ -6,11 +6,10 @@
 
     <div class="navbar-collapse collapse" id="navbar-content">
         <ul class="nav navbar-nav mt-4 mt-md-0 mx-auto row" style="height: 40px;">
-            <form method="POST" data-th-action="@{/search}">
+            <form method="POST" data-th-action="@{/search}" data-th-if="${#httpServletRequest.requestURI} != '/search'">
                 <div class="form-row">
                     <div class="input-group col col-12 col-md-auto">
-                  
-                        <input type="text" name="q" size="40" class="form-control" placeholder="Search short films, filmmakers..." />
+                        <input type="text" name="q" size="40" required class="form-control" placeholder="Search short films, filmmakers..." />
                         <div class="input-group-append">
                             <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(classes='btn-light border-input', type='submit', src=@{/static/search-icon.svg})}"></button>
                         </div>

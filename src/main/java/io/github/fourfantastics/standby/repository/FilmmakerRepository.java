@@ -1,5 +1,6 @@
 package io.github.fourfantastics.standby.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -9,4 +10,6 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 
 public interface FilmmakerRepository extends CrudRepository<Filmmaker, Long> {
 	public Optional<Filmmaker> findByName(String name);
+	
+	public List<Filmmaker> findFirst3ByNameLike(String name);
 }

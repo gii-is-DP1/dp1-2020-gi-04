@@ -60,4 +60,22 @@ public class ShortFilmSpecifications {
 			return cb.conjunction();
 		};
 	}
+
+	public static Specification<ShortFilm> sortByUploadDate(Boolean asc) {
+		return (root, query, cb) -> {
+			if (asc) {
+				query.orderBy(cb.asc(root.get("uploadDate")));
+			} else {
+				query.orderBy(cb.desc(root.get("uploadDate")));
+			}
+
+			return cb.conjunction();
+		};
+	}
+
+	public static Specification<ShortFilm> all() {
+		return (root, query, cb) -> {
+			return cb.conjunction();
+		};
+	}
 }
