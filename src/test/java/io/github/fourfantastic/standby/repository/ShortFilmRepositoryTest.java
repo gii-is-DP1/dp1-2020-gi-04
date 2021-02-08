@@ -12,7 +12,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -24,6 +23,7 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Role;
 import io.github.fourfantastics.standby.model.RoleType;
 import io.github.fourfantastics.standby.model.ShortFilm;
+import io.github.fourfantastics.standby.model.Subscription;
 import io.github.fourfantastics.standby.model.Tag;
 import io.github.fourfantastics.standby.model.form.DateFilter;
 import io.github.fourfantastics.standby.model.form.Pagination;
@@ -32,6 +32,7 @@ import io.github.fourfantastics.standby.model.form.SortType;
 import io.github.fourfantastics.standby.repository.FilmmakerRepository;
 import io.github.fourfantastics.standby.repository.RoleRepository;
 import io.github.fourfantastics.standby.repository.ShortFilmRepository;
+import io.github.fourfantastics.standby.repository.SubscriptionRepository;
 import io.github.fourfantastics.standby.repository.TagRepository;
 import io.github.fourfantastics.standby.service.RatingService;
 import io.github.fourfantastics.standby.service.ShortFilmService;
@@ -53,15 +54,18 @@ public class ShortFilmRepositoryTest {
 
 	@Autowired
 	RatingService ratingService;
-	
+
 	@Autowired
 	ShortFilmService shortFilmService;
-	
+
 	@Autowired
 	RoleRepository rolesRepository;
-	
-	@Test 
-	void countAttachedShortFilmByFilmmaker(){
+
+	@Autowired
+	SubscriptionRepository subscriptionRepository;
+
+	@Test
+	void countAttachedShortFilmByFilmmakerTest() {
 		Filmmaker filmmaker = new Filmmaker();
 		filmmaker.setName("filmmaker1");
 		filmmaker.setPassword("password");
@@ -73,7 +77,7 @@ public class ShortFilmRepositoryTest {
 		filmmaker.setPhone("675987432");
 		filmmaker.setCreationDate(new Date().getTime());
 		filmmakerRepository.save(filmmaker);
-		
+
 		ShortFilm shortFilm = new ShortFilm();
 		shortFilm.setTitle("Test film");
 		shortFilm.setVideoUrl("example.mp4");
@@ -82,18 +86,18 @@ public class ShortFilmRepositoryTest {
 		shortFilm.setUploader(filmmaker);
 		shortFilm.setViewCount(3L);
 		shortFilmRepository.save(shortFilm);
-		
+
 		Role role = new Role();
 		role.setFilmmaker(filmmaker);
 		role.setRole(RoleType.ACTOR);
 		role.setShortfilm(shortFilm);
 		rolesRepository.save(role);
-		
+
 		assertEquals(shortFilmRepository.countAttachedShortFilmByFilmmaker(filmmaker.getId()), 1);
 	}
-	
-	@Test 
-	void getAttachedShortFilmByFilmmaker(){
+
+	@Test
+	void getAttachedShortFilmByFilmmakerTest() {
 		Filmmaker filmmaker = new Filmmaker();
 		filmmaker.setName("filmmaker1");
 		filmmaker.setPassword("password");
@@ -105,7 +109,7 @@ public class ShortFilmRepositoryTest {
 		filmmaker.setPhone("675987432");
 		filmmaker.setCreationDate(new Date().getTime());
 		filmmakerRepository.save(filmmaker);
-		
+
 		ShortFilm shortFilm = new ShortFilm();
 		shortFilm.setTitle("Test film");
 		shortFilm.setVideoUrl("example.mp4");
@@ -114,23 +118,113 @@ public class ShortFilmRepositoryTest {
 		shortFilm.setUploader(filmmaker);
 		shortFilm.setViewCount(3L);
 		shortFilmRepository.save(shortFilm);
-		
+
 		Role role = new Role();
 		role.setFilmmaker(filmmaker);
 		role.setRole(RoleType.ACTOR);
 		role.setShortfilm(shortFilm);
 		rolesRepository.save(role);
-		
+
 		List<ShortFilm> resultExpected = new ArrayList<ShortFilm>();
 		resultExpected.add(shortFilmRepository.findById(shortFilm.getId()).get());
-		
-		assertEquals(shortFilmRepository.findAttachedShortFilmByFilmmaker(filmmaker.getId(), Pagination.empty().getPageRequest()).getContent(),
+
+		assertEquals(shortFilmRepository
+				.findAttachedShortFilmByFilmmaker(filmmaker.getId(), Pagination.empty().getPageRequest()).getContent(),
 				resultExpected);
 	}
-	
+
+	@Test
+	void countFollowedShortFilmsTest() {
+		Filmmaker filmmaker = new Filmmaker();
+		filmmaker.setName("filmmaker1");
+		filmmaker.setPassword("password");
+		filmmaker.setEmail("filmmaker@gmail.com");
+		filmmaker.setPhotoUrl(null);
+		filmmaker.setCity("Seville");
+		filmmaker.setCountry("Spain");
+		filmmaker.setFullname("Filmmaker Díaz García");
+		filmmaker.setPhone("675987432");
+		filmmaker.setCreationDate(new Date().getTime());
+		filmmakerRepository.save(filmmaker);
+
+		Filmmaker filmmaker2 = new Filmmaker();
+		filmmaker2.setName("filmmaker2");
+		filmmaker2.setPassword("password");
+		filmmaker2.setEmail("filmmaker2@gmail.com");
+		filmmaker2.setPhotoUrl(null);
+		filmmaker2.setCity("Seville");
+		filmmaker2.setCountry("Spain");
+		filmmaker2.setFullname("Filmmaker Díaz García 2");
+		filmmaker2.setPhone("675987432");
+		filmmaker2.setCreationDate(new Date().getTime());
+		filmmakerRepository.save(filmmaker2);
+
+		ShortFilm shortFilm = new ShortFilm();
+		shortFilm.setTitle("Test film");
+		shortFilm.setVideoUrl("example.mp4");
+		shortFilm.setUploadDate(8L);
+		shortFilm.setDescription("");
+		shortFilm.setUploader(filmmaker);
+		shortFilm.setViewCount(3L);
+		shortFilmRepository.save(shortFilm);
+
+		Subscription subscription = new Subscription();
+		subscription.setFilmmaker(filmmaker);
+		subscription.setSubscriber(filmmaker2);
+		subscriptionRepository.save(subscription);
+
+		assertEquals(shortFilmRepository.countFollowedShortFilms(filmmaker2.getId()), 1);
+	}
+
+	@Test
+	void FollowedShortFilmsTest() {
+		Filmmaker filmmaker = new Filmmaker();
+		filmmaker.setName("filmmaker1");
+		filmmaker.setPassword("password");
+		filmmaker.setEmail("filmmaker@gmail.com");
+		filmmaker.setPhotoUrl(null);
+		filmmaker.setCity("Seville");
+		filmmaker.setCountry("Spain");
+		filmmaker.setFullname("Filmmaker Díaz García");
+		filmmaker.setPhone("675987432");
+		filmmaker.setCreationDate(new Date().getTime());
+		filmmakerRepository.save(filmmaker);
+
+		Filmmaker filmmaker2 = new Filmmaker();
+		filmmaker2.setName("filmmaker2");
+		filmmaker2.setPassword("password");
+		filmmaker2.setEmail("filmmaker2@gmail.com");
+		filmmaker2.setPhotoUrl(null);
+		filmmaker2.setCity("Seville");
+		filmmaker2.setCountry("Spain");
+		filmmaker2.setFullname("Filmmaker Díaz García 2");
+		filmmaker2.setPhone("675987432");
+		filmmaker2.setCreationDate(new Date().getTime());
+		filmmakerRepository.save(filmmaker2);
+
+		ShortFilm shortFilm = new ShortFilm();
+		shortFilm.setTitle("Test film");
+		shortFilm.setVideoUrl("example.mp4");
+		shortFilm.setUploadDate(8L);
+		shortFilm.setDescription("");
+		shortFilm.setUploader(filmmaker);
+		shortFilm.setViewCount(3L);
+		shortFilmRepository.save(shortFilm);
+
+		Subscription subscription = new Subscription();
+		subscription.setFilmmaker(filmmaker);
+		subscription.setSubscriber(filmmaker2);
+		subscriptionRepository.save(subscription);
+
+		List<ShortFilm> shortFilms = new ArrayList<ShortFilm>();
+		shortFilms.add(shortFilmRepository.findById(shortFilm.getId()).get());
+
+		assertEquals(shortFilmRepository.followedShortFilms(filmmaker2.getId(), Pagination.empty().getPageRequest())
+				.getContent(), shortFilms);
+	}
+
 	@Test
 	void getShortFilmsByName() {
-
 		Filmmaker filmmaker = new Filmmaker();
 		filmmaker.setName("filmmaker1");
 		filmmaker.setPassword("password");
@@ -289,7 +383,7 @@ public class ShortFilmRepositoryTest {
 		shortFilm3.setUploader(filmmaker2);
 		shortFilm3.setViewCount(5L);
 		shortFilmRepository.save(shortFilm3);
-		
+
 		ShortFilm shortFilm4 = new ShortFilm();
 		shortFilm4.setTitle("test new film");
 		shortFilm4.setVideoUrl("example.mp4");
@@ -298,7 +392,7 @@ public class ShortFilmRepositoryTest {
 		shortFilm4.setUploader(filmmaker);
 		shortFilm4.setViewCount(5L);
 		shortFilmRepository.save(shortFilm4);
-		
+
 		Tag tag = new Tag();
 		tag.setName("comedy");
 		tag.getMovies().add(shortFilm2);
@@ -315,7 +409,7 @@ public class ShortFilmRepositoryTest {
 		Set<Tag> tags = new HashSet<Tag>();
 		tags.add(tag);
 		tags.add(tag2);
-		
+
 		SearchData searchData = new SearchData();
 		searchData.setQ("film");
 		searchData.setTags(tags);
@@ -326,22 +420,21 @@ public class ShortFilmRepositoryTest {
 			searchData.getPagination().setCurrentPage(1);
 
 			System.out.println("PAGE 1:");
-			for(ShortFilm s: shortFilmService.searchShortFilms(searchData).getContent()) {
-				System.out.println(s.toString()+s.getTags().toString());
+			for (ShortFilm s : shortFilmService.searchShortFilms(searchData).getContent()) {
+				System.out.println(s.toString() + s.getTags().toString());
 			}
 			searchData.getPagination().setCurrentPage(2);
 			System.out.println("PAGE 2:");
 
-			for(ShortFilm s: shortFilmService.searchShortFilms(searchData).getContent()) {
-				System.out.println(s.toString()+s.getTags().toString());
+			for (ShortFilm s : shortFilmService.searchShortFilms(searchData).getContent()) {
+				System.out.println(s.toString() + s.getTags().toString());
 			}
 
 		} catch (BadRequestException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
 }
