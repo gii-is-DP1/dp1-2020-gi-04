@@ -21,7 +21,7 @@ public class TagService {
 	public void tagShortFilm(Collection<String> tags, ShortFilm shortFilm) {
 		shortFilm.getTags().clear();
 		for (String tagName : tags) {
-			if (tagName == null) {
+			if (tagName.isEmpty() || tagName.chars().allMatch(Character::isWhitespace)) {
 				continue;
 			}
 
