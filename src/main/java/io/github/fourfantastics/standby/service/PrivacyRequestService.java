@@ -75,7 +75,7 @@ public class PrivacyRequestService {
 		}
 		
 		if (request.getRequestState() != RequestStateType.PENDING) {
-			throw new UnauthorizedException("Request already answered", Utils.hashSet("alreadyAccepted"));
+			throw new UnauthorizedException("Request already answered", Utils.hashSet("alreadyAnswered"));
 		}
 		
 		if (!request.getFilmmaker().equals((Filmmaker) user)) {
@@ -104,7 +104,7 @@ public class PrivacyRequestService {
 		}
 		
 		if (request.getRequestState() != RequestStateType.PENDING) {
-			throw new UnauthorizedException("Request already answered", Utils.hashSet("alreadyAccepted"));
+			throw new UnauthorizedException("Request already answered", Utils.hashSet("alreadyAnswered"));
 		}
 		
 		if (!request.getFilmmaker().equals((Filmmaker) user)) {
