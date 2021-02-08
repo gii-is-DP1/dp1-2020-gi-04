@@ -78,45 +78,6 @@ public class RatingServiceTest {
 	}
 	
 	@Test
-	public void rateShortFilmWithNotificationAndNotificationDeletionTest() {
-		final ShortFilm mockShortFilm = new ShortFilm();
-		final Filmmaker mockUploader = new Filmmaker();
-		mockShortFilm.setUploader(mockUploader);
-		final NotificationConfiguration configuration = new NotificationConfiguration();
-		configuration.setByRatings(true);
-		mockUploader.setConfiguration(configuration);
-		final User mockUser = new User();
-		mockUser.setName("sender");
-		final Integer grade = 5;
-		final Notification notification = new Notification();
-		notification.setEmissionDate(1L);
-		notification.setReadDate(2L);
-		notification.setText("sender has rated your film");
-		notification.setType(NotificationType.RATING);
-		notification.setUser(mockUploader);
-		mockUploader.getNotifications().add(notification);
-		
-		
-		
-		when(ratingRepository.findByUserAndShortFilm(mockUser, mockShortFilm)).thenReturn(Optional.empty());
-
-		Rating rating = ratingService.rateShortFilm(mockShortFilm, mockUser, grade);
-
-		assertThat(rating.getGrade()).isEqualTo(grade);
-		assertThat(rating.getUser()).isEqualTo(mockUser);
-		assertThat(rating.getShortFilm()).isEqualTo(mockShortFilm);
-		assertNotNull(rating.getDate());
-
-		verify(ratingRepository, times(1)).findByUserAndShortFilm(mockUser, mockShortFilm);
-		verify(ratingRepository, times(1)).save(rating);
-		verify(ratingRepository, times(1)).averageShortFilmRating(mockShortFilm.getId());
-		verifyNoMoreInteractions(ratingRepository);
-		verify(shortFilmService, only()).save(mockShortFilm);
-		verify(notificationService, times(1)).deleteNotification(notification);
-		verify(notificationService, times(1)).sendNotification(eq(mockUploader), eq(NotificationType.RATING), anyString());
-	}
-	
-	@Test
 	public void rateShortFilmWithoutNotificationTest() {
 		final ShortFilm mockShortFilm = new ShortFilm();
 		final Filmmaker mockUploader = new Filmmaker();
@@ -176,30 +137,5 @@ public class RatingServiceTest {
 		verifyNoMoreInteractions(ratingRepository);
 		verify(shortFilmService, only()).save(mockShortFilm);
 		verify(notificationService, only()).sendNotification(eq(mockUploader), eq(NotificationType.RATING), anyString());
-	}
-	
-	@Test
-	public void deleteRatingWithNotificationDeletion() {
-		final ShortFilm mockShortFilm = new ShortFilm();
-		final Filmmaker mockUploader = new Filmmaker();
-		mockShortFilm.setUploader(mockUploader);
-		final NotificationConfiguration configuration = new NotificationConfiguration();
-		configuration.setByRatings(true);
-		mockUploader.setConfiguration(configuration);
-		final User mockUser = new User();
-		mockUser.setName("sender");
-		final Integer grade = 5;
-		final Notification notification = new Notification();
-		notification.setEmissionDate(1L);
-		notification.setReadDate(2L);
-		notification.setText("sender has rated your film");
-		notification.setType(NotificationType.RATING);
-		notification.setUser(mockUploader);
-		mockUploader.getNotifications().add(notification);
-		
-		ratingService.removeRating(mockUser, mockShortFilm);
-		
-		verify(notificationService, only()).deleteNotification(notification);
-		verify(ratingRepository, only()).deleteByUserAndShortFilm(mockUser, mockShortFilm);
 	}
 }
