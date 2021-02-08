@@ -1,11 +1,11 @@
 <th-block data-th-fragment="input(name)">
     <th-block data-th-if="${prepend} or ${append}">
         <div class="form-group">
+            <label data-th-if="${label}" data-th-text="${label}"></label>
             <div class="input-group">
                 <div data-th-if="${prepend}" class="input-group-prepend">
                     <div class="input-group-text" data-th-text="${prepend}"></div>
                 </div>
-                <label data-th-if="${label}" data-th-text="${label}"></label>
                 <input
                     data-th-field="*{__${name}__}"
                     class="form-control"
