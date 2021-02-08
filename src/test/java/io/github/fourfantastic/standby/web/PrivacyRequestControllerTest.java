@@ -2,6 +2,7 @@ package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.only;
@@ -34,7 +35,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import io.github.fourfantastics.standby.StandbyApplication;
 import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
-import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
 import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.service.PrivacyRequestService;

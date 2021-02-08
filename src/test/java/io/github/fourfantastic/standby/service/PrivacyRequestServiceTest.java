@@ -27,6 +27,7 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
+import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.model.UserType;
 import io.github.fourfantastics.standby.repository.PrivacyRequestRepository;
 import io.github.fourfantastics.standby.service.NotificationService;
