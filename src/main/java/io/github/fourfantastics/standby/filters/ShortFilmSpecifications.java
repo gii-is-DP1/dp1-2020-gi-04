@@ -13,7 +13,7 @@ import io.github.fourfantastics.standby.model.Tag;
 public class ShortFilmSpecifications {
 	public static Specification<ShortFilm> hasTitle(String title) {
 		return (root, query, cb) -> {
-			return cb.like(root.get("title"), title);
+			return cb.like(cb.lower(root.get("title")), title.toLowerCase());
 		};
 	}
 
@@ -57,6 +57,24 @@ public class ShortFilmSpecifications {
 				query.orderBy(cb.desc(root.get("ratingAverage")));
 			}
 
+			return cb.conjunction();
+		};
+	}
+
+	public static Specification<ShortFilm> sortByUploadDate(Boolean asc) {
+		return (root, query, cb) -> {
+			if (asc) {
+				query.orderBy(cb.asc(root.get("uploadDate")));
+			} else {
+				query.orderBy(cb.desc(root.get("uploadDate")));
+			}
+
+			return cb.conjunction();
+		};
+	}
+
+	public static Specification<ShortFilm> all() {
+		return (root, query, cb) -> {
 			return cb.conjunction();
 		};
 	}

@@ -1,19 +1,41 @@
-<!DOCTYPE html>
-<html
-	data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
-<title data-th-text="|Standby|"></title>
-<section>
-    <h3>These are the found results</h3>
-    <hr />
-	<form data-th-action="@{/search}" method="POST"
-		data-th-object="${searchShortFilmData}"
-		data-th-with="searchShortFilms = ${searchShortFilmData.getSearchShortFilms()}">
-		<th-block
-			data-th-switch="${searchShortFilms} != null and ${!searchShortFilms.isEmpty()}">
-		<th-block data-th-case="true"> <th-block
-			data-th-each="shortFilm : ${searchShortFilms}">
-		<div
-			data-th-replace="~{@{fragments/shortFilmItem}(
+<html data-th-replace="~{@{fragments/baseLayout} :: layout(~{::title}, ~{::section})}">
+    <title>Search - Standby</title>
+    <section>
+        <form method="POST" data-th-action="@{/search}" data-th-object="${searchData}">
+                <div class="input-group">
+                    <input data-th-replace="~{@{fragments/form/input}(name='q', required='true', placeholder='Search short films, filmmakers...' )}" />
+                    <div class="input-group-append">
+                        <button data-th-replace="~{@{fragments/namedButton} :: imgBtn(classes='btn-light border-input', type='submit', src=@{/static/search-icon.svg})}"></button>
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col-4">
+                    <select data-th-replace="~{@{fragments/form/select}(name='dateFilter', values='${T(io.github.fourfantastics.standby.model.form.DateFilter).values()}', label='Upload date')}"></select>
+                </div>
+                <div class="col-4">
+                    <select data-th-replace="~{@{fragments/form/select}(name='sortType', values='${T(io.github.fourfantastics.standby.model.form.SortType).values()}', label='Order by')}"></select>
+                </div>
+                <div class="col-4">
+                    <input data-th-replace="~{@{fragments/form/input}(name='tags', prepend='#', label='Tags')}">
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex flex-column">
+                <div class="row">
+	                <th-block data-th-each="i : ${#numbers.sequence(0, 2)}">
+	                   <div class="col-4 px-5 px-md-0">
+	                       <th-block data-th-if="${i < filmmakers.size()}">
+	                           <div data-th-replace="~{@{fragments/filmmakerItem}(${filmmakers.get(i)})}"></div>
+	                        </th-block>
+                        </div>
+	                </th-block>
+                </div>
+                <th-block data-th-switch="${shortFilms.size() != 0}">
+                    <th-block data-th-case="true">
+                        <th-block data-th-each="shortFilm : ${shortFilms}">
+                            <th-block data-th-with="uploader = ${shortFilm.getUploader()}">
+                                <div
+                                    data-th-replace="~{@{fragments/shortFilmItem}(
                                     id=${shortFilm.getId()},
                                     title=${shortFilm.getTitle()},
                                     description=${shortFilm.getDescription()},
@@ -21,15 +43,26 @@
                                     viewCount=${shortFilm.getViewCount()},
                                     uploadDate=${shortFilm.getFormattedUploadDate()},
                                     editable=(${accountButton} != null),
-                                )}"></div>
-		</th-block>
-		<nav
-			data-th-replace="~{@{fragments/form/pagination}('searchShortFilmPagination')}"></nav>
-		</th-block>
-		<div data-th-case="false" class="alert alert-dark mt-3">There
-			are no shortfilms to show</div>
-		</th-block>
-	</form>
-</section>
+                                    showUploader=true
+                                )}"
+                                ></div>
+                            </th-block>
+                        </th-block>
+                        <nav data-th-replace="~{@{fragments/form/pagination}('pagination')}"></nav>
+                    </th-block>
+                    <div data-th-case="false" class="text-center">
+                        <div class="row mt-5 mb-5">
+                            <div class="col-4 col-md-5"></div>
+                            <div class="col-4 col-md-2">
+                                <img data-th-src="@{/static/tumbleweed.svg}" class="img-fluid" />
+                            </div>
+                            <div class="col-4 col-md-5"></div>
+                        </div>
+                        <h3>Nothing to show here...</h3>
+                        <p>You should try searching for other terms</p>
+                    </div>
+                </th-block>
+            </div>
+        </form>
+    </section>
 </html>
-</th-block>

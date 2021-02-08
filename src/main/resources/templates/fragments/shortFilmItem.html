@@ -7,7 +7,7 @@
         </div>
         <div class="col-md-8">
             <div class="card-body">
-                <div class="d-flex flex-column-reverse flex-md-row align-items-stretch justify-content-md-between align-items-baseline">
+                <div class="d-flex flex-row align-items-stretch justify-content-between align-items-baseline">
 	                <h5 class="card-title m-0">
 	                    <a class="text-decoration-none text-dark" data-th-text="${title}" data-th-href="@{'/shortfilm/' + ${id}}"></a>
 	                </h5>
@@ -15,8 +15,14 @@
 		                <th-block data-th-if="${editable} == true">
 		                    <button data-th-replace="~{@{fragments/button} :: imgBtn(src=@{/static/edit-icon.svg}, href=@{'/shortfilm/' + ${id} + '/edit'})}"></button>
 		                </th-block>
-		                <span class="text-muted" data-th-if="${uploadDate}" data-th-text="|Uploaded ${uploadDate}|"></span>
+		                <span class="text-muted mx-2 mx-md-0" data-th-if="${uploadDate}" data-th-text="|Uploaded ${uploadDate}|"></span>
 	                </div>
+                </div>
+                <div data-th-if="${showUploader}" data-th-with="uploader = ${shortFilm.getUploader()}" class="d-flex mt-3">
+                    <a data-th-href="@{'/profile/' + ${uploader.getId()}}">
+                    <img data-th-replace="~{@{fragments/profilePicture}(src=${uploader.getPhotoUrl()}, width='30px', height='30px', style='border-radius: 50%; object-fit: cover')}">
+                    </a>
+                    <a class="text-muted text-decoration-none ml-2" data-th-href="@{'/profile/' + ${uploader.getId()}}" data-th-text="${uploader.getName()}"></a>
                 </div>
                 <p class="card-text text-collapse m-0" style="white-space: pre-line;" data-th-if="!${#strings.isEmpty(description)}" data-th-text="${description}"></p>
                 <label class="card-text text-muted mt-3" data-th-if="${viewCount} != null" data-th-text="|${viewCount} views|"></label>

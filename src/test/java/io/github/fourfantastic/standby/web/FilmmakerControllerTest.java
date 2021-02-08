@@ -38,6 +38,7 @@ import io.github.fourfantastics.standby.model.Company;
 import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.NotificationConfiguration;
 import io.github.fourfantastics.standby.model.PrivacyRequest;
+import io.github.fourfantastics.standby.model.RequestStateType;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.User;
 import io.github.fourfantastics.standby.model.form.FilmmakerConfigurationData;
@@ -86,6 +87,9 @@ public class FilmmakerControllerTest {
 
 		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -98,6 +102,9 @@ public class FilmmakerControllerTest {
 
 		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -127,9 +134,11 @@ public class FilmmakerControllerTest {
 				.andExpect(redirectedUrl("/"));
 
 		verify(userService, times(1)).getLoggedUser();
-		verify(filmmakerService, only()).registerFilmmaker(mockFilmmakerRegisterData);
-		verifyNoMoreInteractions(filmmakerService);
 		verifyNoMoreInteractions(userService);
+		verify(filmmakerService, only()).registerFilmmaker(mockFilmmakerRegisterData);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -160,6 +169,9 @@ public class FilmmakerControllerTest {
 
 		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -191,6 +203,9 @@ public class FilmmakerControllerTest {
 
 		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -224,6 +239,9 @@ public class FilmmakerControllerTest {
 
 		verify(userService, only()).getLoggedUser();
 		verify(filmmakerService, only()).registerFilmmaker(mockFilmmakerRegisterData);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -245,6 +263,10 @@ public class FilmmakerControllerTest {
 		});
 
 		verify(userService, only()).getLoggedUser();
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -278,8 +300,11 @@ public class FilmmakerControllerTest {
 		});
 
 		verify(userService, times(1)).getLoggedUser();
-		verify(filmmakerService, only()).updateFilmmakerData(mockFilmmaker, mockConfigFilmmaker);
 		verifyNoMoreInteractions(userService);
+		verify(filmmakerService, only()).updateFilmmakerData(mockFilmmaker, mockConfigFilmmaker);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -319,6 +344,9 @@ public class FilmmakerControllerTest {
 		verify(filmmakerService, only()).updateFilmmakerData(mockFilmmaker, mockConfigFilmmaker);
 		verify(userService, times(1)).setProfilePicture(mockFilmmaker, mockConfigFilmmaker.getNewPhoto());
 		verifyNoMoreInteractions(userService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -345,6 +373,10 @@ public class FilmmakerControllerTest {
 		});
 
 		verify(userService, only()).getLoggedUser();
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -378,6 +410,10 @@ public class FilmmakerControllerTest {
 		});
 
 		verify(userService, only()).getLoggedUser();
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -411,6 +447,10 @@ public class FilmmakerControllerTest {
 		});
 
 		verify(userService, only()).getLoggedUser();
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -444,6 +484,8 @@ public class FilmmakerControllerTest {
 				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
+		when(privacyRequestService.getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany)).thenReturn(Optional.empty());
+		when(subscriptionService.isAlreadySubscribedTo(mockViewerCompany, mockViewed)).thenReturn(false);
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
@@ -463,6 +505,12 @@ public class FilmmakerControllerTest {
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
+		verify(subscriptionService, times(1)).getFollowerCount(mockViewed);
+		verify(subscriptionService, times(1)).getFollowedCount(mockViewed);
+		verify(subscriptionService, times(1)).isAlreadySubscribedTo(mockViewerCompany, mockViewed);
+		verifyNoMoreInteractions(subscriptionService);
+		verify(privacyRequestService, only()).getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany);
+		verifyNoInteractions(filmmakerService);
 	}
 
 	@Test
@@ -500,6 +548,7 @@ public class FilmmakerControllerTest {
 				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
+		when(privacyRequestService.getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany)).thenReturn(Optional.empty());
 		when(subscriptionService.isAlreadySubscribedTo(mockViewerCompany, mockViewed)).thenReturn(true);
 
 		assertDoesNotThrow(() -> {
@@ -521,6 +570,12 @@ public class FilmmakerControllerTest {
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
+		verify(subscriptionService, times(1)).getFollowerCount(mockViewed);
+		verify(subscriptionService, times(1)).getFollowedCount(mockViewed);
+		verify(subscriptionService, times(1)).isAlreadySubscribedTo(mockViewerCompany, mockViewed);
+		verifyNoMoreInteractions(subscriptionService);
+		verify(privacyRequestService, only()).getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany);
+		verifyNoInteractions(filmmakerService);
 	}
 
 	@Test
@@ -545,6 +600,9 @@ public class FilmmakerControllerTest {
 		mockViewerCompany.setTaxIDNumber("123-78-1234567");
 		mockViewerCompany.setConfiguration(new NotificationConfiguration());
 		mockViewerCompany.getSentRequests().add(request);
+		
+		final PrivacyRequest mockPrivacyRequest = new PrivacyRequest();
+		mockPrivacyRequest.setRequestState(RequestStateType.PENDING);
 
 		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
 		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
@@ -558,7 +616,9 @@ public class FilmmakerControllerTest {
 				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
-
+		when(privacyRequestService.getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany)).thenReturn(Optional.of(mockPrivacyRequest));
+		when(subscriptionService.isAlreadySubscribedTo(mockViewerCompany, mockViewed)).thenReturn(false);
+		
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
 					.andExpect(model().attribute("followButton", true))
@@ -578,6 +638,12 @@ public class FilmmakerControllerTest {
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
+		verify(subscriptionService, times(1)).getFollowerCount(mockViewed);
+		verify(subscriptionService, times(1)).getFollowedCount(mockViewed);
+		verify(subscriptionService, times(1)).isAlreadySubscribedTo(mockViewerCompany, mockViewed);
+		verifyNoMoreInteractions(subscriptionService);
+		verify(privacyRequestService, only()).getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany);
+		verifyNoInteractions(filmmakerService);
 	}
 
 	@Test
@@ -612,6 +678,7 @@ public class FilmmakerControllerTest {
 				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
+		when(subscriptionService.isAlreadySubscribedTo(mockViewerFilmmaker, mockViewed)).thenReturn(false);
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
@@ -630,6 +697,12 @@ public class FilmmakerControllerTest {
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
+		verify(subscriptionService, times(1)).getFollowerCount(mockViewed);
+		verify(subscriptionService, times(1)).getFollowedCount(mockViewed);
+		verify(subscriptionService, times(1)).isAlreadySubscribedTo(mockViewerFilmmaker, mockViewed);
+		verifyNoMoreInteractions(subscriptionService);
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -687,6 +760,12 @@ public class FilmmakerControllerTest {
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
+		verify(subscriptionService, times(1)).getFollowerCount(mockViewed);
+		verify(subscriptionService, times(1)).getFollowedCount(mockViewed);
+		verify(subscriptionService, times(1)).isAlreadySubscribedTo(mockFollower, mockViewed);
+		verifyNoMoreInteractions(subscriptionService);
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -712,6 +791,7 @@ public class FilmmakerControllerTest {
 				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
+		when(subscriptionService.isAlreadySubscribedTo(mockViewed, mockViewed)).thenReturn(false);
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
@@ -731,6 +811,12 @@ public class FilmmakerControllerTest {
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
+		verify(subscriptionService, times(1)).getFollowerCount(mockViewed);
+		verify(subscriptionService, times(1)).getFollowedCount(mockViewed);
+		verify(subscriptionService, times(1)).isAlreadySubscribedTo(mockViewed, mockViewed);
+		verifyNoMoreInteractions(subscriptionService);
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -756,6 +842,7 @@ public class FilmmakerControllerTest {
 				.thenReturn(attachedShortFilms.size());
 		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
 				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
+		when(subscriptionService.isAlreadySubscribedTo(mockViewed, mockViewed)).thenReturn(false);
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
@@ -774,6 +861,11 @@ public class FilmmakerControllerTest {
 		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
 				any(PageRequest.class));
 		verifyNoMoreInteractions(shortFilmService);
+		verify(subscriptionService, times(1)).getFollowerCount(mockViewed);
+		verify(subscriptionService, times(1)).getFollowedCount(mockViewed);
+		verifyNoMoreInteractions(subscriptionService);
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -787,6 +879,10 @@ public class FilmmakerControllerTest {
 		});
 
 		verify(userService, only()).getUserById(filmmakerId);
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 
 	@Test
@@ -806,5 +902,9 @@ public class FilmmakerControllerTest {
 		});
 
 		verify(userService, only()).getUserById(1L);
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
 	}
 }

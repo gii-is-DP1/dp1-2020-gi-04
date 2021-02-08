@@ -82,7 +82,7 @@
                                             text=${shortFilm.getDescription()},
                                             photoUrl=${uploader.getPhotoUrl()}, 
                                             profileId=${uploader.getId()},
-                                            subscriberCount=${#lists.size(followers)},
+                                            subscriberCount=${followers},
                                             collapsable=(${shortFilm.isCollapsable()} ? true : null),
                                         )}"
                     ></div>
