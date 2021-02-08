@@ -42,7 +42,7 @@ public class CommentService {
 		comment.setDate(new Date().getTime());
 		commentRepository.save(comment);
 		
-		if (shortFilm.getUploader().getConfiguration().getByComments()) {
+        if (shortFilm.getUploader().getConfiguration().getByComments() && !sender.equals((User) shortFilm.getUploader())) {
 			notificationService.sendNotification(shortFilm.getUploader(), NotificationType.COMMENT,
 					String.format("%s has commented in your video '%s'", sender.getName(), shortFilm.getTitle()));
 		}
