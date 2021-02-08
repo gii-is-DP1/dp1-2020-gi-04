@@ -26,10 +26,6 @@ public class CommentService {
 		this.notificationService = notificationService;
 	}
 
-	public Integer getCommentCountByShortFilm(ShortFilm shortFilm) {
-		return commentRepository.countByShortFilm(shortFilm);
-	}
-
 	public Page<Comment> getCommentsByShortFilm(ShortFilm shortFilm, Pageable pageable) {
 		return commentRepository.findByShortFilm(shortFilm, pageable);
 	}

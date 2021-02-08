@@ -5,16 +5,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -181,7 +180,6 @@ public class FavouriteShortFilmControllerTest {
 		final User mockUser = new User();
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockUser));
-		when(favouriteService.getFavouriteShortFilmsCount(mockUser)).thenReturn(0);
 		when(favouriteService.getFavouriteShortFilmsByUser(mockUser, Pagination.empty().getPageRequest())).thenReturn(Page.empty());
 
 		assertDoesNotThrow(() -> {
@@ -191,14 +189,11 @@ public class FavouriteShortFilmControllerTest {
 		});
 		
 		verify(userService, only()).getLoggedUser();
-		verify(favouriteService, times(1)).getFavouriteShortFilmsCount(mockUser);
-		verify(favouriteService, times(1)).getFavouriteShortFilmsByUser(mockUser, Pagination.empty().getPageRequest());
-		verifyNoMoreInteractions(favouriteService);
+		verify(favouriteService, only()).getFavouriteShortFilmsByUser(mockUser, Pagination.empty().getPageRequest());
 	}
 	
 	@Test
 	public void getFavouritesViewAsUnregisteredUserTest() {
-		
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
 		
 		assertDoesNotThrow(() -> {

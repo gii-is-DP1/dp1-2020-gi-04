@@ -734,13 +734,11 @@ public class ShortFilmControllerTest {
 		mockShortFilmViewData.setCommentPagination(Pagination.empty());
 
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		when(commentService.getCommentCountByShortFilm(mockShortFilm)).thenReturn(1);
 		when(commentService.getCommentsByShortFilm(mockShortFilm,
 				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending())))
 						.thenReturn(Page.empty());
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockUser));
 		when(favouriteService.hasFavouriteShortFilm(mockShortFilm, mockUser)).thenReturn(true);
-		when(ratingService.getRatingCount(mockShortFilm)).thenReturn(3L);
 		when(ratingService.getRatingByUserAndShortFilm(mockUser, mockShortFilm)).thenReturn(userRate);
 		when(subscriptionService.getFollowedCount(any(Filmmaker.class))).thenReturn(1);
 
@@ -757,14 +755,12 @@ public class ShortFilmControllerTest {
 		verify(shortFilmService, times(1)).getShortFilmById(mockShortFilm.getId());
 		verify(shortFilmService, times(1)).updateViewCount(any(ShortFilm.class), any(Integer.class));
 		verifyNoMoreInteractions(shortFilmService);
-		verify(commentService, times(1)).getCommentCountByShortFilm(mockShortFilm);
 		verify(commentService, times(1)).getCommentsByShortFilm(mockShortFilm,
 				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()));
 		verifyNoMoreInteractions(commentService);
 		verify(userService, times(1)).getLoggedUser();
 		verifyNoMoreInteractions(userService);
 		verify(favouriteService, only()).hasFavouriteShortFilm(mockShortFilm, mockUser);
-		verify(ratingService, times(1)).getRatingCount(mockShortFilm);
 		verify(ratingService, times(1)).getRatingByUserAndShortFilm(mockUser, mockShortFilm);
 		verifyNoMoreInteractions(ratingService);
 		verify(subscriptionService, only()).getFollowerCount(any(Filmmaker.class));
@@ -782,12 +778,10 @@ public class ShortFilmControllerTest {
 		mockShortFilmViewData.setCommentPagination(Pagination.empty());
 
 		when(shortFilmService.getShortFilmById(mockShortFilm.getId())).thenReturn(Optional.of(mockShortFilm));
-		when(commentService.getCommentCountByShortFilm(mockShortFilm)).thenReturn(1);
 		when(commentService.getCommentsByShortFilm(mockShortFilm,
 				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending())))
 						.thenReturn(Page.empty());
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
-		when(ratingService.getRatingCount(mockShortFilm)).thenReturn(3L);
 		when(ratingService.getRatingByUserAndShortFilm(null, mockShortFilm)).thenReturn(null);
 		when(subscriptionService.getFollowedCount(any(Filmmaker.class))).thenReturn(1);
 
@@ -801,17 +795,14 @@ public class ShortFilmControllerTest {
 		verify(shortFilmService, times(1)).getShortFilmById(mockShortFilm.getId());
 		verify(shortFilmService, times(1)).updateViewCount(any(ShortFilm.class), any(Integer.class));
 		verifyNoMoreInteractions(shortFilmService);
-		verify(commentService, times(1)).getCommentCountByShortFilm(mockShortFilm);
 		verify(commentService, times(1)).getCommentsByShortFilm(mockShortFilm,
 				mockShortFilmViewData.getCommentPagination().getPageRequest(Sort.by("date").descending()));
 		verifyNoMoreInteractions(commentService);
 		verify(userService, times(1)).getLoggedUser();
 		verifyNoMoreInteractions(userService);
-		verify(ratingService, times(1)).getRatingCount(mockShortFilm);
 		verify(ratingService, times(1)).getRatingByUserAndShortFilm(null, mockShortFilm);
 		verifyNoMoreInteractions(ratingService);
 		verify(subscriptionService, only()).getFollowerCount(any(Filmmaker.class));
-
 	}
 
 	@Test
