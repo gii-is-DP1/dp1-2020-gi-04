@@ -1,13 +1,10 @@
 package io.github.fourfantastics.standby.service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.github.fourfantastics.standby.model.Notification;
 import io.github.fourfantastics.standby.model.NotificationType;
 import io.github.fourfantastics.standby.model.Rating;
 import io.github.fourfantastics.standby.model.ShortFilm;
@@ -44,14 +41,7 @@ public class RatingService {
 			rating.setUser(user);
 			rating.setShortFilm(shortFilm);
 		}
-		
-		List<Notification> notification = shortFilm.getUploader().getNotifications().stream()
-				.filter(x -> x.getText().contains(user.getName()) && x.getType().equals(NotificationType.RATING))
-				.collect(Collectors.toList());
-		if (!notification.isEmpty()) {
-			notificationService.deleteNotification(notification.get(0));
-		}
-		
+
 		rating.setDate(Instant.now().toEpochMilli());
 		rating.setGrade(rate);
 
@@ -76,13 +66,6 @@ public class RatingService {
 	}
 
 	public void removeRating(User user, ShortFilm shortFilm) {
-			List<Notification> notification = shortFilm.getUploader().getNotifications().stream()
-					.filter(x -> x.getText().contains(user.getName()) && x.getType().equals(NotificationType.RATING))
-					.collect(Collectors.toList());
-			if (!notification.isEmpty()) {
-				notificationService.deleteNotification(notification.get(0));
-			}
-			ratingRepository.deleteByUserAndShortFilm(user, shortFilm);
-		}
+		ratingRepository.deleteByUserAndShortFilm(user, shortFilm);
 	}
-
+}
