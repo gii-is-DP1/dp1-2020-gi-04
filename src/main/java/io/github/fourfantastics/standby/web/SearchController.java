@@ -17,7 +17,7 @@ public class SearchController {
 
 		String q = searchData.getQ();
 
-		if (q == null || q.isBlank()) {
+		if (q == null || q.chars().allMatch(Character::isWhitespace)) {
 			return "redirect:/";
 		}
 		
