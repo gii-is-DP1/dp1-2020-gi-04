@@ -244,6 +244,7 @@ public class UserControllerTest {
 		final List<ShortFilm> followedShortFilms = new ArrayList<ShortFilm>();
 		
 		when(userService.getLoggedUser()).thenReturn(Optional.of(filmmaker));
+		when(shortFilmService.getFollowedShortFilmsCount(filmmaker.getId())).thenReturn(followedShortFilms.size());
 		when(shortFilmService.getFollowedShortFilms(eq(filmmaker.getId()), any(PageRequest.class)))
 		.thenReturn(new PageImpl<ShortFilm>(followedShortFilms));
 		
@@ -271,6 +272,7 @@ public class UserControllerTest {
 		final List<ShortFilm> followedShortFilms = new ArrayList<ShortFilm>();
 		
 		when(userService.getLoggedUser()).thenReturn(Optional.of(company));
+		when(shortFilmService.getFollowedShortFilmsCount(company.getId())).thenReturn(followedShortFilms.size());
 		when(shortFilmService.getFollowedShortFilms(eq(company.getId()), any(PageRequest.class)))
 		.thenReturn(new PageImpl<ShortFilm>(followedShortFilms));
 		
