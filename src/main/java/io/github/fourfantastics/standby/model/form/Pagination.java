@@ -99,10 +99,6 @@ public class Pagination {
 		return index >= (currentPage - 1) * pageElements && index < currentPage * pageElements;
 	}
 
-	public Boolean isCountVisible(Integer count) {
-		return isIndexVisible(count - 1);
-	}
-
 	public PageRequest getPageRequest() {
 		return PageRequest.of(getCurrentPage() - 1, getPageElements());
 	}
