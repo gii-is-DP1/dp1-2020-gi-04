@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,6 @@ import io.github.fourfantastics.standby.service.ShortFilmService;
 @SpringBootTest(classes = StandbyApplication.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ShortFilmRepositoryTest {
-
 	@Autowired
 	ShortFilmRepository shortFilmRepository;
 
@@ -67,6 +65,9 @@ public class ShortFilmRepositoryTest {
 
 	@Autowired
 	SubscriptionRepository subscriptionRepository;
+	
+	@Autowired
+	ShortFilmSpecifications shortFilmSpecifications;
 
 	@Test
 	void countAttachedShortFilmByFilmmakerTest() {
@@ -280,7 +281,7 @@ public class ShortFilmRepositoryTest {
 		shortFilm3.setViewCount(5L);
 		shortFilmRepository.save(shortFilm3);
 
-		Specification<ShortFilm> thatHasTitle = ShortFilmSpecifications.hasTitle("%film%");
+		Specification<ShortFilm> thatHasTitle = shortFilmSpecifications.hasTitle("%film%");
 
 		assertEquals(2, shortFilmRepository.findAll(thatHasTitle).size());
 	}
@@ -338,7 +339,7 @@ public class ShortFilmRepositoryTest {
 		shortFilm3.setViewCount(5L);
 		shortFilmRepository.save(shortFilm3);
 
-		Specification<ShortFilm> thatHasTitle = ShortFilmSpecifications.hasTitle("%test%");
+		Specification<ShortFilm> thatHasTitle = shortFilmSpecifications.hasTitle("%test%");
 
 		assertEquals(2, shortFilmRepository.findAll(thatHasTitle).size());
 	}
@@ -411,7 +412,7 @@ public class ShortFilmRepositoryTest {
 		tags.add(comedy.getName());
 		tags.add(action.getName());
 
-		Specification<ShortFilm> withTags = ShortFilmSpecifications.hasTags(tags);
+		Specification<ShortFilm> withTags = shortFilmSpecifications.hasTags(tags);
 
 		List<ShortFilm> shortFilms = shortFilmRepository.findAll(withTags);
 		assertEquals(2, shortFilms.size());
@@ -485,7 +486,7 @@ public class ShortFilmRepositoryTest {
 
 		Set<String> emptyTags = new HashSet<String>();
 
-		Specification<ShortFilm> withTags = ShortFilmSpecifications.hasTags(emptyTags);
+		Specification<ShortFilm> withTags = shortFilmSpecifications.hasTags(emptyTags);
 
 		List<ShortFilm> shortFilms = shortFilmRepository.findAll(withTags);
 		assertEquals(0, shortFilms.size());
@@ -545,20 +546,20 @@ public class ShortFilmRepositoryTest {
 		shortFilm3.setViewCount(5L);
 		shortFilmRepository.save(shortFilm3);
 
-		Specification<ShortFilm> between7and11 = ShortFilmSpecifications.betweenDates(7L, 11L);
+		Specification<ShortFilm> between7and11 = shortFilmSpecifications.betweenDates(7L, 11L);
 
 		List<ShortFilm> shortFilms = shortFilmRepository.findAll(between7and11);
 		assertEquals(2, shortFilms.size());
 		assertTrue(shortFilms.contains(shortFilm));
 		assertTrue(shortFilms.contains(shortFilm2));
 
-		Specification<ShortFilm> between7and9 = ShortFilmSpecifications.betweenDates(7L, 9L);
+		Specification<ShortFilm> between7and9 = shortFilmSpecifications.betweenDates(7L, 9L);
 
 		List<ShortFilm> shortFilms2 = shortFilmRepository.findAll(between7and9);
 		assertEquals(1, shortFilms2.size());
 		assertTrue(shortFilms2.contains(shortFilm));
 
-		Specification<ShortFilm> between13and14 = ShortFilmSpecifications.betweenDates(13L, 14L);
+		Specification<ShortFilm> between13and14 = shortFilmSpecifications.betweenDates(13L, 14L);
 
 		List<ShortFilm> shortFilms3 = shortFilmRepository.findAll(between13and14);
 		assertEquals(0, shortFilms3.size());
@@ -618,7 +619,7 @@ public class ShortFilmRepositoryTest {
 		shortFilm3.setViewCount(5L);
 		shortFilmRepository.save(shortFilm3);
 
-		Specification<ShortFilm> orderByUploadDateAsc = ShortFilmSpecifications.sortByUploadDate(true);
+		Specification<ShortFilm> orderByUploadDateAsc = shortFilmSpecifications.sortByUploadDate(true);
 		List<ShortFilm> shortfilmAsc = shortFilmRepository.findAll(orderByUploadDateAsc);
 
 		assertEquals(3, shortfilmAsc.size());
@@ -626,7 +627,7 @@ public class ShortFilmRepositoryTest {
 		assertTrue(shortfilmAsc.get(1).equals(shortFilm3));
 		assertTrue(shortfilmAsc.get(2).equals(shortFilm));
 
-		Specification<ShortFilm> orderByUploadDateDesc = ShortFilmSpecifications.sortByUploadDate(false);
+		Specification<ShortFilm> orderByUploadDateDesc = shortFilmSpecifications.sortByUploadDate(false);
 		List<ShortFilm> shortfilmDesc = shortFilmRepository.findAll(orderByUploadDateDesc);
 
 		assertEquals(3, shortfilmDesc.size());
@@ -694,7 +695,7 @@ public class ShortFilmRepositoryTest {
 		shortFilm3.setViewCount(5L);
 		shortFilmRepository.save(shortFilm3);
 
-		Specification<ShortFilm> orderByViewsAsc = ShortFilmSpecifications.sortByViews(true);
+		Specification<ShortFilm> orderByViewsAsc = shortFilmSpecifications.sortByViews(true);
 		List<ShortFilm> shortfilmAsc = shortFilmRepository.findAll(orderByViewsAsc);
 
 		assertEquals(3, shortfilmAsc.size());
@@ -702,7 +703,7 @@ public class ShortFilmRepositoryTest {
 		assertTrue(shortfilmAsc.get(1).equals(shortFilm3));
 		assertTrue(shortfilmAsc.get(2).equals(shortFilm2));
 
-		Specification<ShortFilm> orderByViewsDesc = ShortFilmSpecifications.sortByViews(false);
+		Specification<ShortFilm> orderByViewsDesc = shortFilmSpecifications.sortByViews(false);
 		List<ShortFilm> shortfilmDesc = shortFilmRepository.findAll(orderByViewsDesc);
 
 		assertEquals(3, shortfilmDesc.size());
@@ -784,7 +785,7 @@ public class ShortFilmRepositoryTest {
 		ratingService.rateShortFilm(shortFilm, filmmaker, 5);
 		ratingService.rateShortFilm(shortFilm2, filmmaker, 7);
 
-		Specification<ShortFilm> orderByRatingAsc = ShortFilmSpecifications.sortByRating(true);
+		Specification<ShortFilm> orderByRatingAsc = shortFilmSpecifications.sortByRating(true);
 		List<ShortFilm> shortfilmAsc = shortFilmRepository.findAll(orderByRatingAsc);
 
 		assertEquals(3, shortfilmAsc.size());
@@ -792,7 +793,7 @@ public class ShortFilmRepositoryTest {
 		assertTrue(shortfilmAsc.get(1).equals(shortFilm));
 		assertTrue(shortfilmAsc.get(2).equals(shortFilm2));
 
-		Specification<ShortFilm> orderByRatingDesc = ShortFilmSpecifications.sortByRating(false);
+		Specification<ShortFilm> orderByRatingDesc = shortFilmSpecifications.sortByRating(false);
 		List<ShortFilm> shortfilmDesc = shortFilmRepository.findAll(orderByRatingDesc);
 
 		assertEquals(3, shortfilmDesc.size());
@@ -806,6 +807,4 @@ public class ShortFilmRepositoryTest {
 				.allMatch(x -> shortfilmAsc.get(x).equals(shortfilmDesc.get(x))));
 
 	}
-
-
 }

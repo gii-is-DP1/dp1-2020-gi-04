@@ -45,6 +45,6 @@ public class FilmmakerService {
 	}
 	
 	public List<Filmmaker> findFirst3ByNameLike(String name) {
-		return filmmakerRepository.findByNameContaining(name);
+		return filmmakerRepository.findByNameContainingIgnoreCase(name);
 	}
 }
