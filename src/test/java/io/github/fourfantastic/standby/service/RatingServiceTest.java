@@ -143,7 +143,6 @@ public class RatingServiceTest {
 		verify(ratingRepository, times(1)).averageShortFilmRating(mockShortFilm.getId());
 		verifyNoMoreInteractions(ratingRepository);
 		verify(shortFilmService, only()).save(mockShortFilm);
-		verify(notificationService, only()).sendNotification(eq(mockUploader), eq(NotificationType.RATING),
-				anyString());
+		verify(notificationService, only()).sendNotification(eq(mockUploader), eq(NotificationType.RATING), anyString());
 	}
 }

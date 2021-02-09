@@ -1,6 +1,7 @@
 package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -9,8 +10,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -225,6 +226,32 @@ public class CompanyControllerTest {
 
 		verify(userService, only()).getLoggedUser();
 	}
+	
+	@Test
+	void manageAccountCompanyNotLoggedView() {
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/account/company")).andExpect(status().isFound())
+				.andExpect(redirectedUrl("/login"));
+		});
+
+		verify(userService, only()).getLoggedUser();
+		verifyNoInteractions(companyService);
+	}
+	
+	@Test
+	void manageAccountCompanyAsFilmmakerView() {
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new Filmmaker()));
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/account/company")).andExpect(status().isFound())
+				.andExpect(redirectedUrl("/account"));
+		});
+
+		verify(userService, only()).getLoggedUser();
+		verifyNoInteractions(companyService);
+	}
 
 	@Test
 	void manageAccountCompany() {
@@ -278,6 +305,43 @@ public class CompanyControllerTest {
 				new MockMultipartFile("newPhoto", "mockFile.png", "image/png", "This is an example".getBytes()));
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(multipart("/account/company").file((MockMultipartFile) mockConfigCompany.getNewPhoto())
+					.with(csrf()).param("companyName", mockConfigCompany.getCompanyName())
+					.param("taxIDNumber", mockConfigCompany.getTaxIDNumber())
+					.param("businessPhone", mockConfigCompany.getBusinessPhone())
+					.param("officeAddress", mockConfigCompany.getOfficeAddress())
+					.param("byPrivacyRequests", mockConfigCompany.getByPrivacyRequests().toString()))
+					.andExpect(status().isOk()).andExpect(view().name("manageCompanyAccount"));
+		});
+
+		verify(userService, times(1)).getLoggedUser();
+		verify(companyService, only()).updateCompanyData(mockCompany, mockConfigCompany);
+		verify(userService, times(1)).setProfilePicture(mockCompany, mockConfigCompany.getNewPhoto());
+		verifyNoMoreInteractions(userService);
+	}
+	
+	@Test
+	void manageAccountCompanyChangeInvalidPicture() throws TooBigException, InvalidExtensionException, RuntimeException {
+		final Company mockCompany = new Company();
+		mockCompany.setBusinessPhone("675849765");
+		mockCompany.setCompanyName("Company1");
+		mockCompany.setOfficeAddress("Calle Manzanita 3");
+		mockCompany.setTaxIDNumber("123-78-1234567");
+		mockCompany.setConfiguration(new NotificationConfiguration());
+
+		final CompanyConfigurationData mockConfigCompany = new CompanyConfigurationData();
+		mockConfigCompany.setBusinessPhone("675849765");
+		mockConfigCompany.setByPrivacyRequests(false);
+		mockConfigCompany.setCompanyName("Company2");
+		mockConfigCompany.setOfficeAddress("Apple street 3");
+		mockConfigCompany.setTaxIDNumber("123-78-1234567");
+		final MockMultipartFile mockPhotoFile = new MockMultipartFile("newPhoto", "mockFile.mp4", "video/mp4", "This is an example".getBytes());
+		mockConfigCompany.setNewPhoto(mockPhotoFile);
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
+		doThrow(new InvalidExtensionException("Example exception")).when(userService).setProfilePicture(mockCompany, mockPhotoFile);
 
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(multipart("/account/company").file((MockMultipartFile) mockConfigCompany.getNewPhoto())

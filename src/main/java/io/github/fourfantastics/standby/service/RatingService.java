@@ -41,7 +41,7 @@ public class RatingService {
 			rating.setUser(user);
 			rating.setShortFilm(shortFilm);
 		}
-
+    
 		rating.setDate(Instant.now().toEpochMilli());
 		rating.setGrade(rate);
 

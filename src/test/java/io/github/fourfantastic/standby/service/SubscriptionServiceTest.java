@@ -65,6 +65,25 @@ public class SubscriptionServiceTest {
 		verify(notificationService, only()).sendNotification(eq(mockFilmmakerFollowed),
 				eq(NotificationType.SUBSCRIPTION), any(String.class));
 	}
+	
+	@Test
+	void subscribesAlreadySuscribedTest() {
+		final User mockUserFollower = new User();
+		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
+		final NotificationConfiguration notificationConfiguration = new NotificationConfiguration();
+		notificationConfiguration.setBySubscriptions(true);
+		mockFilmmakerFollowed.setConfiguration(notificationConfiguration);
+		final Subscription finalSubscription = new Subscription();
+		finalSubscription.setSubscriber(mockUserFollower);
+		finalSubscription.setFilmmaker(mockFilmmakerFollowed);
+
+		when(subscriptionRepository.findBySubscriberAndFilmmaker(mockUserFollower, mockFilmmakerFollowed)).thenReturn(Optional.of(new Subscription()));
+		
+		subscriptionService.subscribeTo(mockUserFollower, mockFilmmakerFollowed);
+
+		verify(subscriptionRepository, only()).findBySubscriberAndFilmmaker(mockUserFollower, mockFilmmakerFollowed);
+		verifyNoInteractions(notificationService);
+	}
 
 	@Test
 	void subscribesWithoutNotificationTest() {
@@ -109,6 +128,28 @@ public class SubscriptionServiceTest {
 		verify(subscriptionRepository, times(1)).delete(subscription);
 		verifyNoMoreInteractions(subscriptionRepository);
 		verify(notificationService, only()).deleteNotification(notification);
+	}
+	
+	@Test
+	void unsubscribesNotAlreadySuscribedTest() {
+		final User mockUserFollower = new User();
+		mockUserFollower.setName("filmmaker1");
+		final Filmmaker mockFilmmakerFollowed = new Filmmaker();
+		
+		final Subscription subscription = new Subscription();
+		subscription.setSubscriber(mockUserFollower);
+		subscription.setFilmmaker(mockFilmmakerFollowed);
+
+		Notification notification = new Notification();
+		notification.setText(String.format("%s has subscribed to your profile.", mockUserFollower.getName()));
+		mockFilmmakerFollowed.getNotifications().add(notification);
+		
+		when(subscriptionRepository.findBySubscriberAndFilmmaker(mockUserFollower, mockFilmmakerFollowed)).thenReturn(Optional.empty());
+		
+		subscriptionService.unsubscribeTo(mockUserFollower, mockFilmmakerFollowed);
+
+		verify(subscriptionRepository, only()).findBySubscriberAndFilmmaker(mockUserFollower, mockFilmmakerFollowed);
+		verifyNoInteractions(notificationService);
 	}
 
 	@Test

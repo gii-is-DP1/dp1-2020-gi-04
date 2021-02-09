@@ -2,7 +2,6 @@ package io.github.fourfantastic.standby.web;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.only;
@@ -11,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -183,7 +183,8 @@ public class PrivacyRequestControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockSenderFilmmaker));
 		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockFilmmakerReceiver));
-
+		doThrow(UnauthorizedException.class).when(privacyRequestService).sendPrivacyRequest(mockSenderFilmmaker, mockFilmmakerReceiver);
+		
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post("/profile/1/request").with(csrf())).andExpect(status().isFound())
 					.andExpect(redirectedUrl("/profile/1"));
@@ -228,7 +229,7 @@ public class PrivacyRequestControllerTest {
 	}
 
 	@Test
-	void filmmakerAcceptPrivactRequestTest() throws Exception {
+	void filmmakerAcceptPrivacyRequestTest() throws Exception {
 		final Filmmaker mockFilmmaker = new Filmmaker();
 		mockFilmmaker.setId(1L);
 
@@ -248,7 +249,7 @@ public class PrivacyRequestControllerTest {
 	}
 
 	@Test
-	void companyAcceptPrivactRequestTest() throws Exception {
+	void companyAcceptPrivacyRequestTest() throws Exception {
 		final Company mockCompany = new Company();
 		mockCompany.setId(1L);
 
@@ -257,7 +258,8 @@ public class PrivacyRequestControllerTest {
 		mockRequest.setRequestState(RequestStateType.ACCEPTED);
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
-
+		doThrow(UnauthorizedException.class).when(privacyRequestService).acceptPrivacyRequest(mockCompany, mockRequest.getId());
+		
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post(String.format("/requests/%d/accept", mockRequest.getId())).with(csrf()))
 					.andExpect(status().isFound()).andExpect(redirectedUrl("/requests"));
@@ -268,7 +270,7 @@ public class PrivacyRequestControllerTest {
 	}
 
 	@Test
-	void acceptPrivactRequestIsNotLoggedTest() {
+	void acceptPrivacyRequestIsNotLoggedTest() {
 		final Long requestId = 1L;
 
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());
@@ -283,7 +285,7 @@ public class PrivacyRequestControllerTest {
 	}
 
 	@Test
-	void filmmakerDeclinePrivactRequestTest() throws Exception {
+	void filmmakerDeclinePrivacyRequestTest() throws Exception {
 		final Filmmaker mockFilmmaker = new Filmmaker();
 
 		PrivacyRequest mockRequest = new PrivacyRequest();
@@ -302,7 +304,7 @@ public class PrivacyRequestControllerTest {
 	}
 
 	@Test
-	void companyDeclinePrivactRequestTest() throws Exception {
+	void companyDeclinePrivacyRequestTest() throws Exception {
 		final Company mockCompany = new Company();
 
 		PrivacyRequest mockRequest = new PrivacyRequest();
@@ -310,7 +312,8 @@ public class PrivacyRequestControllerTest {
 		mockRequest.setRequestState(RequestStateType.ACCEPTED);
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockCompany));
-
+		doThrow(UnauthorizedException.class).when(privacyRequestService).declinePrivacyRequest(mockCompany, mockRequest.getId());
+		
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(post(String.format("/requests/%d/decline", mockRequest.getId())).with(csrf()))
 					.andExpect(status().isFound()).andExpect(redirectedUrl("/requests"));
@@ -321,7 +324,7 @@ public class PrivacyRequestControllerTest {
 	}
 
 	@Test
-	void declinePrivactRequestIsNotLoggedTest() {
+	void declinePrivacyRequestIsNotLoggedTest() {
 		final Long requestId = 1L;
 
 		when(userService.getLoggedUser()).thenReturn(Optional.empty());

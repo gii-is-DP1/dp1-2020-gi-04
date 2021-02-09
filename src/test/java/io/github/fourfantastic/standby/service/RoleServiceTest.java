@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -80,6 +81,31 @@ public class RoleServiceTest {
 	}
 
 	@Test
+	public void setWhiteRolesOfShortFilmTest() {
+		final String filmmakerName = "filmmaker";
+
+		final ShortFilm mockShortFilm = new ShortFilm();
+		mockShortFilm.getRoles().add(new Role());
+
+		final List<RoleData> rolesData = new ArrayList<RoleData>();
+		final RoleData roleData = new RoleData();
+		roleData.setFilmmakerName("     ");
+		roleData.setRoleType(RoleType.ACTOR);
+		rolesData.add(roleData);
+
+		when(userService.getUserByName(filmmakerName)).thenReturn(Optional.empty());
+
+		assertDoesNotThrow(() -> {
+			roleService.setRolesOfShortFilm(rolesData, mockShortFilm);
+		});
+
+		assertTrue(mockShortFilm.getRoles().isEmpty());
+
+		verify(roleRepository, only()).delete(new Role());
+		verifyNoInteractions(userService);
+	}
+	
+	@Test
 	public void setInvalidRolesOfShortFilmTest() {
 		final String filmmakerName = "filmmaker";
 
@@ -100,7 +126,7 @@ public class RoleServiceTest {
 
 		assertTrue(mockShortFilm.getRoles().isEmpty());
 
-		verify(roleRepository, only()).delete(new Role());
+		verify(roleRepository, times(1)).delete(new Role());
 		verify(userService, only()).getUserByName(filmmakerName);
 	}
 }

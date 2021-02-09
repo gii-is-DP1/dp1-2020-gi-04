@@ -73,7 +73,7 @@ public class PrivacyRequestController {
 	}
 
 	@PostMapping("/requests/{requestId}/accept")
-	public String acceptPrivactRequest(@PathVariable Long requestId) {
+	public String acceptPrivacyRequest(@PathVariable Long requestId) {
 		User sender = userService.getLoggedUser().orElse(null);
 		if (sender == null) {
 			return "redirect:/login";
@@ -89,7 +89,7 @@ public class PrivacyRequestController {
 	}
 
 	@PostMapping("/requests/{requestId}/decline")
-	public String declinePrivactRequest(@PathVariable Long requestId) {
+	public String declinePrivacyRequest(@PathVariable Long requestId) {
 		User sender = userService.getLoggedUser().orElse(null);
 		if (sender == null) {
 			return "redirect:/login";

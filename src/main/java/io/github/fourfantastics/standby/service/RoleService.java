@@ -32,19 +32,18 @@ public class RoleService {
 		
 		for (RoleData roleData : roles) {
 			String filmmakerName = roleData.getFilmmakerName();
-			if (filmmakerName == null) {
+			if (filmmakerName == null || filmmakerName.chars().allMatch(Character::isWhitespace)) {
 				continue;
 			}
 
 			User roleUser = userService.getUserByName(filmmakerName).orElse(null);
-			if (roleUser == null || !roleUser.getType().equals(UserType.Filmmaker)) {
-				continue;
+			if (roleUser != null && roleUser.getType().equals(UserType.Filmmaker)) {
+				Role newRole = new Role();
+				newRole.setFilmmaker((Filmmaker) roleUser);
+				newRole.setRole(roleData.getRoleType());
+				newRole.setShortfilm(shortFilm);
+				roleRepository.save(newRole);
 			}
-			Role newRole = new Role();
-			newRole.setFilmmaker((Filmmaker) roleUser);
-			newRole.setRole(roleData.getRoleType());
-			newRole.setShortfilm(shortFilm);
-			roleRepository.save(newRole);
 		}
 	}
 }
