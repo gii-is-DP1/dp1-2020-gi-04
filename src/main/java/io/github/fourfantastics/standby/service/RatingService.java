@@ -52,7 +52,10 @@ public class RatingService {
 
 		shortFilmService.save(shortFilm);
 
-		if (shortFilm.getUploader().getConfiguration().getByRatings() && !user.equals(shortFilm.getUploader())) {
+		if (shortFilm
+				.getUploader()
+				.getConfiguration()
+				.getByRatings() && !user.equals(shortFilm.getUploader())) {
 			notificationService.sendNotification(shortFilm.getUploader(), NotificationType.RATING,
 					String.format("%s has rated your shortfilm '%s' with %d", user.getName(), shortFilm.getTitle(),
 							rating.getGrade()));

@@ -6,7 +6,6 @@ import javax.persistence.criteria.SetJoin;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import io.github.fourfantastics.standby.model.Filmmaker;
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
 
@@ -14,12 +13,6 @@ public class ShortFilmSpecifications {
 	public static Specification<ShortFilm> hasTitle(String title) {
 		return (root, query, cb) -> {
 			return cb.like(cb.lower(root.get("title")), title.toLowerCase());
-		};
-	}
-
-	public static Specification<ShortFilm> hasUploader(Filmmaker filmmaker) {
-		return (root, query, cb) -> {
-			return cb.equal(root.get("uploader"), filmmaker);
 		};
 	}
 
@@ -73,9 +66,4 @@ public class ShortFilmSpecifications {
 		};
 	}
 
-	public static Specification<ShortFilm> all() {
-		return (root, query, cb) -> {
-			return cb.conjunction();
-		};
-	}
 }
