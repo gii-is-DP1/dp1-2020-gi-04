@@ -1,7 +1,5 @@
 package io.github.fourfantastics.standby.repository;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -26,7 +24,7 @@ public class FileRepository {
 		}
 
 		String extension = fileSplit[fileSplit.length - 1];
-		if (extension.isEmpty()) {
+		if (extension.isEmpty() || extension.chars().allMatch(Character::isWhitespace)) {
 			return null;
 		}
 		return "." + extension;
@@ -43,17 +41,6 @@ public class FileRepository {
 
 	public boolean saveFile(MultipartFile file, Path path) {
 		return saveFile(file.getResource(), path);
-	}
-
-	public boolean saveFile(ByteArrayOutputStream stream, Path path) {
-		try {
-			FileOutputStream output = new FileOutputStream(path.toFile());
-			stream.writeTo(output);
-			output.close();
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
 	}
 
 	public boolean saveFile(Resource file, Path path) {

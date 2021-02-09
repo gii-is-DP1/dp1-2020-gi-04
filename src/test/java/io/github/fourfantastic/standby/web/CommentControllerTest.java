@@ -5,6 +5,7 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
@@ -193,5 +194,25 @@ public class CommentControllerTest {
 		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
 		verify(userService, only()).getLoggedUser();
 		verifyNoInteractions(commentService);
+	}
+	
+	@Test
+	public void removeCommentNotFoundTest() throws NotFoundException, UnauthorizedException {
+		final Long shortFilmId = 1L;
+		final String viewShortFilmUrl = String.format("/shortfilm/%s", shortFilmId);
+		final Long commentId = 2L;
+
+		when(shortFilmService.getShortFilmById(shortFilmId)).thenReturn(Optional.of(new ShortFilm()));
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new User()));
+		doThrow(NotFoundException.class).when(commentService).removeUserComment(commentId, new User());
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post(viewShortFilmUrl).with(csrf()).param("deleteComment", commentId.toString()))
+					.andExpect(status().isFound()).andExpect(redirectedUrl(viewShortFilmUrl));
+		});
+
+		verify(shortFilmService, only()).getShortFilmById(shortFilmId);
+		verify(userService, only()).getLoggedUser();
+		verify(commentService, only()).removeUserComment(commentId, new User());
 	}
 }

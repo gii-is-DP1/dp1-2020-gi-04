@@ -18,7 +18,7 @@
 		                <span class="text-muted mx-2 mx-md-0" data-th-if="${uploadDate}" data-th-text="|Uploaded ${uploadDate}|"></span>
 	                </div>
                 </div>
-                <div data-th-if="${showUploader}" data-th-with="uploader = ${shortFilm.getUploader()}" class="d-flex mt-3">
+                <div data-th-if="${showUploader}" data-th-with="uploader = ${shortFilm.getUploader()}" class="d-flex my-3">
                     <a data-th-href="@{'/profile/' + ${uploader.getId()}}">
                     <img data-th-replace="~{@{fragments/profilePicture}(src=${uploader.getPhotoUrl()}, width='30px', height='30px', style='border-radius: 50%; object-fit: cover')}">
                     </a>

@@ -2,8 +2,15 @@ package io.github.fourfantastic.standby.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
@@ -33,17 +40,17 @@ public class RatingServiceTest {
 
 	@Mock
 	RatingRepository ratingRepository;
-	
+
 	@Mock
 	ShortFilmService shortFilmService;
-	
+
 	@Mock
 	NotificationService notificationService;
 
 	@BeforeEach
 	public void setup() {
 		ratingService = new RatingService(ratingRepository, shortFilmService, notificationService);
-		
+
 		when(ratingRepository.save(any(Rating.class))).then(AdditionalAnswers.returnsFirstArg());
 	}
 
@@ -55,7 +62,7 @@ public class RatingServiceTest {
 		final NotificationConfiguration configuration = new NotificationConfiguration();
 		configuration.setByRatings(true);
 		mockUploader.setConfiguration(configuration);
-		
+
 		final User mockUser = new User();
 		final Integer grade = 5;
 
@@ -73,9 +80,10 @@ public class RatingServiceTest {
 		verify(ratingRepository, times(1)).averageShortFilmRating(mockShortFilm.getId());
 		verifyNoMoreInteractions(ratingRepository);
 		verify(shortFilmService, only()).save(mockShortFilm);
-		verify(notificationService, only()).sendNotification(eq(mockUploader), eq(NotificationType.RATING), anyString());
+		verify(notificationService, only()).sendNotification(eq(mockUploader), eq(NotificationType.RATING),
+				anyString());
 	}
-	
+
 	@Test
 	public void rateShortFilmWithoutNotificationTest() {
 		final ShortFilm mockShortFilm = new ShortFilm();
@@ -84,7 +92,7 @@ public class RatingServiceTest {
 		final NotificationConfiguration configuration = new NotificationConfiguration();
 		configuration.setByRatings(false);
 		mockUploader.setConfiguration(configuration);
-		
+
 		final User mockUser = new User();
 		final Integer grade = 5;
 
@@ -113,7 +121,7 @@ public class RatingServiceTest {
 		final NotificationConfiguration configuration = new NotificationConfiguration();
 		configuration.setByRatings(true);
 		mockUploader.setConfiguration(configuration);
-		
+
 		final User mockUser = new User();
 		final Integer grade = 5;
 		final Rating previousRating = new Rating();

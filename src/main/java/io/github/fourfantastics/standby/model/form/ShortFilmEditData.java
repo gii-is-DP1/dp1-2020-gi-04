@@ -48,9 +48,4 @@ public class ShortFilmEditData {
 		shortFilmEditData.setNewRoleType(RoleType.ACTOR);
 		return shortFilmEditData;
 	}
-	
-	public void copyToShortFilm(ShortFilm shortFilm) {
-		shortFilm.setTitle(getTitle());
-		shortFilm.setDescription(getDescription());
-	}
 }

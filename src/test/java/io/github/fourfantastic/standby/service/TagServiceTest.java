@@ -3,7 +3,9 @@ package io.github.fourfantastic.standby.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.Set;
@@ -57,7 +59,29 @@ public class TagServiceTest {
 		for (String tagName : tagsName) {
 			verify(tagRepository, times(1)).findByName(tagName);
 		}
-		verify(tagRepository, times(2)).save(new Tag());
+		verify(tagRepository, times(2)).save(any(Tag.class));
 		verifyNoMoreInteractions(tagRepository);
+	}
+	
+	@Test
+	public void setWhiteTagsOfShortFilmTest() {
+		final String filmmakerName = "filmmaker";
+
+		final Filmmaker filmmaker = new Filmmaker();
+		filmmaker.setId(1L);
+		filmmaker.setName(filmmakerName);
+
+		final ShortFilm mockShortFilm = new ShortFilm();
+		mockShortFilm.getTags().add(new Tag());
+
+		final Set<String> tagsName = Utils.hashSet("          ");
+
+		assertDoesNotThrow(() -> {
+			tagService.tagShortFilm(tagsName, mockShortFilm);
+		});
+
+		assertTrue(mockShortFilm.getTags().isEmpty());
+
+		verifyNoInteractions(tagRepository);
 	}
 }

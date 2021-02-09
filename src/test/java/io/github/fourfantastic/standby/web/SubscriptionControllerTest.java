@@ -264,6 +264,33 @@ public class SubscriptionControllerTest {
 		verify(subscriptionService, times(1)).unsubscribeTo(mockFollower, mockFilmmakerFollowed);
 		verifyNoMoreInteractions(subscriptionService);
 	}
+	
+	@Test
+	void filmmakerUnsubscribesToCompanyTest() throws Exception {
+		final Filmmaker mockFollower = new Filmmaker();
+		mockFollower.setName("user1");
+		mockFollower.setFullname("Filmmaker1");
+		mockFollower.setCountry("Spain");
+		mockFollower.setCity("Seville");
+		mockFollower.setPhone("678543167");
+		mockFollower.setConfiguration(new NotificationConfiguration());
+
+		final Company mockCompanyFollowed = new Company();
+		mockCompanyFollowed.setId(2L);
+		
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFollower));
+		when(userService.getUserById(any(Long.class))).thenReturn(Optional.of(mockCompanyFollowed));
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(post(String.format("/profile/%d/unsubscription", mockCompanyFollowed.getId())).with(csrf())).andExpect(status().isFound())
+					.andExpect(redirectedUrl(String.format("/profile/%d", mockCompanyFollowed.getId())));
+		});
+
+		verify(userService, times(1)).getLoggedUser();
+		verify(userService, times(1)).getUserById(mockCompanyFollowed.getId());
+		verifyNoMoreInteractions(userService);
+		verifyNoInteractions(subscriptionService);
+	}
 
 	@Test
 	void companyUnsubscribesToFilmmakerTest() throws Exception {

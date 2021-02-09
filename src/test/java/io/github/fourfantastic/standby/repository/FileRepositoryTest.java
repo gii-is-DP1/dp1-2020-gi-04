@@ -50,6 +50,7 @@ public class FileRepositoryTest {
 		final String fileName6 = "C:\\Users";
 		final String fileName7 = "C:\\Users.sad.sad.asdasd.sad.exm";
 		final String fileName8 = "asdas.";
+		final String fileName9 = "dasdasd.     ";
 
 		assertThat(fileRepository.getFileExtension(fileName1)).isEqualTo(".mp4");
 		assertThat(fileRepository.getFileExtension(fileName2)).isEqualTo(".txt");
@@ -59,6 +60,7 @@ public class FileRepositoryTest {
 		assertThat(fileRepository.getFileExtension(fileName6)).isEqualTo(null);
 		assertThat(fileRepository.getFileExtension(fileName7)).isEqualTo(".exm");
 		assertThat(fileRepository.getFileExtension(fileName8)).isEqualTo(null);
+		assertThat(fileRepository.getFileExtension(fileName9)).isEqualTo(null);
 	}
 
 	@Test
@@ -68,9 +70,35 @@ public class FileRepositoryTest {
 
 		assertThat(fileRepository.getFileExtension(mockFile)).isEqualTo(".mp4");
 	}
+	
+	@Test
+	public void createDirectoryTest() {
+		final String directoryName = "wakala";
+		final Path directoryPath = root.resolve(directoryName);
+		
+		assertTrue(Files.notExists(directoryPath));
+		
+		fileRepository.createDirectory(directoryPath);
+		
+		assertTrue(Files.exists(directoryPath));
+	}
+	
+	@Test
+	public void createRepeatedDirectoryTest() {
+		final String directoryName = "wakala2";
+		final Path directoryPath = root.resolve(directoryName);
+		
+		assertTrue(Files.notExists(directoryPath));
+		
+		fileRepository.createDirectory(directoryPath);
+		
+		assertTrue(Files.exists(directoryPath));
+		
+		assertFalse(fileRepository.createDirectory(directoryPath));
+	}
 
 	@Test
-	public void saveFileTest() {
+	public void saveMultipartFileTest() {
 		final byte[] content = "This is an example".getBytes();
 		final MultipartFile mockFile = new MockMultipartFile("mockFile", "mockFile.txt", "text/plain", content);
 		final String fileName = "theNameOfTheFileWhenSaved.txt";
@@ -87,6 +115,28 @@ public class FileRepositoryTest {
 		assertDoesNotThrow(() -> {
 			assertThat(Files.readAllBytes(filePath)).isEqualTo(content);
 		});
+	}
+
+	@Test
+	public void saveRepeatedMultipartFileTest() {
+		final byte[] content = "This is an example".getBytes();
+		final MultipartFile mockFile = new MockMultipartFile("mockFile2", "mockFile2.txt", "text/plain", content);
+		final String fileName = "theNameOfTheFileWhenSaved2.txt";
+		final Path filePath = root.resolve(fileName);
+
+		assertTrue(Files.notExists(filePath));
+
+		assertTrue(fileRepository.saveFile(mockFile, filePath));
+
+		assertTrue(Files.exists(filePath));
+		assertFalse(Files.isDirectory(filePath));
+		assertTrue(Files.isReadable(filePath));
+		assertTrue(Files.isWritable(filePath));
+		assertDoesNotThrow(() -> {
+			assertThat(Files.readAllBytes(filePath)).isEqualTo(content);
+		});
+		
+		assertFalse(fileRepository.saveFile(mockFile, filePath));
 	}
 
 	@Test
