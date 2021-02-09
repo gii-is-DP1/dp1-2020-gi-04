@@ -4,7 +4,7 @@ emisionDate: @notnull
 readDate:
 type: @notnull
 
-TOTAL: 2
+TOTAL: 3
 
 NotificationConfiguration:
 byComments: @notnull
@@ -70,7 +70,7 @@ thumbnailUrl:
 uploadDate: @notnull
 viewCount: @notnull @min 0
 
-TOTAL: 8
+TOTAL: 9
 
 Tag:
 name: @notnull @notempty
@@ -79,4 +79,4 @@ TOTAL: 2
 
 -----------------
 
-TOTAL: 43
+TOTAL: 45
