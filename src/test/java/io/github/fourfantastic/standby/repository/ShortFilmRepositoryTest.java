@@ -563,7 +563,6 @@ public class ShortFilmRepositoryTest {
 
 		List<ShortFilm> shortFilms3 = shortFilmRepository.findAll(between13and14);
 		assertEquals(0, shortFilms3.size());
-
 	}
 
 	@Test
@@ -637,7 +636,7 @@ public class ShortFilmRepositoryTest {
 
 		Collections.reverse(shortfilmDesc);
 
-		assertTrue(IntStream.iterate(0, x -> x < 3, x -> x + 1)
+		assertTrue(IntStream.iterate(0, x -> x + 1).limit(2)
 				.allMatch(x -> shortfilmAsc.get(x).equals(shortfilmDesc.get(x))));
 
 	}
@@ -713,7 +712,7 @@ public class ShortFilmRepositoryTest {
 
 		Collections.reverse(shortfilmDesc);
 
-		assertTrue(IntStream.iterate(0, x -> x < 3, x -> x + 1)
+		assertTrue(IntStream.iterate(0, x -> x + 1).limit(2)
 				.allMatch(x -> shortfilmAsc.get(x).equals(shortfilmDesc.get(x))));
 
 	}
@@ -803,7 +802,7 @@ public class ShortFilmRepositoryTest {
 
 		Collections.reverse(shortfilmDesc);
 
-		assertTrue(IntStream.iterate(0, x -> x < 3, x -> x + 1)
+		assertTrue(IntStream.iterate(0, x -> x + 1).limit(2)
 				.allMatch(x -> shortfilmAsc.get(x).equals(shortfilmDesc.get(x))));
 
 	}
