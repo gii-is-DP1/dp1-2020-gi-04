@@ -35,7 +35,7 @@ public class UserService {
 	FileRepository fileRepository;
 
 	@Autowired
-	public UserService(UserRepository userRepository,FileRepository fileRepository) {
+	public UserService(UserRepository userRepository, FileRepository fileRepository) {
 		this.userRepository = userRepository;
 		this.fileRepository = fileRepository;
 	}
@@ -83,8 +83,8 @@ public class UserService {
 			throw new InvalidExtensionException("Invalid extension for the image");
 		}
 
-		long gigabyte = 1000L * 1000L * 5L; /* 5MB */
-		if (imageFile.getSize() > gigabyte) {
+		long maximumSize = 1000L * 1000L * 5L; /* 5MB */
+		if (imageFile.getSize() > maximumSize) {
 			throw new TooBigException("Uploaded image is too big");
 		}
 

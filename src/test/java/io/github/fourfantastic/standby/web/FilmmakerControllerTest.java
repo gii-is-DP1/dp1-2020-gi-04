@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -268,6 +269,38 @@ public class FilmmakerControllerTest {
 		verifyNoInteractions(subscriptionService);
 		verifyNoInteractions(privacyRequestService);
 	}
+	
+	@Test
+	void manageAccountFilmmakerNotLoggedView() {
+		when(userService.getLoggedUser()).thenReturn(Optional.empty());
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/account/filmmaker")).andExpect(status().isFound())
+				.andExpect(redirectedUrl("/login"));
+		});
+
+		verify(userService, only()).getLoggedUser();
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
+	}
+	
+	@Test
+	void manageAccountFilmmakerAsCompanyView() {
+		when(userService.getLoggedUser()).thenReturn(Optional.of(new Company()));
+
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/account/filmmaker")).andExpect(status().isFound())
+				.andExpect(redirectedUrl("/account"));
+		});
+
+		verify(userService, only()).getLoggedUser();
+		verifyNoInteractions(filmmakerService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
+	}
 
 	@Test
 	void manageAccountFilmmaker() {
@@ -329,6 +362,49 @@ public class FilmmakerControllerTest {
 
 		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
 
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(multipart("/account/filmmaker").file((MockMultipartFile) mockConfigFilmmaker.getNewPhoto())
+					.with(csrf()).param("fullname", mockConfigFilmmaker.getFullname())
+					.param("country", mockConfigFilmmaker.getCountry()).param("city", mockConfigFilmmaker.getCity())
+					.param("phone", mockConfigFilmmaker.getPhone())
+					.param("byComments", mockConfigFilmmaker.getByComments().toString())
+					.param("byRatings", mockConfigFilmmaker.getByRatings().toString())
+					.param("bySubscriptions", mockConfigFilmmaker.getBySubscriptions().toString()))
+					.andExpect(status().isOk()).andExpect(view().name("manageFilmmakerAccount"));
+		});
+
+		verify(userService, times(1)).getLoggedUser();
+		verify(filmmakerService, only()).updateFilmmakerData(mockFilmmaker, mockConfigFilmmaker);
+		verify(userService, times(1)).setProfilePicture(mockFilmmaker, mockConfigFilmmaker.getNewPhoto());
+		verifyNoMoreInteractions(userService);
+		verifyNoInteractions(shortFilmService);
+		verifyNoInteractions(subscriptionService);
+		verifyNoInteractions(privacyRequestService);
+	}
+	
+	@Test
+	void manageAccountFilmmakerChangeInvalidPicture() throws TooBigException, InvalidExtensionException, RuntimeException {
+		final Filmmaker mockFilmmaker = new Filmmaker();
+		mockFilmmaker.setFullname("Filmmaker1");
+		mockFilmmaker.setCountry("Spain");
+		mockFilmmaker.setCity("Seville");
+		mockFilmmaker.setPhone("678543167");
+		mockFilmmaker.setConfiguration(new NotificationConfiguration());
+
+		final FilmmakerConfigurationData mockConfigFilmmaker = new FilmmakerConfigurationData();
+		mockConfigFilmmaker.setByComments(false);
+		mockConfigFilmmaker.setByRatings(true);
+		mockConfigFilmmaker.setBySubscriptions(true);
+		mockConfigFilmmaker.setCity("Huelva");
+		mockConfigFilmmaker.setCountry("Spain");
+		mockConfigFilmmaker.setFullname("Filmmaker1");
+		mockConfigFilmmaker.setPhone("616449997");
+		final MockMultipartFile mockPhotoFile = new MockMultipartFile("newPhoto", "mockFile.mp4", "video/mp4", "This is an example".getBytes());
+		mockConfigFilmmaker.setNewPhoto(mockPhotoFile);
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockFilmmaker));
+		doThrow(new InvalidExtensionException("Example exception")).when(userService).setProfilePicture(mockFilmmaker, mockPhotoFile);
+		
 		assertDoesNotThrow(() -> {
 			mockMvc.perform(multipart("/account/filmmaker").file((MockMultipartFile) mockConfigFilmmaker.getNewPhoto())
 					.with(csrf()).param("fullname", mockConfigFilmmaker.getFullname())
@@ -589,9 +665,6 @@ public class FilmmakerControllerTest {
 		mockViewed.setPhone("678543167");
 		mockViewed.setConfiguration(new NotificationConfiguration());
 
-		final PrivacyRequest request = new PrivacyRequest();
-		request.setFilmmaker(mockViewed);
-
 		final Company mockViewerCompany = new Company();
 		mockViewerCompany.setName("user1");
 		mockViewerCompany.setBusinessPhone("675849765");
@@ -599,7 +672,6 @@ public class FilmmakerControllerTest {
 		mockViewerCompany.setOfficeAddress("Calle Manzanita 3");
 		mockViewerCompany.setTaxIDNumber("123-78-1234567");
 		mockViewerCompany.setConfiguration(new NotificationConfiguration());
-		mockViewerCompany.getSentRequests().add(request);
 		
 		final PrivacyRequest mockPrivacyRequest = new PrivacyRequest();
 		mockPrivacyRequest.setRequestState(RequestStateType.PENDING);
@@ -624,6 +696,71 @@ public class FilmmakerControllerTest {
 					.andExpect(model().attribute("followButton", true))
 					.andExpect(model().attribute("privacyRequestButton", true))
 					.andExpect(model().attribute("disablePrivacyRequestButton", true))
+					.andExpect(
+							model().attributeDoesNotExist("accountButton", "alreadyFollowed"))
+					.andExpect(view().name("filmmakerProfile"));
+		});
+
+		verify(userService, times(1)).getLoggedUser();
+		verify(userService, times(1)).getUserById(1L);
+		verifyNoMoreInteractions(userService);
+		verify(shortFilmService, times(1)).getShortFilmsCountByUploader(mockViewed);
+		verify(shortFilmService, times(1)).getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class));
+		verify(shortFilmService, times(1)).getAttachedShortFilmsCountByFilmmaker(mockViewed.getId());
+		verify(shortFilmService, times(1)).getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()),
+				any(PageRequest.class));
+		verifyNoMoreInteractions(shortFilmService);
+		verify(subscriptionService, times(1)).getFollowerCount(mockViewed);
+		verify(subscriptionService, times(1)).getFollowedCount(mockViewed);
+		verify(subscriptionService, times(1)).isAlreadySubscribedTo(mockViewerCompany, mockViewed);
+		verifyNoMoreInteractions(subscriptionService);
+		verify(privacyRequestService, only()).getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany);
+		verifyNoInteractions(filmmakerService);
+	}
+	
+	@Test
+	void getProfileViewAsAcceptedPrivacyRequestCompanyTest() throws Exception {
+		final Filmmaker mockViewed = new Filmmaker();
+		mockViewed.setId(1L);
+		mockViewed.setName("filmmaker1");
+		mockViewed.setFullname("Filmmaker1");
+		mockViewed.setCountry("Spain");
+		mockViewed.setCity("Seville");
+		mockViewed.setPhone("678543167");
+		mockViewed.setConfiguration(new NotificationConfiguration());
+
+		final Company mockViewerCompany = new Company();
+		mockViewerCompany.setName("user1");
+		mockViewerCompany.setBusinessPhone("675849765");
+		mockViewerCompany.setCompanyName("Company1");
+		mockViewerCompany.setOfficeAddress("Calle Manzanita 3");
+		mockViewerCompany.setTaxIDNumber("123-78-1234567");
+		mockViewerCompany.setConfiguration(new NotificationConfiguration());
+		
+		final PrivacyRequest mockPrivacyRequest = new PrivacyRequest();
+		mockPrivacyRequest.setRequestState(RequestStateType.ACCEPTED);
+
+		final List<ShortFilm> uploadedShortFilms = new ArrayList<ShortFilm>();
+		final List<ShortFilm> attachedShortFilms = new ArrayList<ShortFilm>();
+
+		when(userService.getLoggedUser()).thenReturn(Optional.of(mockViewerCompany));
+		when(userService.getUserById(mockViewed.getId())).thenReturn(Optional.of(mockViewed));
+		when(shortFilmService.getShortFilmsCountByUploader(mockViewed)).thenReturn(uploadedShortFilms.size());
+		when(shortFilmService.getShortFilmsByUploader(eq(mockViewed), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(uploadedShortFilms));
+		when(shortFilmService.getAttachedShortFilmsCountByFilmmaker(mockViewed.getId()))
+				.thenReturn(attachedShortFilms.size());
+		when(shortFilmService.getAttachedShortFilmsByFilmmaker(eq(mockViewed.getId()), any(PageRequest.class)))
+				.thenReturn(new PageImpl<ShortFilm>(attachedShortFilms));
+		when(privacyRequestService.getPrivacyRequestByFilmmakerAndCompany(mockViewed, mockViewerCompany)).thenReturn(Optional.of(mockPrivacyRequest));
+		when(subscriptionService.isAlreadySubscribedTo(mockViewerCompany, mockViewed)).thenReturn(false);
+		
+		assertDoesNotThrow(() -> {
+			mockMvc.perform(get("/profile/1")).andExpect(status().isOk())
+					.andExpect(model().attribute("followButton", true))
+					.andExpect(model().attribute("privacyRequestButton", true))
+					.andExpect(model().attribute("disablePrivacyRequestButton", true))
+					.andExpect(model().attribute("personalInformation", true))
 					.andExpect(
 							model().attributeDoesNotExist("accountButton", "alreadyFollowed"))
 					.andExpect(view().name("filmmakerProfile"));
