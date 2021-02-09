@@ -5,18 +5,20 @@ import java.util.Set;
 import javax.persistence.criteria.SetJoin;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import io.github.fourfantastics.standby.model.ShortFilm;
 import io.github.fourfantastics.standby.model.Tag;
 
+@Component
 public class ShortFilmSpecifications {
-	public static Specification<ShortFilm> hasTitle(String title) {
+	public Specification<ShortFilm> hasTitle(String title) {
 		return (root, query, cb) -> {
 			return cb.like(cb.lower(root.get("title")), title.toLowerCase());
 		};
 	}
 
-	public static Specification<ShortFilm> hasTags(Set<String> tags) {
+	public Specification<ShortFilm> hasTags(Set<String> tags) {
 		return (root, query, cb) -> {
 			SetJoin<ShortFilm, Tag> filmTags = root.joinSet("tags");
 			query.distinct(true);
@@ -24,13 +26,13 @@ public class ShortFilmSpecifications {
 		};
 	}
 
-	public static Specification<ShortFilm> betweenDates(Long from, Long to) {
+	public Specification<ShortFilm> betweenDates(Long from, Long to) {
 		return (root, query, cb) -> {
 			return cb.and(cb.greaterThan(root.get("uploadDate"), from), cb.lessThan(root.get("uploadDate"), to));
 		};
 	}
 
-	public static Specification<ShortFilm> sortByViews(Boolean asc) {
+	public Specification<ShortFilm> sortByViews(Boolean asc) {
 		return (root, query, cb) -> {
 			if (asc) {
 				query.orderBy(cb.asc(root.get("viewCount")));
@@ -42,7 +44,7 @@ public class ShortFilmSpecifications {
 		};
 	}
 
-	public static Specification<ShortFilm> sortByRating(Boolean asc) {
+	public Specification<ShortFilm> sortByRating(Boolean asc) {
 		return (root, query, cb) -> {
 			if (asc) {
 				query.orderBy(cb.asc(root.get("ratingAverage")));
@@ -54,7 +56,7 @@ public class ShortFilmSpecifications {
 		};
 	}
 
-	public static Specification<ShortFilm> sortByUploadDate(Boolean asc) {
+	public Specification<ShortFilm> sortByUploadDate(Boolean asc) {
 		return (root, query, cb) -> {
 			if (asc) {
 				query.orderBy(cb.asc(root.get("uploadDate")));
@@ -65,5 +67,4 @@ public class ShortFilmSpecifications {
 			return cb.conjunction();
 		};
 	}
-
 }

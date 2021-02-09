@@ -39,11 +39,13 @@ public class ShortFilmService {
 
 	ShortFilmRepository shortFilmRepository;
 	FileRepository fileRepository;
+	ShortFilmSpecifications shortFilmSpecifications;
 
 	@Autowired
-	public ShortFilmService(ShortFilmRepository shortFilmRepository, FileRepository fileRepository) {
+	public ShortFilmService(ShortFilmRepository shortFilmRepository, FileRepository fileRepository, ShortFilmSpecifications shortFilmSpecifications) {
 		this.shortFilmRepository = shortFilmRepository;
 		this.fileRepository = fileRepository;
+		this.shortFilmSpecifications = shortFilmSpecifications;
 	}
 
 	public Optional<ShortFilm> getShortFilmById(Long id) {
@@ -152,8 +154,8 @@ public class ShortFilmService {
 		SortType sortType = searchData.getSortType();
 		Pagination pagination = searchData.getPagination();
 		Specification<ShortFilm> filters = (!q.startsWith("#"))
-				? ShortFilmSpecifications.hasTitle("%" + q + "%") :
-					ShortFilmSpecifications.hasTags(Utils.hashSet(q.substring(1)));
+				? shortFilmSpecifications.hasTitle("%" + q + "%") :
+					shortFilmSpecifications.hasTags(Utils.hashSet(q.substring(1)));
 
 		Long now = Instant.now().toEpochMilli();
 		Long day = 24L * 60L * 60L * 1000L;
@@ -161,31 +163,32 @@ public class ShortFilmService {
 		if (dateFilter != null) {
 			switch (dateFilter) {
 			case TODAY:
-				Specification<ShortFilm> fromToday = ShortFilmSpecifications.betweenDates(now - day, now);
+				Specification<ShortFilm> fromToday = shortFilmSpecifications.betweenDates(now - day, now);
 				filters = filters.and(fromToday);
 				break;
 			case WEEK:
 				Long week = day * 7L;
-				Specification<ShortFilm> fromWeek = ShortFilmSpecifications.betweenDates(now - week, now);
+				Specification<ShortFilm> fromWeek = shortFilmSpecifications.betweenDates(now - week, now);
 				filters = filters.and(fromWeek);
 				break;
 			case MONTH:
-				Long month = day * 30;
-				Specification<ShortFilm> fromMonth = ShortFilmSpecifications.betweenDates(now - month, now);
+				Long month = day * 30L;
+				Specification<ShortFilm> fromMonth = shortFilmSpecifications.betweenDates(now - month, now);
 				filters = filters.and(fromMonth);
 				break;
 			case YEAR:
-				Long year = day * 365;
-				Specification<ShortFilm> fromYear = ShortFilmSpecifications.betweenDates(now - year, now);
+				Long year = day * 365L;
+				Specification<ShortFilm> fromYear = shortFilmSpecifications.betweenDates(now - year, now);
 				filters = filters.and(fromYear);
 				break;
 			case ALL:
-				Specification<ShortFilm> fromAllTime = ShortFilmSpecifications.betweenDates(0L, now);
+			default:
+				Specification<ShortFilm> fromAllTime = shortFilmSpecifications.betweenDates(0L, now);
 				filters = filters.and(fromAllTime);
 				break;
 			}
 		} else {
-			Specification<ShortFilm> fromAllTime = ShortFilmSpecifications.betweenDates(0L, now);
+			Specification<ShortFilm> fromAllTime = shortFilmSpecifications.betweenDates(0L, now);
 			filters = filters.and(fromAllTime);
 		}
 		
@@ -197,20 +200,21 @@ public class ShortFilmService {
 		if (sortType != null) {
 			switch (sortType) {
 			case RATINGS:
-				Specification<ShortFilm> sortByRating = ShortFilmSpecifications.sortByRating(ascending);
+				Specification<ShortFilm> sortByRating = shortFilmSpecifications.sortByRating(ascending);
 				filters = filters.and(sortByRating);
 				break;
 			case UPLOAD_DATE:
-				Specification<ShortFilm> sortByUploadDate = ShortFilmSpecifications.sortByUploadDate(ascending);
+				Specification<ShortFilm> sortByUploadDate = shortFilmSpecifications.sortByUploadDate(ascending);
 				filters = filters.and(sortByUploadDate);
 				break;
 			case VIEWS:
-				Specification<ShortFilm> sortByViews = ShortFilmSpecifications.sortByViews(ascending);
+			default:
+				Specification<ShortFilm> sortByViews = shortFilmSpecifications.sortByViews(ascending);
 				filters = filters.and(sortByViews);
 				break;
 			}
 		} else {
-			Specification<ShortFilm> sortByUploadDate = ShortFilmSpecifications.sortByUploadDate(ascending);
+			Specification<ShortFilm> sortByUploadDate = shortFilmSpecifications.sortByUploadDate(ascending);
 			filters = filters.and(sortByUploadDate);
 		}
 		

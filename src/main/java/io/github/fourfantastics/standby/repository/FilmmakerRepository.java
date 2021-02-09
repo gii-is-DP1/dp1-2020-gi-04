@@ -11,5 +11,5 @@ import io.github.fourfantastics.standby.model.Filmmaker;
 public interface FilmmakerRepository extends CrudRepository<Filmmaker, Long> {
 	public Optional<Filmmaker> findByName(String name);
 	
-	public List<Filmmaker> findByNameContaining(String name);
+	public List<Filmmaker> findByNameContainingIgnoreCase(String name);
 }
